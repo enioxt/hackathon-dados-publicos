@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App do Cidadão — Visão de Rota</title>
+<style>
+  :root {
+    --azul-marinho: #0B1B2B;
+    --cartao: #12273B;
+    --cartao-2: #17304a;
+    --texto: #F6F8FA;
+    --ambar: #E8A33D;
+    --verde: #2E9E6B;
+    --vermelho: #D6453D;
+    --cinza: #9AA5B1;
+    --linha: #223954;
+    --app-fundo: #F6F8FA;
+    --app-cartao: #FFFFFF;
+    --app-texto: #1B2733;
+    --app-texto-fraco: #5C6B7A;
+    --app-linha: #E3E8ED;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--azul-marinho);
+    color: var(--texto);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 20px 64px;
+  }
+
+  /* ---------- topo da página ---------- */
+
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 28px;
+  }
+
+  .tag-maquete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232, 163, 61, 0.14);
+    border: 1px solid var(--ambar);
+    color: var(--ambar);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .tag-maquete::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ambar);
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 16px 0 6px;
+  }
+
+  .page-sub {
+    color: var(--cinza);
+    font-size: 14px;
+    max-width: 760px;
+    line-height: 1.5;
+  }
+
+  .disclaimer-line {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--ambar);
+    background: rgba(232, 163, 61, 0.08);
+    border-left: 3px solid var(--ambar);
+    padding: 10px 14px;
+    border-radius: 6px;
+    max-width: 900px;
+    line-height: 1.5;
+  }
+
+  .projeto-nome {
+    color: var(--cinza);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 18px;
+  }
+
+  /* ---------- prancha de telas ---------- */
+
+  .prancha {
+    max-width: 1400px;
+    margin: 28px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px 24px;
+  }
+
+  .tela-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tela-numero {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ambar);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  /* moldura de celular */
+
+  .moldura {
+    width: 300px;
+    height: 620px;
+    background: #06111c;
+    border-radius: 38px;
+    padding: 12px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45), inset 0 0 0 2px #1c3049;
+    position: relative;
+  }
+
+  .tela {
+    width: 100%;
+    height: 100%;
+    background: var(--app-fundo);
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    color: var(--app-texto);
+  }
+
+  .notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 18px;
+    background: #06111c;
+    border-radius: 10px;
+    z-index: 30;
+  }
+
+  .status-bar {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--app-texto);
+    flex-shrink: 0;
+    background: var(--app-fundo);
+  }
+
+  .status-bar .sinais { display: flex; gap: 4px; align-items: center; }
+  .status-bar .sinais span { display: inline-block; }
+  .bar-icone { width: 14px; height: 9px; border: 1px solid var(--app-texto); border-radius: 2px; position: relative; }
+  .bar-icone::after { content:""; position:absolute; right:-3px; top:2px; width:2px; height:5px; background:var(--app-texto); border-radius:1px; }
+
+  .app-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .app-topo {
+    font-size: 11px;
+    color: var(--app-texto-fraco);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-titulo {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--app-texto);
+    margin: 0;
+  }
+
+  .app-legenda {
+    font-size: 12px;
+    color: var(--app-texto-fraco);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .etiqueta-mini {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 4px;
+    background: #FBF0DD;
+    border: 1px solid #E8A33D;
+    color: #8A5A12;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 999px;
+  }
+
+  /* bottom tab bar do app */
+  .tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 4px;
+    border-top: 1px solid var(--app-linha);
+    background: var(--app-cartao);
+    flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 9px;
+    color: var(--app-texto-fraco);
+    font-weight: 600;
+  }
+  .tab-item.ativo { color: var(--ambar); }
+  .tab-icone {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background: var(--app-linha);
+  }
+  .tab-item.ativo .tab-icone { background: var(--ambar); }
+
+  /* componentes genéricos dentro da tela clara */
+
+  .cartao {
+    background: var(--app-cartao);
+    border: 1px solid var(--app-linha);
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .atalho-grande {
+    background: linear-gradient(135deg, #0B1B2B, #17304a);
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .atalho-grande .titulo { font-size: 13px; font-weight: 700; }
+  .atalho-grande .sub { font-size: 10px; color: #C8D3DE; }
+
+  .atalho-linha { display: flex; flex-direction: column; gap: 8px; }
+
+  .btn-ambar {
+    background: var(--ambar);
+    color: #2B1A02;
+    font-weight: 800;
+    font-size: 13px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .btn-fantasma {
+    border: 1px solid var(--app-linha);
+    color: var(--app-texto);
+    font-weight: 700;
+    font-size: 12px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .linha-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--app-linha);
+  }
+  .linha-mini:last-child { border-bottom: none; }
+
+  .pill {
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .pill.verde { background: #E3F3EB; color: #1E7A50; }
+  .pill.amarelo { background: #FCF1DA; color: #93630F; }
+  .pill.vermelho { background: #FBE4E1; color: #A82E23; }
+  .pill.cinza { background: #EEF1F4; color: #5C6B7A; }
+
+  /* mapa estilizado */
+  .mapa-fake {
+    height: 130px;
+    border-radius: 12px;
+    background: #E7ECF1;
+    position: relative;
+    overflow: hidden;
+  }
+  .mapa-fake svg { width: 100%; height: 100%; display: block; }
+
+  /* carinhas / escala 1-5 */
+  .escala-5 { display: flex; justify-content: space-between; gap: 6px; }
+  .escala-item {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 1px solid var(--app-linha);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .escala-item.selecionado { border-color: var(--ambar); background: #FBF0DD; }
+
+  .barra-progresso-fundo {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--app-linha);
+    overflow: hidden;
+  }
+  .barra-progresso-cheio {
+    height: 100%;
+    background: var(--ambar);
+    border-radius: 999px;
+  }
+
+  .barra-semana { display: flex; align-items: flex-end; gap: 5px; height: 60px; }
+  .barra-semana .col { flex: 1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:3px; }
+  .barra-semana .bloco { width: 100%; border-radius: 4px 4px 0 0; }
+  .barra-semana .rotulo { font-size: 8px; color: var(--app-texto-fraco); }
+
+  .icone-circ {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--app-linha);
+    flex-shrink: 0;
+    display:flex;align-items:center;justify-content:center;
+    font-size: 13px;
+  }
+
+  hr.fina { border: none; border-top: 1px solid var(--app-linha); margin: 2px 0; }
+
+  .passo-numero {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ambar); color:#2B1A02; font-size: 10px; font-weight:800;
+    display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+
+  /* ---------- blocos de largura cheia ---------- */
+
+  .bloco-full {
+    max-width: 1400px;
+    margin: 56px auto 0;
+  }
+
+  .bloco-full h2 {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .bloco-full .desc {
+    color: var(--cinza);
+    font-size: 13px;
+    margin-bottom: 20px;
+    max-width: 800px;
+    line-height: 1.5;
+  }
+
+  .liga-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .liga-caixa {
+    background: var(--cartao);
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+  }
+
+  .liga-caixa .rotulo-caixa {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ambar);
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .liga-caixa p { font-size: 13px; color: #D6DEE6; line-height: 1.5; margin: 0; }
+
+  .liga-setas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--ambar);
+    font-size: 22px;
+  }
+
+  table.tabela-missoes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--cartao);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table.tabela-missoes th {
+    text-align: left;
+    background: var(--cartao-2);
+    color: var(--ambar);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--linha);
+  }
+  table.tabela-missoes td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--linha);
+    color: #D6DEE6;
+    vertical-align: top;
+  }
+  table.tabela-missoes tr:last-child td { border-bottom: none; }
+
+  .esforco {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .esforco.baixo { background: rgba(46,158,107,0.16); color: var(--verde); }
+  .esforco.medio { background: rgba(232,163,61,0.16); color: var(--ambar); }
+  .esforco.alto { background: rgba(214,69,61,0.16); color: var(--vermelho); }
+
+  .riscos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .risco-linha {
+    display: grid;
+    grid-template-columns: 22px 1.1fr 1fr;
+    gap: 14px;
+    align-items: start;
+    background: var(--cartao);
+    border: 1px solid var(--linha);
+    border-left: 3px solid var(--vermelho);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+
+  .risco-linha .marcador { color: var(--vermelho); font-weight: 800; font-size: 14px; }
+  .risco-linha .risco-texto { font-size: 13px; color: #F0C9C4; line-height: 1.4; }
+  .risco-linha .mitig-texto { font-size: 13px; color: #C7E4D5; line-height: 1.4; }
+  .risco-linha .mitig-rotulo { color: var(--verde); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; display:block; margin-bottom: 2px; }
+  .risco-linha .risco-rotulo { color: var(--vermelho); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; display:block; margin-bottom: 2px; }
+
+  footer.rodape-pagina {
+    max-width: 1400px;
+    margin: 48px auto 0;
+    color: var(--cinza);
+    font-size: 12px;
+    border-top: 1px solid var(--linha);
+    padding-top: 16px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 680px) {
+    .prancha { grid-template-columns: 1fr; }
+    .moldura { width: 100%; max-width: 320px; height: 640px; }
+    .risco-linha { grid-template-columns: 1fr; }
+    .risco-linha .marcador { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="tag-maquete">Maquete — dado sintético</span>
+  <div class="page-title">App do Cidadão — telas propostas</div>
+  <div class="page-sub">Projeto Visão de Rota. Conjunto de telas para viver dentro do aplicativo oficial que a cidade já tem — não é um aplicativo novo.</div>
+  <div class="disclaimer-line">
+    Telas propostas para dentro do aplicativo que a cidade já tem. Nenhum número aqui é medição; é exemplo de como a informação apareceria.
+  </div>
+</div>
+
+<div class="prancha">
+
+  <!-- TELA 1 — INÍCIO -->
+  <div class="tela-slot">
+    <div class="tela-numero">01 · Início</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">Bom dia, cidadão <span class="etiqueta-mini">maquete</span></p>
+          <h1 class="app-titulo">Sua cidade, agora</h1>
+          <div class="atalho-linha">
+            <div class="atalho-grande">
+              <div class="titulo">🚦 Como está agora</div>
+              <div class="sub">veja o trânsito e as filas perto de você</div>
+            </div>
+            <div class="atalho-grande" style="background:linear-gradient(135deg,#1a3a2c,#0B1B2B);">
+              <div class="titulo">📍 Registrar um ponto</div>
+              <div class="sub">leva 5 segundos, ajuda a cidade toda</div>
+            </div>
+            <div class="atalho-grande" style="background:linear-gradient(135deg,#3a2a10,#0B1B2B);">
+              <div class="titulo">🎯 Missão da semana</div>
+              <div class="sub">2 de 3 registros — quase lá</div>
+            </div>
+          </div>
+          <div class="cartao">
+            <div class="linha-mini">
+              <span>📣 Campanha ativa</span>
+              <span class="pill amarelo">Semana da travessia segura</span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item ativo"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 2 — COMO ESTÁ AGORA -->
+  <div class="tela-slot">
+    <div class="tela-numero">02 · Como está agora</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar</p>
+          <h1 class="app-titulo">Como está agora</h1>
+          <div class="mapa-fake">
+            <svg viewBox="0 0 300 130" preserveAspectRatio="none">
+              <rect width="300" height="130" fill="#E7ECF1"/>
+              <path d="M0 40 L300 55" stroke="#C7D0D8" stroke-width="10" fill="none"/>
+              <path d="M40 0 L60 130" stroke="#C7D0D8" stroke-width="8" fill="none"/>
+              <path d="M180 0 L220 130" stroke="#C7D0D8" stroke-width="8" fill="none"/>
+              <ellipse cx="70" cy="45" rx="26" ry="16" fill="#2E9E6B" opacity="0.55"/>
+              <ellipse cx="180" cy="60" rx="30" ry="18" fill="#E8A33D" opacity="0.6"/>
+              <ellipse cx="240" cy="35" rx="22" ry="14" fill="#D6453D" opacity="0.65"/>
+            </svg>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="font-weight:700;color:var(--app-texto);margin-bottom:6px;">3 pontos mais lentos agora</p>
+            <div class="linha-mini"><span>Av. Central x Rua das Flores</span><span class="pill vermelho">+12 min</span></div>
+            <div class="linha-mini"><span>Terminal Rodoviário</span><span class="pill amarelo">+6 min</span></div>
+            <div class="linha-mini"><span>Praça do Mercado</span><span class="pill amarelo">+5 min</span></div>
+          </div>
+          <p class="app-legenda">Atualizado há 4 min · vem das câmeras que já existem na cidade, sem rosto e sem placa.</p>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 3 — REGISTRAR -->
+  <div class="tela-slot">
+    <div class="tela-numero">03 · Registrar onde perdi tempo</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar</p>
+          <h1 class="app-titulo">Onde você perdeu tempo?</h1>
+          <p class="app-legenda">Leva 5 segundos, não precisa escrever nada</p>
+          <div class="escala-5">
+            <div class="escala-item">🙂</div>
+            <div class="escala-item">🙂</div>
+            <div class="escala-item selecionado">😐</div>
+            <div class="escala-item">🙁</div>
+            <div class="escala-item">😣</div>
+          </div>
+          <div class="cartao">
+            <div class="linha-mini"><span>📍 Local</span><span class="pill cinza">GPS automático</span></div>
+            <p class="app-legenda" style="margin-top:2px;">Rua Coronel Cypriano, 480</p>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="font-weight:700;color:var(--app-texto);margin-bottom:6px;">Categoria</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <span class="pill cinza">Fila de ônibus</span>
+              <span class="pill amarelo">Trânsito parado</span>
+              <span class="pill cinza">Travessia difícil</span>
+              <span class="pill cinza">Calçada ruim</span>
+              <span class="pill cinza">Falta de vaga</span>
+            </div>
+          </div>
+          <div class="btn-ambar">Enviar</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 4 — OBRIGADO -->
+  <div class="tela-slot">
+    <div class="tela-numero">04 · Obrigado</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body" style="align-items:center;text-align:center;padding-top:30px;">
+          <div class="icone-circ" style="width:52px;height:52px;font-size:24px;background:#E3F3EB;">✅</div>
+          <h1 class="app-titulo" style="font-size:17px;">Registro enviado</h1>
+          <p class="app-legenda">Seu registro entrou no mapa da semana</p>
+          <div class="cartao" style="width:100%;text-align:left;">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;">
+              <div class="passo-numero">1</div>
+              <p class="app-legenda" style="margin:0;">Seu ponto entra no mapa junto com os de outras pessoas</p>
+            </div>
+            <hr class="fina">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;">
+              <div class="passo-numero">2</div>
+              <p class="app-legenda" style="margin:0;">A prefeitura olha os pontos mais repetidos da semana</p>
+            </div>
+            <hr class="fina">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:6px 0;">
+              <div class="passo-numero">3</div>
+              <p class="app-legenda" style="margin:0;">Quem decide prioriza o que mais gente sentiu</p>
+            </div>
+          </div>
+          <div class="btn-fantasma" style="width:100%;">Ver missão da semana</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 5 — MISSÃO DA SEMANA -->
+  <div class="tela-slot">
+    <div class="tela-numero">05 · Missão da semana</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <h1 class="app-titulo">Missão da semana</h1>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">Registre 3 pontos onde você perdeu tempo esta semana</p>
+            <div class="barra-progresso-fundo"><div class="barra-progresso-cheio" style="width:66%;"></div></div>
+            <p class="app-legenda" style="margin-top:6px;">2 de 3 concluídos</p>
+          </div>
+          <div class="cartao">
+            <div class="linha-mini"><span>🎟️ O que vale</span><span class="pill amarelo">Bilhetes na nota fiscal premiada</span></div>
+            <p class="app-legenda" style="margin-top:4px;">Cada missão concluída somaria bilhete no sorteio que a cidade já faz com a nota fiscal. <b>Hoje a lei desse programa é só fiscal: premiar participação exige mudar a lei.</b> Alternativa sem lei nova: prêmio do comércio participante.</p>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">Regra</p>
+            <p class="app-legenda">1 registro por local por dia. Máximo 5 registros por dia.</p>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 6 — VAGAS -->
+  <div class="tela-slot">
+    <div class="tela-numero">06 · Vagas perto de você</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <h1 class="app-titulo">Vagas perto de você</h1>
+          <div class="cartao">
+            <div class="linha-mini"><span>🅿️ Estacionamento Central</span><span class="pill verde">14 livres</span></div>
+            <div class="linha-mini"><span>220 m</span><span class="pill cinza">3 min a pé</span></div>
+          </div>
+          <div class="cartao">
+            <div class="linha-mini"><span>🅿️ Estacionamento Praça</span><span class="pill amarelo">3 livres</span></div>
+            <div class="linha-mini"><span>410 m</span><span class="pill cinza">5 min a pé</span></div>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">Vagas na rua por quadra</p>
+            <div class="linha-mini"><span>Rua Coronel Cypriano</span><span class="pill verde">6 livres</span></div>
+            <div class="linha-mini"><span>Av. Getúlio Vargas</span><span class="pill vermelho">0 livres</span></div>
+          </div>
+          <p class="app-legenda">Contagem pela câmera que já filma a entrada, sem placa.</p>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 7 — LINHA DE ÔNIBUS -->
+  <div class="tela-slot">
+    <div class="tela-numero">07 · Linha do ônibus</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <h1 class="app-titulo">Linha 204 — Centro</h1>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">Pontualidade na última semana</p>
+            <div class="barra-semana">
+              <div class="col"><div class="bloco" style="height:70%;background:#2E9E6B;"></div><span class="rotulo">Seg</span></div>
+              <div class="col"><div class="bloco" style="height:60%;background:#2E9E6B;"></div><span class="rotulo">Ter</span></div>
+              <div class="col"><div class="bloco" style="height:40%;background:#E8A33D;"></div><span class="rotulo">Qua</span></div>
+              <div class="col"><div class="bloco" style="height:85%;background:#2E9E6B;"></div><span class="rotulo">Qui</span></div>
+              <div class="col"><div class="bloco" style="height:30%;background:#D6453D;"></div><span class="rotulo">Sex</span></div>
+              <div class="col"><div class="bloco" style="height:55%;background:#E8A33D;"></div><span class="rotulo">Sáb</span></div>
+              <div class="col"><div class="bloco" style="height:75%;background:#2E9E6B;"></div><span class="rotulo">Dom</span></div>
+            </div>
+          </div>
+          <div class="cartao">
+            <div class="linha-mini"><span>🚌 Seu ponto</span><span class="pill verde">próximo em ~7 min</span></div>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">Onde a linha mais perde tempo</p>
+            <div class="linha-mini"><span>Terminal Rodoviário</span><span class="pill vermelho">+9 min</span></div>
+            <div class="linha-mini"><span>Av. Central</span><span class="pill amarelo">+4 min</span></div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 8 — A RUA MUDOU -->
+  <div class="tela-slot">
+    <div class="tela-numero">08 · A rua mudou</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <h1 class="app-titulo">A rua perto de você mudou</h1>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;">Travessia — Rua Coronel Cypriano</p>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+              <div style="flex:1;">
+                <p class="app-legenda">Antes</p>
+                <div class="barra-progresso-fundo"><div class="barra-progresso-cheio" style="width:35%;background:#D6453D;"></div></div>
+              </div>
+              <div style="flex:1;">
+                <p class="app-legenda">Depois</p>
+                <div class="barra-progresso-fundo"><div class="barra-progresso-cheio" style="width:78%;background:#2E9E6B;"></div></div>
+              </div>
+            </div>
+            <p class="app-legenda" style="margin-top:8px;">Tempo médio de travessia caiu depois da faixa elevada.</p>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">O que você achou?</p>
+            <div style="display:flex;gap:8px;">
+              <span class="pill verde" style="flex:1;text-align:center;padding:8px;">Melhorou</span>
+              <span class="pill cinza" style="flex:1;text-align:center;padding:8px;">Igual</span>
+              <span class="pill vermelho" style="flex:1;text-align:center;padding:8px;">Piorou</span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 9 — CAMPANHA -->
+  <div class="tela-slot">
+    <div class="tela-numero">09 · Campanha</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar</p>
+          <div class="atalho-grande" style="background:linear-gradient(135deg,#3a2a10,#0B1B2B);">
+            <div class="titulo" style="font-size:16px;">🚶 Semana da travessia segura</div>
+            <div class="sub">participe e ajude a cidade a medir</div>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">O que a cidade vai medir</p>
+            <p class="app-legenda">Tempo de travessia e registros de pontos difíceis nas faixas de pedestre.</p>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">Como participar</p>
+            <p class="app-legenda">Registre um ponto de travessia difícil perto de você durante a semana.</p>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:6px;">Apoio</p>
+            <p class="app-legenda">Comércio local participante</p>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 10 — PRIVACIDADE -->
+  <div class="tela-slot">
+    <div class="tela-numero">10 · Privacidade</div>
+    <div class="moldura">
+      <div class="tela">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>Operadora</span>
+          <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
+        </div>
+        <div class="app-body">
+          <p class="app-topo">← Voltar</p>
+          <h1 class="app-titulo">Sua privacidade</h1>
+          <div class="cartao">
+            <div class="linha-mini"><span>🙈 Rosto</span><span class="pill verde">nunca lido</span></div>
+            <div class="linha-mini"><span>🔢 Placa</span><span class="pill verde">nunca lida</span></div>
+            <div class="linha-mini"><span>🗑️ Imagem</span><span class="pill verde">descartada após contar</span></div>
+            <div class="linha-mini"><span>👤 Registro</span><span class="pill verde">anônimo</span></div>
+          </div>
+          <div class="cartao">
+            <p class="app-legenda">A câmera conta pessoas e veículos para saber o quanto a rua está cheia — ela não guarda quem você é.</p>
+          </div>
+          <div class="btn-fantasma" style="border-color:var(--vermelho);color:var(--vermelho);width:100%;">Apagar meus registros</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="tab-icone"></div>Início</div>
+          <div class="tab-item"><div class="tab-icone"></div>Chamados</div>
+          <div class="tab-item"><div class="tab-icone"></div>Trânsito</div>
+          <div class="tab-item"><div class="tab-icone"></div>Campanhas</div>
+          <div class="tab-item ativo"><div class="tab-icone"></div>Perfil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= BLOCO: COMO ISSO LIGA NO QUE JÁ EXISTE ================= -->
+<div class="bloco-full">
+  <h2>Como isso liga no que já existe</h2>
+  <div class="desc">Nenhuma peça nova de infraestrutura. As telas do App do Cidadão conversam com quatro coisas que a prefeitura já opera.</div>
+  <div class="liga-grid" style="grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;">
+    <div class="liga-caixa">
+      <div class="rotulo-caixa">App oficial da cidade</div>
+      <p>Chamado, enquete, campanha e notificação — módulos que já existem, ganham as 10 telas novas.</p>
+    </div>
+    <div class="liga-setas">→</div>
+    <div class="liga-caixa">
+      <div class="rotulo-caixa">Nota fiscal premiada</div>
+      <p>O bilhete e o sorteio já existem. As missões só geram bilhete a mais — nenhum prêmio novo.</p>
+    </div>
+    <div class="liga-setas">→</div>
+    <div class="liga-caixa">
+      <div class="rotulo-caixa">Câmeras já instaladas</div>
+      <p>A contagem de fluxo e ocupação que as câmeras já fazem vira o "como está agora" e as vagas.</p>
+    </div>
+    <div class="liga-setas">→</div>
+    <div class="liga-caixa">
+      <div class="rotulo-caixa">Painel do gestor</div>
+      <p>Registros do cidadão e contagem das câmeras chegam como prioridade visível para quem decide.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= BLOCO: CAMPANHAS E MISSÕES ================= -->
+<div class="bloco-full">
+  <h2>Campanhas e missões, em ordem de esforço</h2>
+  <div class="desc">Da mais simples de ligar até a que exige mais articulação com terceiros.</div>
+  <table class="tabela-missoes">
+    <thead>
+      <tr>
+        <th>Missão</th>
+        <th>O que pede ao cidadão</th>
+        <th>O que a cidade ganha</th>
+        <th>O que precisa ser ligado</th>
+        <th>Esforço</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Missão da semana</td>
+        <td>Registrar 3 pontos de demora em 7 dias</td>
+        <td>Mapa contínuo de pontos sentidos pela população</td>
+        <td>Módulo de registro + bilhete da nota premiada</td>
+        <td><span class="esforco baixo">Baixo</span></td>
+      </tr>
+      <tr>
+        <td>Semana temática</td>
+        <td>Focar registros numa categoria (ex.: travessia)</td>
+        <td>Dado concentrado num problema específico, num período curto</td>
+        <td>Módulo de campanha do app + filtro de categoria</td>
+        <td><span class="esforco baixo">Baixo</span></td>
+      </tr>
+      <tr>
+        <td>Placar de bairro</td>
+        <td>Registros contam para o bairro onde moram</td>
+        <td>Engajamento territorial, comparação entre regiões</td>
+        <td>Cadastro de bairro + ranking simples</td>
+        <td><span class="esforco medio">Médio</span></td>
+      </tr>
+      <tr>
+        <td>Mutirão de travessia</td>
+        <td>Presença marcada num dia e local combinados</td>
+        <td>Evento presencial com dado antes/depois</td>
+        <td>Agenda do app + equipe de campo no dia</td>
+        <td><span class="esforco medio">Médio</span></td>
+      </tr>
+      <tr>
+        <td>Desafio das empresas</td>
+        <td>Funcionários de empresas parceiras registram pontos</td>
+        <td>Volume maior de dado em horário de pico</td>
+        <td>Acordo com empresas locais + identificação por equipe (sem nome de empresa na tela pública)</td>
+        <td><span class="esforco alto">Alto</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================= BLOCO: O QUE PODE DAR ERRADO ================= -->
+<div class="bloco-full">
+  <h2>O que pode dar errado</h2>
+  <div class="desc">Nomear o risco antes de alguém perguntar é o que separa uma proposta séria de uma proposta bonita.</div>
+  <div class="riscos-grid">
+    <div class="risco-linha">
+      <div class="marcador">1</div>
+      <div>
+        <span class="risco-rotulo">Risco</span>
+        <p class="risco-texto">Quem reporta não representa a cidade toda — viés de quem tem o app e usa com frequência.</p>
+      </div>
+      <div>
+        <span class="mitig-rotulo">Mitigação</span>
+        <p class="mitig-texto">Cruzar registro do cidadão com a contagem das câmeras, que não depende de quem participa.</p>
+      </div>
+    </div>
+    <div class="risco-linha">
+      <div class="marcador">2</div>
+      <div>
+        <span class="risco-rotulo">Risco</span>
+        <p class="risco-texto">Prêmio atrai registro falso — gente clicando só pelo bilhete, sem problema real.</p>
+      </div>
+      <div>
+        <span class="mitig-rotulo">Mitigação</span>
+        <p class="mitig-texto">Limite diário por pessoa e por local, mais checagem cruzada com o dado de câmera na mesma janela.</p>
+      </div>
+    </div>
+    <div class="risco-linha">
+      <div class="marcador">3</div>
+      <div>
+        <span class="risco-rotulo">Risco</span>
+        <p class="risco-texto">Engajamento cai depois que a campanha termina.</p>
+      </div>
+      <div>
+        <span class="mitig-rotulo">Mitigação</span>
+        <p class="mitig-texto">Missão-base contínua e de esforço baixo, sem depender de campanha ativa para existir.</p>
+      </div>
+    </div>
+    <div class="risco-linha">
+      <div class="marcador">4</div>
+      <div>
+        <span class="risco-rotulo">Risco</span>
+        <p class="risco-texto">Custo do bilhete extra fica maior que o valor do dado coletado.</p>
+      </div>
+      <div>
+        <span class="mitig-rotulo">Mitigação</span>
+        <p class="mitig-texto">Testar com teto de bilhetes por semana antes de abrir sem limite.</p>
+      </div>
+    </div>
+    <div class="risco-linha">
+      <div class="marcador">5</div>
+      <div>
+        <span class="risco-rotulo">Risco</span>
+        <p class="risco-texto">Cadastro de participante cria dado pessoal que precisa de base legal para existir.</p>
+      </div>
+      <div>
+        <span class="mitig-rotulo">Mitigação</span>
+        <p class="mitig-texto">Registro anônimo por padrão; vínculo com CPF só onde a própria nota premiada já exige.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="rodape-pagina">
+  Visão de Rota — maquete de demonstração. Todas as telas, números e nomes deste documento são exemplos sintéticos e não representam medição real.
+</footer>
+
+</body>
+</html>

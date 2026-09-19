@@ -1,0 +1,25 @@
+name: Quero participar do hub
+description: Diga quem você é e onde quer ajudar. É a porta de entrada.
+title: "[entrada] "
+labels: ["entrada"]
+body:
+  - type: input
+    id: time
+    attributes: { label: Seu time no hackathon, placeholder: "nome do time, ou 'sem time'" }
+    validations: { required: true }
+  - type: dropdown
+    id: sabe
+    attributes:
+      label: O que você sabe fazer
+      multiple: true
+      options: [Dados e planilhas, Programação, Design, Direito e regulação, Trânsito e transporte, Comunicação e pitch, Conheço a cidade e quero apontar problemas]
+    validations: { required: true }
+  - type: dropdown
+    id: ideia
+    attributes:
+      label: Qual ideia quer ajudar
+      options: [Ainda não sei, Visão de Rota, Segunda Leitura, Horário Escalonado, Ônibus da UNIPAM, Quase, Rua com Memória, Rota Humana, Olho Adiante, Missão da semana no app da cidade, Vou trazer a minha]
+    validations: { required: true }
+  - type: textarea
+    id: recado
+    attributes: { label: Recado, description: "Opcional. Não escreva telefone, CPF nem dado de outra pessoa: esta página é pública." }

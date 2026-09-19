@@ -1,0 +1,145 @@
+:root{
+  --bg:#F3F2F2; --surface:#FFFFFF; --surface-alt:#EAE7E1;
+  --text-primary:#201F1D; --text-muted:#5B5854; --border:#DAD6CF;
+  --accent:#8A5F1C; --accent-soft:rgba(138,95,28,0.10);
+  --green:#2F7D4F; --green-soft:rgba(47,125,79,0.10);
+  --red:#A93226; --red-soft:rgba(169,50,38,0.10);
+  --gray-soft:rgba(91,88,84,0.10);
+  --code-bg:#EDEAE3;
+  --header-h:56px; --sidebar-w:236px; --max-content:800px; --radius:10px; --radius-sm:6px;
+}
+body.dark{
+  --bg:#1C1B19; --surface:#262421; --surface-alt:#2E2C28;
+  --text-primary:#F2EFEA; --text-muted:#B9B4AC; --border:#3C3934;
+  --accent:#D9A64E; --accent-soft:rgba(217,166,78,0.14);
+  --green:#6FBF8B; --green-soft:rgba(111,191,139,0.14);
+  --red:#E2776A; --red-soft:rgba(226,119,106,0.14);
+  --gray-soft:rgba(185,180,172,0.12);
+  --code-bg:#232120;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.65;
+  background:var(--bg);color:var(--text-primary);display:flex;flex-direction:column;min-height:100vh;
+  transition:background .2s,color .2s; font-variant-numeric:tabular-nums;}
+.egos-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 18px;z-index:200;}
+.header-logo{font-family:Georgia,'Palatino Linotype',serif;font-weight:700;font-size:16px;color:var(--accent);flex-shrink:0;}
+.header-logo span{color:var(--text-muted);font-weight:400;font-size:13px;margin-left:8px;}
+.header-title{flex:1;font-size:13px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.header-actions{display:flex;gap:8px;flex-shrink:0;}
+.btn-icon{background:var(--surface-alt);border:1px solid var(--border);color:var(--text-primary);
+  border-radius:var(--radius-sm);padding:6px 10px;cursor:pointer;font-size:14px;line-height:1;}
+.btn-icon:hover{background:var(--accent-soft);}
+.btn-icon:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.btn-hamburger{display:none;}
+.egos-layout{display:flex;margin-top:var(--header-h);flex:1;}
+.egos-sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);
+  border-right:1px solid var(--border);overflow-y:auto;padding:18px 0 32px;z-index:100;transition:transform .25s ease;}
+.sidebar-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text-muted);padding:12px 18px 6px;}
+.sidebar-link{display:block;padding:6px 18px;font-size:13.5px;color:var(--text-primary);text-decoration:none;
+  border-left:3px solid transparent;}
+.sidebar-link:hover,.sidebar-link[aria-current="page"]{background:var(--accent-soft);border-left-color:var(--accent);color:var(--accent);}
+.sidebar-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
+.sidebar-nota{display:block;padding:8px 18px;font-size:12px;font-style:italic;color:var(--text-muted,#7a7a7a);}
+.egos-main{margin-left:var(--sidebar-w);flex:1;padding:36px 30px 52px;}
+.content-wrap{max-width:var(--max-content);}
+h1{font-family:Georgia,'Palatino Linotype',serif;font-size:1.85rem;font-weight:700;line-height:1.28;margin-bottom:10px;}
+h2{font-family:Georgia,'Palatino Linotype',serif;font-size:1.4rem;font-weight:700;line-height:1.3;margin:38px 0 14px;
+  padding-bottom:8px;border-bottom:2px solid var(--border);}
+p{margin-bottom:13px;}
+ul,ol{padding-left:22px;margin-bottom:13px;}
+li{margin-bottom:6px;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+strong{font-weight:700;}
+section{scroll-margin-top:calc(var(--header-h) + 16px);}
+.doc-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;font-size:12.5px;color:var(--text-muted);}
+.doc-meta span{background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 9px;}
+.callout{border-left:4px solid var(--accent);background:var(--surface-alt);border-radius:0 var(--radius) var(--radius) 0;
+  padding:16px 18px;margin:18px 0;font-size:14.5px;}
+.callout.red{border-left-color:var(--red);background:var(--red-soft);}
+.callout-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;opacity:.75;}
+.callout p{margin-bottom:6px;font-size:14.5px;}
+.callout p:last-child{margin-bottom:0;}
+code{font-family:'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;font-size:13px;background:var(--code-bg);
+  border:1px solid var(--border);border-radius:var(--radius-sm);padding:1px 6px;}
+.section-divider{height:1px;background:var(--border);margin:34px 0;}
+
+/* Badge de decisão pendente */
+.badge-pending{display:inline-flex;align-items:center;gap:5px;background:var(--red-soft);color:var(--red);
+  border:1px solid var(--red);border-radius:12px;padding:3px 11px;font-size:11px;font-weight:800;
+  letter-spacing:.03em;text-transform:uppercase;margin:10px 0 4px;}
+.badge-pending::before{content:"⛔";font-size:11px;}
+
+/* Lista de perguntas numeradas */
+.qa-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 20px;margin:0 0 16px;}
+.qa-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.qa-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;flex-shrink:0;}
+.qa-title{font-weight:700;font-size:15px;}
+.qa-body{font-size:15px;line-height:1.7;}
+.qa-item.has-pending{border-color:var(--red);}
+
+.notes-list li{margin-bottom:10px;}
+.egos-footer{margin-left:var(--sidebar-w);background:var(--surface-alt);border-top:1px solid var(--border);
+  color:var(--text-muted);padding:20px 30px;font-size:12.5px;display:flex;justify-content:space-between;
+  align-items:flex-start;flex-wrap:wrap;gap:14px;}
+.footer-sig{font-family:Georgia,'Palatino Linotype',serif;font-style:italic;color:var(--accent);font-size:13.5px;}
+.footer-prov{text-align:right;line-height:1.7;}
+@media (max-width:768px){
+  .egos-sidebar{transform:translateX(-100%);width:82vw;max-width:300px;box-shadow:4px 0 24px rgba(0,0,0,.15);}
+  .egos-sidebar.open{transform:translateX(0);}
+  .btn-hamburger{display:flex;}
+  .egos-main{margin-left:0;padding:22px 16px 48px;}
+  .egos-footer{margin-left:0;flex-direction:column;}
+  .footer-prov{text-align:left;}
+  h1{font-size:1.4rem;} h2{font-size:1.15rem;}
+}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
+.sidebar-overlay.active{display:block;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}html{scroll-behavior:auto;}}
+
+/* IMPRESSAO / PDF.
+   Tres defeitos, todos desta folha: (1) .egos-header e .egos-sidebar sao position:fixed, e o Chrome
+   REPINTA elemento fixo em TODA pagina do PDF, por cima do conteudo; (2) .egos-main tem margin-left
+   da sidebar, que no papel nao existe e so espremia o texto; (3) nenhuma regra de quebra, entao linha
+   de tabela partia no meio. Documento de cliente sai em PDF: o papel e destino de primeira classe. */
+@media print{
+  @page{size:A4;margin:16mm 14mm;}  /* A4: papel do Brasil, nao Letter (default do Chrome headless) */
+  html{font-size:11.5pt;}
+  body{background:#fff!important;color:#000!important;}
+  /* cromo de tela nao vai para o papel */
+  .egos-header,.egos-sidebar,.sidebar-overlay,.btn-hamburger,#btn-tema,.header-actions,
+  .btn-copiar{display:none!important;}
+  .egos-layout{display:block!important;margin-top:0!important;}
+  .egos-main,.egos-footer{margin-left:0!important;}
+  .egos-main{padding:0!important;max-width:none!important;}
+  .egos-footer{background:transparent!important;border-top:1px solid #ccc;padding:12px 0 0!important;}
+  /* proveniencia do gerador ("Gerado de X.md por scripts/...") e instrucao interna: nao vai
+     no PDF que o cliente recebe (=R-ENTREGA-PURA-001). Na tela continua visivel. */
+  .footer-prov{display:none!important;}
+  /* nada parte no meio */
+  tr,th,td,li,figure,blockquote,.midia,.bloco-cod,.bloco-colar{
+    break-inside:avoid;page-break-inside:avoid;}
+  table{break-inside:auto;page-break-inside:auto;}
+  thead{display:table-header-group;}  /* cabecalho da tabela repete em cada pagina */
+  tfoot{display:table-footer-group;}
+  h1,h2,h3,h4{break-after:avoid;page-break-after:avoid;} /* titulo nunca sozinho no rodape */
+  h1,h2{break-before:auto;}
+  p,li{orphans:3;widows:3;}
+  /* wrapper com overflow corta conteudo na impressao — no papel ele nao rola, ele quebra */
+  .tabela-wrap{overflow:visible!important;}
+  .bloco-cod,.bloco-colar{overflow:visible!important;white-space:pre-wrap!important;}
+  /* fundo de cabecalho de tabela e realces precisam sair impressos, nao branco */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  a{color:#000!important;text-decoration:underline;}
+  details[open],details{display:block!important;}
+  details>summary{list-style:none;font-weight:700;}
+  details>*{display:revert!important;}
+  /* NOTA: as regras de impressao das camadas dobraveis NAO moram aqui — esta folha e embutida
+     em TODO documento, e citar a classe faria o marcador de camada aparecer em documento que
+     nao pediu a flag (golden g16). Elas vivem no bloco condicional de scripts/md-para-html.ts. */
+}

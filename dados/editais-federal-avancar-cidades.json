@@ -1,0 +1,66 @@
+{
+  "pergunta": "Quais municípios receberam recurso federal de mobilidade urbana (BRT, corredores, terminais, ciclovias) entre 2016-2023, e Patos de Minas aparece?",
+  "medido_em": "2026-09-19",
+  "universo_declarado": {
+    "periodo_pedido": "2016-2023",
+    "fontes_indicadas_pelo_pedido": [
+      "compras.dados.gov.br (API ComprasNet/licitações federais)",
+      "Portal da Transparência (licitações/contratos por órgão)",
+      "PAC / Avançar Brasil mobilidade urbana (Ministério das Cidades/Caixa — lista por município)"
+    ],
+    "resultado": "NAO-CONSTRUIDO — nenhuma das 3 fontes produziu, nesta sessão, um ranking município x nº-empreendimentos x valor para 2016-2023. Motivo em cada fonte abaixo."
+  },
+  "por_fonte": {
+    "compras.dados.gov.br": {
+      "classificacao": "DESCARTADA-COMO-FONTE-CERTA",
+      "achado": "API real (http://compras.dados.gov.br/licitacoes/v1/licitacoes.*), mas é licitação FEDERAL (órgãos da União/UASG) — não tem filtro por 'mobilidade urbana' nem por município beneficiário de transferência. Serve para compras que a própria União faz, não para dinheiro que a União repassa a prefeitura.",
+      "evidencia": "https://compras.dados.gov.br/docs/licitacoes/v1/licitacoes.html — testado via busca, doc confirma ausência de filtro temático/município-alvo."
+    },
+    "portal_da_transparencia_transferegov": {
+      "classificacao": "NAO-TESTADA-NESTA-SESSAO",
+      "achado": "transferegov.br (ex-SICONV) é a fonte correta para convênios/transferências à Patos de Minas e a qualquer outro município, mas não foi consultada via API/download nesta sessão — só busca textual, que não achou convênio de mobilidade nomeando Patos de Minas nem retornou uma listagem baixável.",
+      "gap": "Falta: consulta direta na API do Portal da Transparência (api.portaldatransparencia.gov.br) ou no transferegov.sistema.gov.br filtrando favorecido=Patos de Minas + área=mobilidade urbana, 2016-2023."
+    },
+    "avancar_cidades_pac_pro_transporte": {
+      "classificacao": "PARCIAL — programa é REAL, lista completa NAO-OBTIDA",
+      "achado": "Avançar Cidades — Mobilidade Urbana (Ministério das Cidades, recursos FGTS/Pró-Transporte) existe e publica listas numeradas sequenciais (achadas: 28ª a 43ª, período 2025-2026) de municípios pré-selecionados, cada notícia com PDF próprio. NÃO achei, nesta sessão, uma planilha/lista única consolidada cobrindo 2016-2023 — as páginas gov.br/cidades são renderizadas em JS e os PDFs individuais não foram lidos com sucesso pelas ferramentas disponíveis (WebFetch devolveu só o esqueleto de navegação, sem tabela).",
+      "municipios_avistados_em_buscas_2025_2026": [
+        {"municipio": "Pouso Alegre", "uf": "MG", "lista": "29ª", "valor_ate_R$": 150000000},
+        {"municipio": "Siderópolis", "uf": "SC", "lista": "28ª", "valor_ate_R$": 29500000},
+        {"municipio": "Sapiranga", "uf": "RS", "lista": "36ª"},
+        {"municipio": "Mogi das Cruzes", "uf": "SP", "lista": "36ª"},
+        {"municipio": "Piracicaba", "uf": "SP", "lista": "36ª"},
+        {"municipio": "Capivari", "uf": "SP", "lista": "36ª"},
+        {"municipio": "Porto Ferreira", "uf": "SP", "lista": "36ª"},
+        {"municipio": "Serrana", "uf": "SP", "lista": "36ª"},
+        {"municipio": "São João Batista", "uf": "SC", "lista": "36ª"},
+        {"municipio": "Erechim", "uf": "RS", "lista": "39ª"},
+        {"municipio": "São Jerônimo", "uf": "RS", "lista": "39ª"},
+        {"municipio": "Ivoti", "uf": "RS", "lista": "41ª"},
+        {"municipio": "Canarana", "uf": "MT", "lista": "41ª"},
+        {"municipio": "Várzea Paulista", "uf": "SP", "lista": "41ª"},
+        {"municipio": "Mirassol D'Oeste", "uf": "MT", "lista": "43ª"}
+      ],
+      "nota": "Lista acima é AMOSTRA de manchetes achadas por busca textual, não é ranking — não cobre 2016-2023 (programa Avançar Cidades como marca é pós-2019; período 2016-2018 era PAC 2 Mobilidade Grandes/Médias Cidades, também não consolidado nesta sessão) e não tem contagem/soma por município.",
+      "gap": "Falta baixar e parsear os PDFs de 1ª a 43ª lista (ou pedir por LAI a planilha consolidada) + achar o equivalente para PAC 2 (2011-2018)."
+    }
+  },
+  "patos_de_minas": {
+    "apareceu_em_alguma_fonte_consultada": false,
+    "classificacao": "NAO-MEDIDO — ausência de registro nas buscas feitas NÃO é prova de ausência do fato (P1: ausência de registro nunca é prova de ausência de evento)",
+    "busca_direta_feita": "'Patos de Minas' + mobilidade urbana + PAC/Avançar Cidades/Pró-Transporte/transferegov — zero menção encontrada em notícias oficiais ou páginas da prefeitura/câmara sobre recurso FEDERAL de mobilidade recebido 2016-2023.",
+    "contexto_achado_fora_do_escopo_pedido": "editais-espelho.json (mesmo diretório, dataset PNCP 2024-2026, licitações MUNICIPAIS — não é transferência federal) mostra Patos de Minas com 1 licitação na família 'mobilidade' (concessão de estacionamento rotativo, 2026) e 0 registros de BRT/corredor/terminal/ciclovia financiado. Não responde à pergunta feita (universo/período diferentes: contratação local vs. repasse federal; 2024-2026 vs. 2016-2023)."
+  },
+  "ranking_municipios": {
+    "status": "NAO-CONSTRUIDO",
+    "motivo": "nenhuma fonte consultada devolveu, nesta sessão, dado estruturado (CSV/JSON/API) com contagem de empreendimentos + valor por município para 2016-2023 — só manchetes individuais de listas recentes (2025-2026) do Avançar Cidades."
+  },
+  "🕳️_o_que_ficou_de_fora": [
+    "PAC 2 Mobilidade Grandes/Médias Cidades (2011-2018): programa citado por fontes secundárias, planilha consolidada não localizada/lida nesta sessão",
+    "Avançar Cidades listas 1ª-27ª e 30ª-35ª/38ª/40ª/42ª (não amostradas nas buscas)",
+    "API do Portal da Transparência (api.portaldatransparencia.gov.br) — não chamada",
+    "transferegov.sistema.gov.br — não consultado via download/filtro",
+    "Qualquer soma de valores ou contagem nacional — nenhum número agregado é confiável ainda"
+  ],
+  "proxima_acao_recomendada": "Consultar api.portaldatransparencia.gov.br/api-de-dados/convenios?municipioBeneficiado=Patos+de+Minas (requer chave de API, cadastro gratuito) e baixar os PDFs 1ª-43ª do Avançar Cidades (gov.br/cidades) via download direto (não WebFetch, que só lê o shell JS da página) para parsear localmente. Sem isso, ranking nacional e resposta definitiva sobre Patos de Minas continuam NAO-MEDIDOS."
+}

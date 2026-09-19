@@ -1,0 +1,41 @@
+name: Enviar uma ideia
+description: Sua ideia entra no hub com dono, estágio e o que falta.
+title: "[ideia] "
+labels: ["ideia-nova"]
+body:
+  - type: input
+    id: nome
+    attributes: { label: Nome da ideia }
+    validations: { required: true }
+  - type: input
+    id: assinatura
+    attributes: { label: Uma frase que um morador entende }
+    validations: { required: true }
+  - type: input
+    id: time
+    attributes: { label: Time }
+    validations: { required: true }
+  - type: dropdown
+    id: estagio
+    attributes:
+      label: Estágio, sem enfeite
+      description: "Se nada roda ainda, é Ideia."
+      options: [Ideia, Conceito, Protótipo, MVP, Em uso]
+    validations: { required: true }
+  - type: textarea
+    id: pergunta
+    attributes: { label: Que pergunta real a ideia responde }
+    validations: { required: true }
+  - type: textarea
+    id: funciona
+    attributes: { label: O que já funciona, description: "Só o que roda. Se nada roda, escreva 'nada ainda'." }
+  - type: textarea
+    id: falta
+    attributes: { label: O que falta, description: "Dado, ajuda, acesso a alguém, dinheiro." }
+  - type: checkboxes
+    id: regras
+    attributes:
+      label: Regras do hub
+      options:
+        - { label: "Não há dado pessoal nem dado policial nesta ideia", required: true }
+        - { label: "Todo número que citei tem origem", required: true }

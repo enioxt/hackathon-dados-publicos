@@ -1,0 +1,139 @@
+{
+ "critico": {
+  "lacunas": [
+   {
+    "lacuna": "QUASE-ACIDENTES (near-miss) não tem NENHUMA fonte no inventário — as 83 entradas cobrem acidente CONSUMADO (BAT/DATATRAN, RENAEST, SEJUSP, SIM/SIH), nunca o evento que quase virou acidente (frenagem brusca, conflito veículo-pedestre sem colisão). É a pergunta central do desafio 'QUASE' e está sem base de dados possível — só proxy ou coleta primária.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Não existe base pública para isso — feche com 2 caminhos em paralelo: (a) pedir à Prefeitura/Secretaria de Trânsito (parceira do evento) acesso ao painel Waze for Cities Data, que registra alertas de frenagem/perigo em tempo real (não confirmado se ativo hoje, mas é o único proxy existente); (b) desenhar um formulário curto de relato cidadão (Google Forms/Typeform) e coletar quase-acidentes na própria comunidade do hackathon como dado primário — sem isso o produto QUASE não tem numerador."
+   },
+   {
+    "lacuna": "'Rua com Memória' (intervenções viárias DATADAS — lombada, sinalização, ciclofaixa, recapeamento) não tem fonte estruturada. O PNCP só foi consultado para 1 pregão específico (videomonitoramento) e para o CNPJ da prefeitura sem filtro de obras de engenharia de tráfego — nunca se buscou o histórico de contratos de sinalização/pavimentação com datas.",
+    "serve_para": "RUA-COM-MEMORIA",
+    "como_fechar_hoje": "Rodar hoje a API pública do PNCP filtrando cnpj=18602011000107 (Prefeitura de Patos de Minas) sem restringir codigoModalidadeContratacao, cruzando por palavra-chave no objeto da contratação: 'sinalização viária', 'lombada', 'redutor de velocidade', 'ciclofaixa', 'recapeamento', 'pintura de faixa' — comando: curl 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao?cnpj=18602011000107&dataInicial=20200101&dataFinal=20260919' e filtrar localmente. Isso dá a linha do tempo de intervenções com data de homologação."
+   },
+   {
+    "lacuna": "Base de calçadas/acessibilidade (rampa, piso tátil, faixa de pedestre, semáforo sonoro) não foi buscada — a única consulta OSM feita foi bus_stop e highway=residential; nenhuma query rodou para footway=sidewalk, kerb=*, tactile_paving=*, crossing=*. Sem isso, 'Rota Humana' (acessibilidade) não tem nenhum dado geoespacial de infraestrutura para PCD/idoso.",
+    "serve_para": "ROTA-HUMANA",
+    "como_fechar_hoje": "Rodar hoje nova query Overpass API (pública, sem chave) para a área administrativa de Patos de Minas com os filtros: [out:json];area[name='Patos de Minas']->.a;(way(area.a)[sidewalk];way(area.a)[footway=sidewalk];node(area.a)[tactile_paving];node(area.a)[kerb];node(area.a)[crossing];);out body; — isso é o mesmo canal já usado hoje para bus_stop, só falta rodar com esses tags."
+   },
+   {
+    "lacuna": "MobiPatos (bilhetagem) não tem NENHUMA fonte de USO real do transporte coletivo — só se confirmou o CONTRATO/tarifa (Decreto 5.668, subsídio) e a existência de um app ('Meu Ônibus Pássaro Branco'), mas nenhum GTFS, API ou export de embarques por linha/ponto/horário foi localizado ou confirmado como acessível.",
+    "serve_para": "MOBIPATOS",
+    "como_fechar_hoje": "Pedido presencial no evento (Prefeitura é parceira) à Secretaria de Trânsito/SETTRAM pelo export do sistema de bilhetagem eletrônica (cartão AndeFácil) da Viação Pássaro Branco — pedir explicitamente: nome + telefone/e-mail do técnico responsável pelo contrato de concessão, não apenas o secretário. Sem esse nome, o pedido não tem endereço."
+   },
+   {
+    "lacuna": "SAMU/Bombeiros (CBMMG) — atendimentos a acidente de trânsito por local/data/gravidade — está totalmente ausente das 83 fontes; a própria lista de não-cobertos confirma 'zero busca feita'. É a fonte mais direta de gravidade real (antes do óbito, que é o único desfecho coberto via SIM/SES-MG).",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Ligar/protocolar hoje pedido à 3ª Cia Independente do CBMMG de Patos de Minas (ou 193 institucional) e ao SAMU 192 regional pedindo estatística agregada de ocorrências de trânsito 2025-2026 por bairro/via — via e-SIC do Governo de MG (prazo LAI 20+10d, não cabe no hackathon) OU contato presencial no evento se CBMMG/SAMU tiverem representação entre os parceiros."
+   },
+   {
+    "lacuna": "Seguradoras / Seguro Obrigatório (DPVAT, reativado pela Susep/Caixa) — nenhuma menção no inventário inteiro. É a única fonte que classifica vítima por tipo de veículo e gravidade de forma padronizada nacionalmente, fora do SUS.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Consultar hoje o portal de dados abertos da Susep (dados.susep.gov.br) ou o portal do Seguro DPVAT (Caixa Seguradora, seguradorlider.com.br sucessora) por indenizações pagas com recorte municipal — se não houver recorte por município, descartar como fonte (provavelmente só estadual/nacional) e registrar como PHANTOM, não deixar em aberto."
+   },
+   {
+    "lacuna": "DETRAN-MG — infrações de trânsito por via (autuações de velocidade, avanço de sinal) — explicitamente listado como 'não pesquisado' no próprio relatório. Sem isso não há como cruzar local de radar/semáforo com volume de infração, só com acidente consumado.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Buscar hoje em dados.mg.gov.br (CKAN, mesmo domínio já usado para SEJUSP) por dataset com 'autuação' ou 'infração' — comando: curl 'https://dados.mg.gov.br/api/3/action/package_search?q=infra%C3%A7%C3%A3o%20tr%C3%A2nsito' — se não existir recorte municipal, pedido formal ao DETRAN-MG via e-SIC estadual (prazo não cabe no evento, mas cabe até 30/09)."
+   },
+   {
+    "lacuna": "Escolas × horário de entrada/saída (zonas escolares) — ausente de toda a investigação; é insumo direto para Rota Humana (travessia de criança/idoso) e para QUASE (pico de risco em horário de saída), e nenhuma das 83 fontes trata disso.",
+    "serve_para": "ROTA-HUMANA",
+    "como_fechar_hoje": "Baixar hoje o Censo Escolar INEP (microdados por escola, já público em dados.gov.br/inep, sem LAI) filtrando município IBGE 3148004, cruzando endereço da escola com o mapa OSM/calçadas do item 3; para horário de turno exato, pedir à Secretaria Municipal de Educação de Patos de Minas (parceira institucional local, canal a confirmar no evento)."
+   },
+   {
+    "lacuna": "Calendário de eventos públicos (feiras, jogos, shows, festas religiosas) que geram picos de tráfego/demanda de ônibus — nenhuma fonte buscada; sem isso QUASE e MOBIPATOS não conseguem explicar picos anômalos nos dados que já existem (ex. o salto de acidentes citado pelo diretor de trânsito).",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Pedir hoje à Secretaria de Cultura/Turismo de Patos de Minas (contato via evento, Prefeitura é parceira) a agenda de eventos 2026 com data/local; alternativa imediata sem pedido: raspar a agenda pública do site oficial da Prefeitura ou de Sympla/Instagram da Prefeitura para os últimos 6 meses."
+   },
+   {
+    "lacuna": "Correios/CEP-logradouros — nenhuma fonte de geocodificação testada; vários datasets já confirmados (Ouvidoria, PAITT em PDF, respostas institucionais) trazem endereço em texto livre sem lat/lon, e sem base de logradouros isso não vira ponto no mapa.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Retentar hoje o download do CNEFE 2022 do IBGE (o caminho antigo deu 404 — a estrutura do FTP mudou, buscar o novo caminho em ftp.ibge.gov.br/Censos/Censo_Demografico_2022/CNEFE) filtrando pelo código 3148004; para geocoding pontual e rápido, usar API pública ViaCEP + Nominatim/OSM (já provado ativo no item 3) sem depender de pedido."
+   },
+   {
+    "lacuna": "Nenhum dos itens marcados 'SIM-SE-PEDIR-NO-EVENTO' (Olho Vivo, Waze CCP, radares, PAITT/rescisão, Portal da Transparência) tem NOME + telefone/e-mail de um técnico confirmado — só cargos genéricos ('secretário', 'Ana Paula Morais ou sucessora' sem confirmação de que ainda está no cargo). Sem endereço nomeado, 'pedir no evento' é promessa, não canal.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Prioridade zero de hoje no evento: obter presencialmente, com quem estiver representando a Prefeitura/SETTRAM no hackathon, o nome + telefone/e-mail direto do técnico (não o secretário) responsável pelos dados de trânsito — e anotar explicitamente para qual dos 5+ pedidos pendentes (Olho Vivo, Waze, radares, PAITT, bilhetagem) essa pessoa é o canal certo."
+   },
+   {
+    "lacuna": "ONS/CEMIG (quedas de energia que apagam semáforos) — não buscado; é causa direta de sinistro em cruzamento sinalizado, e o próprio piloto de semáforo IA na Av. Paracatu depende de energia contínua.",
+    "serve_para": "QUASE",
+    "como_fechar_hoje": "Baixa prioridade para hoje, mas fechável: pedir à CEMIG Distribuição (concessionária local) histórico de interrupções de energia por bairro/data em 2025-2026 via canal de grandes clientes/institucional, ou usar como proxy notícias locais (Patos Hoje/PatosJá) sobre 'semáforo apagado' — não é LAI (empresa privada concessionária), é pedido comercial direto."
+   }
+  ]
+ },
+ "nao_coberto": [
+  "Não abri nenhum CSV/dataset de fato — todas as classificações REAL sobre granularidade municipal específica de Patos de Minas (IBGE 3148004) são CONCEPT porque não confirmei visualmente uma linha com esse município em nenhum arquivo bruto (PRF/RENAEST/SENATRAN frota/SIM/SIH/MUNIC/SIDRA).",
+  "SIDRA (censo deslocamento e MUNIC) retornou HTTP 403 no WebFetch — não consegui abrir a página para confirmar granularidade real, fiquei só com conhecimento de busca.",
+  "Waze CCP: não pesquisado nesta rodada apesar de citado no prompt do usuário — precisa de busca dedicada sobre convênio institucional necessário para acesso.",
+  "ANTP/NTU (indicadores de ônibus): não pesquisado.",
+  "SEMOB/Ministério das Cidades e existência formal de PlanMob de Patos de Minas: não pesquisado diretamente (só o indício indireto via questionário MUNIC).",
+  "Portal de Dados Abertos MG (SES/MG) não foi aberto para confirmar se desce a nível de município (Patos de Minas) nos dados de óbito por acidente de transporte.",
+  "ANTT dataset de acidentes em rodovias não foi aberto para confirmar granularidade nem presença de trechos de BR-365/BR-352/BR-354 no perímetro de Patos.",
+  "Não pesquisei fontes municipais próprias de Patos de Minas (portal de transparência municipal, secretaria de trânsito) além da notícia dos semáforos inteligentes — pode haver dataset local não indexado no Google.",
+  "Não verifiquei se a Viação Pássaro Branco ou a Prefeitura publicam dados abertos de bilhetagem/GPS de ônibus (linha MobiPatos/Patos Premia) — não pesquisado nesta rodada.",
+  "Não converti nenhuma URL achada em confirmação de 'tem Patos de Minas' com número/linha específica — todo o levantamento é de nível de existência do dataset/portal, não de conteúdo linha-a-linha.",
+  "PMMG (relatórios públicos de trânsito): não pesquisado nesta rodada — não abri nenhuma página/relatório da Polícia Militar de MG especificamente sobre trânsito.",
+  "Painéis do governo MG (genérico, além do já achado): não fiz varredura ampla de outros painéis estaduais (ex.: Painel Mobilidade, Painel Segurança Viária) além do Painel de Acidentes de Trânsito da SEJUSP já cobertos.",
+  "Habilitação (CNH) por município e infrações de trânsito do DETRAN-MG: não pesquisado — só frota de veículos foi coberta (e via espelho de terceiro, não portal oficial).",
+  "Conteúdo real do dataset SES-MG de óbitos por ATT (vigilancia.saude.mg.gov.br) não foi aberto diretamente — só uma notícia sobre ele.",
+  "Conteúdo real da página detran.mg.gov.br/sobre-1/estatisticas/registro-nacional-de-acidentes-de-transito não foi aberto (parei no redirect).",
+  "Schema/linhas reais do dataset SEJUSP 'Vítimas de Acidente de Trânsito' em CSV não foi aberto (404 na URL tentada) — não confirmei coluna de município nem presença de Patos de Minas dentro do próprio arquivo.",
+  "Nenhuma fonte federal (SENATRAN/DNIT/DATASUS nacional) foi aberta diretamente — apenas citadas via resultado de busca de terceiros (Base dos Dados).",
+  "Não abri o Portal da Transparência (transparencia.patosdeminas.mg.gov.br) — WebFetch falhou por erro de certificado TLS (domínio publicenter.com.br não bate com o certificado apresentado); não pude confirmar se há busca por 'Pássaro Branco', 'semáforo', 'Olho Vivo' ou 'Zona Azul' nem valores exatos de contrato.",
+  "Não abri nenhum PDF diretamente (edital Olho Vivo 002/2024, resposta PAITT req 003/2023) — só vi o título/URL via busca, conteúdo interno não lido.",
+  "Não confirmei se o app 'Meu Ônibus Pássaro Branco' expõe GTFS ou API pública consultável por terceiros — não instalei o app nem investiguei tráfego de rede.",
+  "Não abri sapl.patosdeminas.mg.leg.br com busca filtrada por palavras-chave 'acidente'/'câmera inteligente' dentro do próprio sistema (só via Google) — pode haver projeto de lei relevante que a busca externa não indexou.",
+  "Não verifiquei o número real da tarifa técnica do subsídio Pássaro Branco — o briefing do usuário cita R$5,61, a notícia aberta cita R$4,76; não reconciliei a divergência (pode ser reajuste entre os dois momentos, não confirmado).",
+  "Não busquei a Guarda Municipal de Patos de Minas como operadora formal do Olho Vivo — só achei paralelo em Pará de Minas; quem comanda operacionalmente hoje em Patos (PM, Guarda ou civis contratados) não foi confirmado com fonte direta.",
+  "Não busquei PatoZap/Conecta Patos como canal de dados (app oficial da prefeitura) além de menções de passagem — não abri o app nem site dedicado.",
+  "Não investiguei SAMU/Bombeiros locais como fonte de dado de sinistro de trânsito — zero busca feita nesta rodada.",
+  "Não busquei recorte específico do código IBGE 3148004 em nenhuma base federal (ex. DATASUS, SNCT, IPEA) além do que já é coberto pelo pedido — está fora do escopo desta rodada, focada em fontes municipais/estaduais.",
+  "Não testei se o Portal da Transparência tem API/exportação estruturada (JSON/CSV) para contratos — só a seção 'Dados Abertos' institucional (que não tem trânsito) foi vista.",
+  "Google Mobility Reports (relatório de mobilidade da pandemia) — não pesquisado neste turno; provavelmente descontinuado, precisa checagem dedicada",
+  "Uber/99/inDrive dados agregados de corrida por região — não pesquisado; provavelmente API-CHAVE comercial fechada, sem programa para pesquisa/hackathon",
+  "KartaView (ex-OpenStreetCam) — imagens de rua colaborativas, alternativa ao Mapillary; não verificado se há cobertura em Patos de Minas",
+  "App oficial de ônibus exigido no contrato da Pássaro Branco (cláusula contratual citada no briefing) — não localizei o nome/URL do app nem confirmei se ele expõe API ou só GPS interno; precisa pedir direto à concessionária ou à prefeitura",
+  "GTFS estático oficial de Patos de Minas (se existir, publicado pela prefeitura ou pela Pássaro Branco) — não encontrado nem descartado; é o dado mais valioso para MobiPatos e não foi localizado",
+  "Overpass: contagem separada de footway vs cycleway vs traffic_signals (saiu somada, 255 total) e a query de highway=residential (barrada por rate-limit 429) — não completei essas duas granularidades",
+  "Google Environmental Insights Explorer: não abri a ferramenta em si (só notícias sobre ela) para confirmar/negar Patos de Minas na lista atual de cidades cobertas",
+  "HERE Deep Coverage: não abri a tabela completa de cobertura por região para checar se Patos de Minas está dentro da 'Deep Coverage 2.0' nacional",
+  "Cittamobi: não confirmei via loja de apps (Google Play/App Store) se a Pássaro Branco/Patos de Minas está listada como cidade atendida",
+  "Waze: não confirmei volume de usuários/reports ativos em Patos de Minas nem se a prefeitura já tem cadastro no Partner Hub — só verifiquei que o programa existe e é gratuito",
+  "Não abri o PDF integral do Edital 002/2024 do Olho Vivo (só a matéria jornalística sobre ele) — base legal exata para ceder stream/frame a terceiro e cláusulas de LGPD/biometria não verificadas linha a linha.",
+  "Nome da empresa fornecedora dos radares fixos municipais não localizado (nem em edital nem em matéria).",
+  "Nome/CNPJ da empresa fornecedora do piloto de semáforo IA na Av. Paracatu (só o nome do empresário, Henrique Moura, apareceu) — se o teste virou contrato definitivo após set/2026 não foi verificado (a notícia é do piloto de 60 dias).",
+  "Câmeras de rodovias operadas por concessionárias privadas (ex.: trechos concedidos que cruzam a região) não foram pesquisadas nesta rodada.",
+  "PRF (Polícia Rodoviária Federal) — câmeras e dados de radares em rodovias federais que cortam Patos de Minas (BR-365) não foram aprofundados além da notícia de retirada dos radares do DNIT.",
+  "Portal de dados abertos do DNIT (dados.gov.br) não foi consultado para contagem volumétrica ou acidentes com recorte BR-365/Patos de Minas.",
+  "Sensor de ruído específico da Prefeitura de Patos de Minas — legislação municipal (se existe) não verificada; só a lei estadual genérica foi encontrada.",
+  "Não confirmei se o sistema Olho Vivo tem qualquer integração/API com o painel de trânsito da Secretaria de Mobilidade (achado incidental, sem prova).",
+  "CNPJ do registro PNCP 'Sistema de Videomonitoramento Urbano' não foi identificado — pode ou não ser de Patos de Minas.",
+  "Não pesquisei contagem de tráfego feita por radar/semáforo antigo (pré-IA) como série histórica publicável.",
+  "Base legal específica (LGPD/ANPD) para uso de reconhecimento facial pelo Olho Vivo não foi encontrada em nenhuma fonte aberta consultada — pode existir só em ato administrativo interno não indexado.",
+  "DATASUS/SIM TabNet não foi efetivamente aberto — só inferido por analogia a estudos de outros municípios; classifiquei como CONCEPT e não REAL por isso",
+  "IBGE Cidades (painel de Patos de Minas) retornou HTTP 403 ao WebFetch — não consegui extrair população/frota diretamente; código IBGE 3148004 não verificado ao vivo nesta sessão",
+  "PDF da UFU (parklet Rua José de Santana) foi baixado mas não pôde ser lido — autor, ano e dataset associado permanecem desconhecidos",
+  "Portal 'Dados Abertos' citado no rodapé do site da SETTRAM não foi aberto — não sei se contém dataset de trânsito ou é só um link genérico do portal da prefeitura",
+  "Nenhuma busca foi feita em IFTM diretamente por TCC/pesquisa própria sobre superlotação — só a notícia jornalística da reclamação dos alunos foi encontrada, não um estudo acadêmico do próprio IFTM",
+  "SciELO/Google Scholar não retornaram nenhum artigo com recorte específico de Patos de Minas — toda a produção acadêmica indexada encontrada é de BH ou do estado de MG como um todo",
+  "Não pesquisei PNCP (Portal Nacional de Contratações Públicas) para o contrato formal Prefeitura-Pássaro Branco nem editais de licitação de mobilidade",
+  "Não pesquisei diretamente 'Patos Valley' como organização (site próprio, dados que ela possa manter) além de citá-la como co-organizadora do hackathon",
+  "Waze for Cities Data dashboard: não confirmei se a prefeitura de Patos de Minas tem acesso ativo ao painel de dados agregados (só ao recurso de publicar alertas/obras) — pode ser só via de mão única (prefeitura→Waze), não bidirecional",
+  "DER-MG (radares estaduais) e SEINFRA-MG (contratos de ônibus intermunicipais) foram apenas localizados por URL, não lidos",
+  "Não busquei diretamente o Plano Diretor de Patos de Minas nem legislação de zoneamento/sistema viário como fonte de dado geoespacial",
+  "Não busquei dissertações/mestrado da UFU (os 2 primeiros mestrados do campus) especificamente sobre mobilidade — só a graduação foi checada",
+  "Google Scholar não foi consultado via ferramenta dedicada (scholar.google.com bloqueado a scraping simples) — a cobertura acadêmica é subestimada",
+  "Não rodei o radar-local.ts do radar de licitações contra PNCP com os termos semáforo/transporte/mobilidade/câmera/radar dos últimos 24 meses filtrando por Patos — tentei via curl direto na API pública do PNCP e o filtro de município não se mostrou confiável (ver item PNCP acima); não cheguei a um resultado confirmável de licitação específica de Patos de Minas nesta sessão.",
+  "Não investiguei o Patos Premia (patospremia.com.br) nem a Viação Pássaro Branco como fontes de dado abertas/API — o relatório de 2026-09-04 só os cita como contexto, não como dataset consultável.",
+  "Ângulo web (Exa/WebFetch/WebSearch) não foi executado nesta rodada — esta resposta cobriu só o ângulo ACERVO LOCAL pedido explicitamente; câmeras existentes de Patos, dados do DER-MG, do DNIT ou do Ministério dos Transportes não foram verificados."
+ ],
+ "contagem": {
+  "brutos": 87,
+  "unicos": 83,
+  "provados": 83,
+  "confirmados": 75,
+  "refutados": 3
+ }
+}
