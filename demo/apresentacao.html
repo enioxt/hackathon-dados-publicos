@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visão de Rota — apresentação</title>
+<style>
+  :root{
+    --bg:#0B1B2B;
+    --card:#12273B;
+    --text:#F6F8FA;
+    --amber:#E8A33D;
+    --green:#2E9E6B;
+    --red:#D6453D;
+    --gray:#9AA5B1;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background:var(--bg); color:var(--text);
+    font-family:var(--font);
+    overflow:hidden;
+  }
+  body.page-mode{ overflow:auto; }
+
+  /* ---------- progress + counter ---------- */
+  #progress-wrap{
+    position:fixed; top:0; left:0; width:100%; height:4px;
+    background:rgba(255,255,255,0.08); z-index:50;
+  }
+  #progress-bar{
+    height:100%; width:8.33%; background:var(--amber);
+    transition:width .25s ease;
+  }
+  #counter{
+    position:fixed; bottom:18px; right:22px; z-index:50;
+    font-size:15px; letter-spacing:.05em; color:var(--gray);
+    font-variant-numeric: tabular-nums;
+    background:rgba(18,39,59,0.7); padding:6px 12px; border-radius:20px;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  #mode-toggle{
+    position:fixed; bottom:18px; left:22px; z-index:50;
+    background:rgba(18,39,59,0.7); color:var(--gray);
+    border:1px solid rgba(255,255,255,0.15); border-radius:20px;
+    padding:6px 14px; font-size:13px; cursor:pointer; font-family:var(--font);
+  }
+  #mode-toggle:hover{ color:var(--text); border-color:var(--amber); }
+  #nav-hint{
+    position:fixed; top:14px; left:22px; z-index:50;
+    font-size:12px; color:var(--gray); letter-spacing:.04em;
+  }
+  body.page-mode #progress-wrap,
+  body.page-mode #counter,
+  body.page-mode #nav-hint{ display:none; }
+
+  /* ---------- deck / slides ---------- */
+  #deck{ width:100vw; height:100vh; position:relative; }
+  .slide{
+    position:absolute; inset:0;
+    display:none;
+    flex-direction:column; align-items:center; justify-content:center;
+    width:100vw; height:100vh;
+    padding: 6vh 8vw;
+    text-align:center;
+    opacity:0;
+  }
+  .slide.active{ display:flex; opacity:1; }
+
+  h1,h2,h3,p,ul{ margin:0; }
+
+  .mega{
+    font-size:clamp(40px, 6.2vw, 92px);
+    font-weight:800; line-height:1.08; letter-spacing:-0.01em;
+    max-width:1100px;
+  }
+  .title-lg{
+    font-size:clamp(28px, 4vw, 52px);
+    font-weight:800; line-height:1.15; margin-bottom:4vh; max-width:1000px;
+  }
+  .subtitle{
+    font-size:clamp(18px,2vw,26px); color:var(--amber); margin-top:1.2vh; font-weight:600;
+  }
+  .signature{
+    font-size:clamp(15px,1.4vw,20px); color:var(--gray); margin-top:3.5vh; font-style:italic;
+  }
+  .event{
+    font-size:clamp(13px,1.1vw,16px); color:var(--gray); margin-top:1.2vh; letter-spacing:.05em; text-transform:uppercase;
+  }
+  .footnote{
+    position:absolute; bottom:6vh; left:0; right:0; text-align:center;
+    font-size:clamp(11px,1vw,14px); color:var(--gray); letter-spacing:.03em;
+  }
+
+  /* badges */
+  .badge{
+    display:inline-block; font-size:clamp(11px,0.95vw,14px);
+    letter-spacing:.06em; text-transform:uppercase; font-weight:700;
+    padding:4px 12px; border-radius:20px; border:1.5px solid currentColor;
+  }
+  .badge.medido{ color:var(--green); }
+  .badge.simulacao{ color:var(--gray); }
+  .badge.estimativa{ color:var(--amber); }
+  .badge.problema{ color:var(--red); }
+  .badge.fala{ color:var(--gray); font-style:italic; }
+
+  /* ---------- slide 1 capa ---------- */
+  .capa{ position:relative; overflow:hidden; }
+  .capa svg.bgfig{
+    position:absolute; inset:0; width:100%; height:100%;
+    opacity:.35; z-index:0;
+  }
+  .capa .content{ position:relative; z-index:1; }
+  .capa .mega{ font-size:clamp(52px, 8.5vw, 128px); letter-spacing:0.01em; }
+
+  /* ---------- slide 2 quote ---------- */
+  .quote blockquote{
+    font-size:clamp(34px, 5vw, 68px); font-weight:700; line-height:1.25;
+    max-width:1150px; font-style:italic; quotes:none;
+  }
+  .quote .attrib{ margin-top:4vh; font-size:clamp(15px,1.5vw,20px); color:var(--gray); }
+
+  /* ---------- slide 3 three numbers ---------- */
+  .cols3{
+    display:flex; gap:4vw; justify-content:center; align-items:stretch;
+    width:100%; max-width:1300px; flex-wrap:wrap;
+  }
+  .stat{
+    flex:1; min-width:240px; background:var(--card); border-radius:18px;
+    padding:5vh 2vw; border:1px solid rgba(255,255,255,0.06);
+  }
+  .hero{
+    font-size:clamp(48px, 6.4vw, 96px); font-weight:800; color:var(--amber); line-height:1;
+  }
+  .hero .unit{ font-size:.4em; color:var(--gray); font-weight:600; }
+  .stat .label{ margin-top:2.5vh; font-size:clamp(15px,1.4vw,20px); color:var(--text); }
+
+  /* ---------- slide 4 grid ---------- */
+  .grid4{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:2vw;
+    width:100%; max-width:1300px; margin-top:5vh;
+  }
+  .card4{
+    background:var(--card); border-radius:16px; padding:3.5vh 1.4vw;
+    display:flex; flex-direction:column; align-items:center; gap:1.6vh;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .card4 svg{ width:56px; height:56px; }
+  .card4 .txt{ font-size:clamp(13px,1.15vw,17px); color:var(--text); line-height:1.35; }
+
+  /* ---------- slide 5 virada ---------- */
+  .lines{ list-style:none; padding:0; margin-top:5vh; display:flex; flex-direction:column; gap:1.6vh; }
+  .lines li{ font-size:clamp(20px,2.4vw,32px); color:var(--text); font-weight:600; }
+  .lines li::before{ content:"— "; color:var(--amber); }
+
+  /* ---------- slide 6 prova ---------- */
+  .prova-grid{
+    display:flex; gap:4vw; align-items:center; justify-content:center;
+    width:100%; max-width:1400px; flex-wrap:wrap;
+  }
+  .prova-left{ display:flex; flex-direction:column; gap:3vh; min-width:260px; }
+  .prova-left .stat{ text-align:left; padding:3vh 2vw; }
+  .prova-left .hero{ font-size:clamp(40px,5vw,72px); }
+  .prova-right{ background:var(--card); border-radius:18px; padding:3vh 2vw; min-width:420px; border:1px solid rgba(255,255,255,0.06); }
+  .tagline{ margin-top:4.5vh; font-size:clamp(20px,2.6vw,34px); font-weight:700; color:var(--text); }
+
+  /* ---------- slide 7 dots ---------- */
+  #dots-grid{
+    display:grid; grid-template-columns:repeat(22, 1fr); gap:6px;
+    width:100%; max-width:760px; margin:4vh auto 3.5vh;
+  }
+  #dots-grid .dot{
+    width:100%; aspect-ratio:1/1; border-radius:50%; background:var(--red);
+    opacity:.85;
+  }
+  .s7-caption{ font-size:clamp(16px,1.8vw,24px); color:var(--text); max-width:900px; }
+
+  /* ---------- slide 8 comparison ---------- */
+  .compare{
+    display:flex; gap:3vw; width:100%; max-width:1200px; margin-top:4vh; flex-wrap:wrap; justify-content:center;
+  }
+  .compare .col{
+    flex:1; min-width:300px; background:var(--card); border-radius:18px; padding:4vh 2vw;
+    border:1px solid rgba(255,255,255,0.06); text-align:left;
+  }
+  .compare .col h3{ font-size:clamp(17px,1.7vw,22px); color:var(--gray); margin-bottom:2.2vh; font-weight:700; }
+  .compare .col.win h3{ color:var(--amber); }
+  .compare ul{ list-style:none; padding:0; display:flex; flex-direction:column; gap:1.4vh; }
+  .compare li{ font-size:clamp(15px,1.4vw,19px); }
+  .compare li::before{ content:"· "; color:var(--gray); }
+  .compare .col.win li::before{ color:var(--amber); }
+
+  /* ---------- slide 9 mesas ---------- */
+  .mesas{ display:flex; gap:2.2vw; width:100%; max-width:1200px; margin-top:5vh; flex-wrap:wrap; justify-content:center; }
+  .mesa{
+    flex:1; min-width:260px; background:var(--card); border-radius:16px; padding:4vh 1.6vw;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .mesa .n{ font-size:clamp(13px,1.1vw,15px); color:var(--gray); letter-spacing:.08em; text-transform:uppercase; margin-bottom:1.6vh; }
+  .mesa .t{ font-size:clamp(16px,1.6vw,21px); font-weight:700; }
+  .mesa.nossa{ border:2px solid var(--amber); box-shadow:0 0 30px rgba(232,163,61,0.15); }
+  .mesa.nossa .n{ color:var(--amber); }
+
+  /* ---------- slide 10 case ---------- */
+  .case-lead{ font-size:clamp(17px,1.9vw,25px); color:var(--text); max-width:920px; margin-bottom:4.5vh; line-height:1.45; }
+
+  /* ---------- slide 11 pedido ---------- */
+  .cards3{ display:flex; gap:2.4vw; width:100%; max-width:1200px; margin-top:4.5vh; flex-wrap:wrap; justify-content:center; }
+  .cardp{
+    flex:1; min-width:260px; background:var(--card); border-radius:16px; padding:4.5vh 1.8vw;
+    border:1px solid rgba(255,255,255,0.06); font-size:clamp(16px,1.6vw,21px); font-weight:600;
+  }
+
+  /* ---------- slide 12 fecho ---------- */
+  .footer-list{
+    margin-top:5vh; font-size:clamp(13px,1.15vw,17px); color:var(--gray);
+    letter-spacing:.03em;
+  }
+
+  /* ---------- print / page mode ---------- */
+  body.page-mode #deck{
+    position:static; width:auto; height:auto; overflow:visible;
+  }
+  body.page-mode .slide{
+    position:static; display:flex !important; opacity:1;
+    width:100%; height:100vh; page-break-after:always;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+
+  @media print{
+    :root{
+      --bg:#FFFFFF;
+      --card:#F3F5F7;
+      --text:#111417;
+      --amber:#B5720A;
+      --green:#1E7A50;
+      --red:#A6332B;
+      --gray:#5C6672;
+    }
+    html,body{ overflow:visible; background:var(--bg) !important; color:var(--text) !important; }
+    #progress-wrap, #counter, #mode-toggle, #nav-hint{ display:none !important; }
+    #deck{ position:static; width:auto; height:auto; }
+    .slide{
+      position:static !important; display:flex !important; opacity:1 !important;
+      width:100%; height:100vh; page-break-after:always;
+      background:var(--bg) !important; color:var(--text) !important;
+    }
+    .card4, .stat, .prova-right, .compare .col, .mesa, .cardp{
+      background:var(--card) !important; border-color:#D8DEE4 !important; color:var(--text) !important;
+    }
+    .mesa.nossa{ border-color:var(--amber) !important; }
+    svg text{ fill:var(--text) !important; }
+  }
+</style>
+<style id="nav-visivel">
+.vr-seta{position:fixed;top:50%;transform:translateY(-50%);width:64px;height:64px;border-radius:50%;border:2px solid #E8A33D;background:rgba(18,39,59,.92);color:#E8A33D;font-size:30px;line-height:1;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center;transition:transform .15s,background .15s}
+.vr-seta:hover{background:#E8A33D;color:#0B1B2B;transform:translateY(-50%) scale(1.08)}
+.vr-seta.esq{left:22px}.vr-seta.dir{right:22px}.vr-seta[disabled]{opacity:.22;cursor:default;pointer-events:none}
+.vr-seta.dir.pulso{animation:vrp 1.6s ease-in-out infinite}@keyframes vrp{0%,100%{box-shadow:0 0 0 0 rgba(232,163,61,.55)}50%{box-shadow:0 0 0 16px rgba(232,163,61,0)}}
+.vr-trilha{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:9px;z-index:50;background:rgba(18,39,59,.9);padding:9px 16px;border-radius:999px;border:1px solid #27425c}
+.vr-trilha button{width:13px;height:13px;border-radius:50%;border:0;background:#3a5470;cursor:pointer;padding:0}.vr-trilha button.on{background:#E8A33D;width:34px;border-radius:999px}
+.vr-prox{position:fixed;right:100px;top:50%;transform:translateY(-50%);color:#9AA5B1;font:600 14px system-ui,sans-serif;z-index:50;letter-spacing:.04em}
+body.page-mode .vr-seta,body.page-mode .vr-trilha,body.page-mode .vr-prox{display:none}
+@media print{.vr-seta,.vr-trilha,.vr-prox{display:none!important}}
+</style><style>.preco-hero{font-size:clamp(34px,4.4vw,64px);font-weight:800;color:#9AA5B1;margin:10px 0 14px;line-height:1}.preco-hero.win{color:#E8A33D}</style></head>
+<body>
+
+<div id="progress-wrap"><div id="progress-bar"></div></div>
+<div id="counter">1 / 12</div>
+<div id="nav-hint">← → navega · clique também</div>
+<button id="mode-toggle" type="button">modo página</button>
+
+<div id="deck">
+
+  <!-- 1. CAPA -->
+  <section class="slide active" id="s1">
+    <div class="capa" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+      <svg class="bgfig" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="fade1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#E8A33D" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#E8A33D" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#9AA5B1" stroke-width="1.4" opacity="0.5" fill="none">
+          <line x1="0" y1="700" x2="1600" y2="700"/>
+          <line x1="0" y1="760" x2="1600" y2="760"/>
+          <line x1="150" y1="900" x2="450" y2="500"/>
+          <line x1="500" y1="900" x2="750" y2="480"/>
+          <line x1="1000" y1="900" x2="1150" y2="460"/>
+          <line x1="1300" y1="900" x2="1400" y2="500"/>
+        </g>
+        <g stroke="#E8A33D" stroke-width="2.2" opacity="0.8" fill="none">
+          <circle cx="220" cy="640" r="5" fill="#E8A33D" stroke="none"/>
+          <circle cx="640" cy="600" r="5" fill="#E8A33D" stroke="none"/>
+          <circle cx="1040" cy="560" r="5" fill="#E8A33D" stroke="none"/>
+          <circle cx="1360" cy="600" r="5" fill="#E8A33D" stroke="none"/>
+          <line x1="220" y1="640" x2="640" y2="600"/>
+          <line x1="640" y1="600" x2="1040" y2="560"/>
+          <line x1="1040" y1="560" x2="1360" y2="600"/>
+        </g>
+      </svg>
+      <div class="content">
+        <h1 class="mega">VISÃO DE ROTA</h1>
+        <div class="subtitle">Mobilidade Inteligente e Previsível</div>
+        <div class="signature">Ruas com memória. Mobilidade com previsibilidade.</div>
+        <div class="event">Hackathon Cidades Inteligentes · Patos de Minas · 2026</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. A FRASE QUE ABRE -->
+  <section class="slide quote" id="s2">
+    <blockquote>&ldquo;Primeiro a gente começa,<br>depois a gente melhora.&rdquo;</blockquote>
+    <div class="attrib">diretor de mobilidade, ao nosso time, hoje</div>
+  </section>
+
+  <!-- 3. O PROBLEMA EM 3 NUMEROS -->
+  <section class="slide" id="s3">
+    <div class="cols3">
+      <div class="stat">
+        <div class="hero">R$ 320 mil<span class="unit">/mês</span></div>
+        <div class="label">um centro de controle completo</div>
+      </div>
+      <div class="stat">
+        <div class="hero">R$ 6 milhões</div>
+        <div class="label">rede de 40 semáforos inteligentes</div>
+      </div>
+      <div class="stat">
+        <div class="hero">1%</div>
+        <div class="label">dos semáforos fala com uma central hoje</div>
+      </div>
+    </div>
+    <div class="footnote">números ditos pela própria secretaria, 19/09</div>
+  </section>
+
+  <!-- 4. O QUE A CIDADE JA TEM -->
+  <section class="slide" id="s4">
+    <div class="title-lg">Tudo isso já existe.<br>Nada disso conta um carro.</div>
+    <div class="grid4">
+      <div class="card4">
+        <svg viewBox="0 0 64 64" fill="none" stroke="#E8A33D" stroke-width="2.5"><rect x="8" y="20" width="34" height="24" rx="3"/><path d="M42 26 L58 18 V46 L42 38"/><circle cx="25" cy="32" r="7"/></svg>
+        <div class="txt">240 câmeras em 140 pontos</div>
+      </div>
+      <div class="card4">
+        <svg viewBox="0 0 64 64" fill="none" stroke="#E8A33D" stroke-width="2.5"><rect x="24" y="6" width="16" height="36" rx="6"/><circle cx="32" cy="15" r="3" fill="#E8A33D" stroke="none"/><circle cx="32" cy="24" r="3" fill="#9AA5B1" stroke="none"/><circle cx="32" cy="33" r="3" fill="#2E9E6B" stroke="none"/><line x1="32" y1="42" x2="32" y2="58"/></svg>
+        <div class="txt">semáforo com inteligência em teste</div>
+      </div>
+      <div class="card4">
+        <svg viewBox="0 0 64 64" fill="none" stroke="#E8A33D" stroke-width="2.5"><rect x="18" y="6" width="28" height="52" rx="5"/><line x1="18" y1="46" x2="46" y2="46"/><circle cx="32" cy="52" r="1.6" fill="#E8A33D" stroke="none"/></svg>
+        <div class="txt">aplicativo oficial da cidade</div>
+      </div>
+      <div class="card4">
+        <svg viewBox="0 0 64 64" fill="none" stroke="#E8A33D" stroke-width="2.5"><polyline points="8,46 20,34 30,40 44,20 56,26"/><line x1="8" y1="54" x2="56" y2="54"/></svg>
+        <div class="txt">dados de passageiros do transporte — por mês, dia, horário e linha</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. A VIRADA -->
+  <section class="slide" id="s5">
+    <h1 class="mega">A mesma câmera.<br>Outra pergunta.</h1>
+    <ul class="lines">
+      <li>quantos passam</li>
+      <li>quanto de fila</li>
+      <li>onde quase bate</li>
+    </ul>
+    <div style="margin-top:5vh;">
+      <span class="badge simulacao">sem rosto · sem placa · imagem descartada depois da contagem</span>
+    </div>
+  </section>
+
+  <!-- 6. A PROVA -->
+  <section class="slide" id="s6">
+    <div class="prova-grid">
+      <div class="prova-left">
+        <div class="stat">
+          <span class="badge medido">medido</span>
+          <div class="hero" style="margin-top:1.6vh;">1.100</div>
+          <div class="label">ocorrências de trânsito com coordenada</div>
+        </div>
+        <div class="stat">
+          <span class="badge medido">medido</span>
+          <div class="hero" style="margin-top:1.6vh;">132</div>
+          <div class="label">graves ou fatais — dado aberto do Estado</div>
+        </div>
+      </div>
+      <div class="prova-right">
+        <span class="badge simulacao">simulação</span>
+        <svg viewBox="0 0 420 260" style="width:100%; height:auto; margin-top:14px;">
+          <line x1="40" y1="20" x2="40" y2="210" stroke="#9AA5B1" stroke-width="1.5"/>
+          <line x1="40" y1="210" x2="400" y2="210" stroke="#9AA5B1" stroke-width="1.5"/>
+          <polyline points="40,210 70,178 130,130 230,80 380,45" fill="none" stroke="#E8A33D" stroke-width="3"/>
+          <circle cx="70" cy="178" r="5" fill="#E8A33D"/>
+          <circle cx="130" cy="130" r="5" fill="#E8A33D"/>
+          <circle cx="230" cy="80" r="5" fill="#E8A33D"/>
+          <circle cx="380" cy="45" r="5" fill="#E8A33D"/>
+          <text x="70" y="230" fill="#F6F8FA" font-size="13" text-anchor="middle">33 pts</text>
+          <text x="70" y="168" fill="#F6F8FA" font-size="13" text-anchor="middle">25%</text>
+          <text x="130" y="230" fill="#F6F8FA" font-size="13" text-anchor="middle">94 pts</text>
+          <text x="130" y="120" fill="#F6F8FA" font-size="13" text-anchor="middle">50%</text>
+          <text x="230" y="230" fill="#F6F8FA" font-size="13" text-anchor="middle">207 pts</text>
+          <text x="230" y="70" fill="#F6F8FA" font-size="13" text-anchor="middle">75%</text>
+          <text x="380" y="230" fill="#F6F8FA" font-size="13" text-anchor="middle">357 pts</text>
+          <text x="352" y="35" fill="#F6F8FA" font-size="13" text-anchor="middle">90%</text>
+        </svg>
+        <div style="font-size:13px; color:var(--gray); margin-top:6px;">pontos de leitura → % das ocorrências cobertas</div>
+      </div>
+    </div>
+    <div class="tagline">Não precisa ler a cidade inteira.<br>Precisa ler os pontos certos.</div>
+  </section>
+
+  <!-- 7. E ISSO E GENTE -->
+  <section class="slide" id="s7">
+    <h2 class="title-lg" style="margin-bottom:2vh;">E isso é gente</h2>
+    <div id="dots-grid"></div>
+    <div class="s7-caption">cada ponto é uma pessoa — é por elas que se escolhe onde ler primeiro</div>
+    <div style="margin-top:3.5vh;display:flex;gap:3vw;justify-content:center;align-items:flex-start;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:clamp(28px,3.4vw,50px);font-weight:800;color:#E8A33D;line-height:1">22.708</div><div style="color:#9AA5B1;font-size:clamp(12px,1.1vw,16px);max-width:22ch">sinistros de trânsito registrados na cidade desde 2018</div></div>
+      <div style="text-align:center"><div style="font-size:clamp(28px,3.4vw,50px);font-weight:800;color:#D6453D;line-height:1">140</div><div style="color:#9AA5B1;font-size:clamp(12px,1.1vw,16px);max-width:22ch">mortes nesses registros</div></div>
+      <div style="text-align:center"><div style="font-size:clamp(28px,3.4vw,50px);font-weight:800;color:#E8A33D;line-height:1">30%</div><div style="color:#9AA5B1;font-size:clamp(12px,1.1vw,16px);max-width:24ch">deles têm uma moto envolvida — a câmera conta moto separado de carro</div></div>
+    </div>
+    <div class="footnote" style="position:static;margin-top:2.5vh"><span class="badge medido">medido</span><span style="margin-left:10px">base nacional aberta de sinistros, extração de agosto de 2026, lida por nós</span></div>
+  </section>
+
+  <!-- 8. O QUE CUSTA -->
+  <section class="slide" id="s8">
+    <div class="title-lg">O que custa</div>
+    <div class="compare">
+      <div class="col">
+        <h3>instalar 50 câmeras novas</h3>
+        <div class="preco-hero">R$ 1,2 milhão</div>
+        <ul>
+          <li>só o equipamento</li>
+          <li>mais obra e instalação</li>
+          <li>mais manutenção</li>
+        </ul>
+      </div>
+      <div class="col win">
+        <h3>ler 50 câmeras que já existem</h3>
+        <div class="preco-hero win">R$ 49 mil</div>
+        <ul>
+          <li>piloto de 90 dias, 1 corredor</li>
+          <li>o preço de 4 câmeras novas</li>
+          <li>cabe na dispensa de licitação: o teto é R$ 65.492</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footnote" style="position:static; margin-top:4vh;">
+      <span class="badge estimativa">estimativa</span>
+      <span style="margin-left:10px;">nosso preço é estimativa, com todas as premissas abertas na calculadora · depois do piloto, R$ 290 por câmera lida por mês · o teto da dispensa vem do decreto federal</span>
+    </div>
+  </section>
+
+  <!-- 9. ONDE A GENTE ENTRA -->
+  <section class="slide" id="s9">
+    <div class="title-lg">Onde a gente entra</div>
+    <div class="mesas">
+      <div class="mesa"><div class="n">1ª mesa</div><div class="t">zona azul</div></div>
+      <div class="mesa"><div class="n">2ª mesa</div><div class="t">semáforos</div></div>
+      <div class="mesa nossa"><div class="n">3ª mesa — nós</div><div class="t">auditar, processar e medir</div></div>
+    </div>
+    <div class="tagline" style="font-size:clamp(17px,2vw,26px); margin-top:5vh;">não é um centro novo. É a terceira mesa do que já está sendo desenhado.</div>
+  </section>
+
+  <!-- 10. O CASO QUE DESTRAVA -->
+  <section class="slide" id="s10">
+    <div class="title-lg">O caso que destrava</div>
+    <div class="case-lead">Existe uma rua onde os dados do piloto já justificam retirar um semáforo e inverter o sentido — e a mudança está parada pela resistência dos moradores.</div>
+    <h1 class="mega">O dado já existe.<br>Falta mostrar o antes e o depois —<br>na tela, antes de mexer na rua.</h1>
+  </section>
+
+  <!-- 11. O QUE PEDIMOS -->
+  <section class="slide" id="s11">
+    <div class="title-lg">O que pedimos</div>
+    <div class="cards3">
+      <div class="cardp">1 hora de vídeo gravado de 1 câmera</div>
+      <div class="cardp">a lista dos pontos</div>
+      <div class="cardp">1 corredor por 90 dias para medir antes e depois</div>
+    </div>
+    <div class="footnote" style="position:static; margin-top:4vh;">nenhum dos três custa equipamento novo</div>
+  </section>
+
+  <!-- 12. FECHO -->
+  <section class="slide" id="s12">
+    <h1 class="mega">Ruas com memória.</h1>
+    <div class="footer-list">painel do gestor · aplicativo do cidadão · calculadora aberta · hub público de dados e ideias</div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var TOTAL = 12;
+  var slides = [];
+  for (var i=1;i<=TOTAL;i++){ slides.push(document.getElementById('s'+i)); }
+  var current = 1;
+
+  function buildDots(){
+    var grid = document.getElementById('dots-grid');
+    if (!grid) return;
+    var frag = document.createDocumentFragment();
+    for (var i=0;i<132;i++){
+      var d = document.createElement('div');
+      d.className = 'dot';
+      frag.appendChild(d);
+    }
+    grid.appendChild(frag);
+  }
+
+  function show(n, updateHash){
+    if (n < 1) n = 1;
+    if (n > TOTAL) n = TOTAL;
+    current = n;
+    for (var i=0;i<slides.length;i++){
+      slides[i].classList.toggle('active', (i+1) === n);
+    }
+    document.getElementById('counter').textContent = n + ' / ' + TOTAL;
+    document.getElementById('progress-bar').style.width = (n/TOTAL*100) + '%';
+    if (updateHash !== false){
+      history.replaceState(null, '', '#s' + n);
+    }
+  }
+
+  function next(){ show(current + 1); }
+  function prev(){ show(current - 1); }
+
+  document.addEventListener('keydown', function(e){
+    if (document.body.classList.contains('page-mode')) return;
+    if (['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key) !== -1){ e.preventDefault(); next(); }
+    else if (['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key) !== -1){ e.preventDefault(); prev(); }
+    else if (e.key === 'Home'){ e.preventDefault(); show(1); }
+    else if (e.key === 'End'){ e.preventDefault(); show(TOTAL); }
+  });
+
+  document.getElementById('deck').addEventListener('click', function(e){
+    if (document.body.classList.contains('page-mode')) return;
+    if (e.target.closest('#mode-toggle')) return;
+    var x = e.clientX / window.innerWidth;
+    if (x < 0.35) prev(); else next();
+  });
+
+  document.getElementById('mode-toggle').addEventListener('click', function(e){
+    e.stopPropagation();
+    document.body.classList.toggle('page-mode');
+    this.textContent = document.body.classList.contains('page-mode') ? 'modo apresentação' : 'modo página';
+  });
+
+  window.addEventListener('hashchange', function(){
+    var m = /^#s(\d+)$/.exec(location.hash);
+    if (m) show(parseInt(m[1],10), false);
+  });
+
+
+  // navegação visível: setas grandes, trilha clicável e "próximo" no 1º slide
+  var bEsq=document.createElement('button'),bDir=document.createElement('button'),trilha=document.createElement('div'),prox=document.createElement('div');
+  bEsq.className='vr-seta esq';bEsq.innerHTML='&#8592;';bEsq.setAttribute('aria-label','slide anterior');
+  bDir.className='vr-seta dir pulso';bDir.innerHTML='&#8594;';bDir.setAttribute('aria-label','próximo slide');
+  trilha.className='vr-trilha';prox.className='vr-prox';prox.textContent='próximo';
+  for(var k=1;k<=TOTAL;k++){(function(n){var d=document.createElement('button');d.title='slide '+n;d.addEventListener('click',function(e){e.stopPropagation();show(n);});trilha.appendChild(d);})(k);}
+  bEsq.addEventListener('click',function(e){e.stopPropagation();prev();});bDir.addEventListener('click',function(e){e.stopPropagation();bDir.classList.remove('pulso');next();});
+  document.body.appendChild(bEsq);document.body.appendChild(bDir);document.body.appendChild(trilha);document.body.appendChild(prox);
+  var _show=show;show=function(n,u){_show(n,u);bEsq.disabled=current<=1;bDir.disabled=current>=TOTAL;prox.style.display=current===1?'':'none';var bs=trilha.children;for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',i+1===current);};
+  buildDots();
+
+  var initial = 1;
+  var m = /^#s(\d+)$/.exec(location.hash);
+  if (m) initial = parseInt(m[1],10);
+  show(initial, false);
+})();
+</script>
+
+</body>
+</html>

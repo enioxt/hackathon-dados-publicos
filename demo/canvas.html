@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canvas de Proposta de Valor — Visão de Rota</title>
+<style>
+  :root{
+    --bg:#0B1B2B;
+    --card:#12273B;
+    --text:#F6F8FA;
+    --amber:#E8A33D;
+    --green:#2E9E6B;
+    --red:#D6453D;
+    --gray:#9AA5B1;
+    --line-dim: rgba(196,205,214,0.45);
+    --band-border: rgba(246,248,250,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size:16px;
+    line-height:1.35;
+    padding: 18px 22px 30px;
+  }
+
+  header.page-head{
+    text-align:center;
+    margin-bottom:14px;
+  }
+  header.page-head h1{
+    margin:0 0 4px;
+    font-size: 1.7rem;
+    letter-spacing:0.01em;
+  }
+  header.page-head .sub{
+    color:var(--gray);
+    font-size:0.95rem;
+  }
+
+  .user-line{
+    max-width: 1200px;
+    margin: 0 auto 14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .user-line .who{
+    font-size:1.05rem;
+    font-weight:600;
+  }
+  .user-line .why{
+    background: rgba(154,165,177,0.10);
+    border:1px solid rgba(154,165,177,0.28);
+    color:var(--gray);
+    font-size:0.85rem;
+    border-radius:8px;
+    padding:6px 12px;
+    max-width: 640px;
+    text-align:left;
+  }
+
+  .counter-bar{
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    flex-wrap:wrap;
+    font-size:1.02rem;
+    font-weight:600;
+  }
+  .counter-bar span{
+    background: var(--card);
+    border:1px solid rgba(246,248,250,0.12);
+    border-radius: 10px;
+    padding: 8px 16px;
+  }
+  .counter-bar .n-feat{ color: var(--amber); }
+  .counter-bar .n-conn{ color: var(--green); }
+  .counter-bar .n-uncov{ color: var(--gray); }
+  .counter-bar .n-uncov.has-gap{ color: var(--red); }
+
+  .canvas-wrap{
+    position:relative;
+    max-width: 1300px;
+    margin: 0 auto;
+    display:flex;
+    gap: 40px;
+    align-items:flex-start;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  svg.link-overlay{
+    position:absolute;
+    top:0; left:0;
+    pointer-events:none;
+    z-index:1;
+    overflow:visible;
+  }
+  svg.link-overlay path{
+    fill:none;
+    stroke: var(--line-dim);
+    stroke-width: 1.6;
+    transition: stroke .18s ease, stroke-width .18s ease, opacity .18s ease;
+  }
+  svg.link-overlay path.lit{
+    stroke: var(--amber);
+    stroke-width: 2.6;
+  }
+  svg.link-overlay path.faded{
+    opacity: 0.12;
+  }
+  svg.link-overlay circle.endpoint{
+    fill: var(--gray);
+    opacity:0.75;
+  }
+  svg.link-overlay circle.endpoint.lit{
+    fill: var(--amber);
+    opacity:1;
+  }
+  svg.link-overlay circle.endpoint.faded{
+    opacity:0.08;
+  }
+
+  /* ---- shapes ---- */
+  .shape{
+    position:relative;
+    z-index:2;
+    background: radial-gradient(circle at 30% 20%, rgba(246,248,250,0.05), transparent 60%);
+    border: 2px solid rgba(246,248,250,0.18);
+    width: min(620px, 94vw);
+    display:flex;
+    flex-direction:column;
+    overflow:visible;
+  }
+  .shape.circle{
+    border-radius: 50% / 14%;
+    padding: 36px 58px;
+  }
+  .shape.square{
+    border-radius: 26px;
+    padding: 26px 38px;
+  }
+  .shape-title{
+    position:absolute;
+    top: -32px;
+    left: 0;
+    right:0;
+    text-align:center;
+    font-size:1.15rem;
+    font-weight:700;
+    letter-spacing:0.03em;
+    color: var(--text);
+  }
+
+  .band{
+    flex: 0 0 auto;
+    display:flex;
+    flex-direction:column;
+    padding: 10px 4px;
+  }
+  .circle .band + .band{ border-top: 1px dashed var(--band-border); }
+  .square .band + .band{ border-top: 1px dashed var(--band-border); }
+
+  .band-label{
+    font-size:0.72rem;
+    font-weight:800;
+    letter-spacing:0.10em;
+    text-transform:uppercase;
+    color: var(--gray);
+    margin-bottom:6px;
+    text-align:center;
+  }
+  .band.tarefas .band-label{ color:#C7CDD4; }
+  .band.dores .band-label{ color:#F0A9A0; }
+  .band.ganhos .band-label{ color:#9BE3C2; }
+  .band.aliviadores .band-label{ color:#F3C98B; }
+  .band.criadores .band-label{ color:#9BE3C2; }
+
+  .card-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    align-content:flex-start;
+    flex:1;
+  }
+
+  .card{
+    background: var(--card);
+    border:1px solid rgba(246,248,250,0.14);
+    border-radius: 9px;
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    line-height:1.28;
+    max-width: 178px;
+    min-width: 92px;
+    position:relative;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, opacity .15s ease;
+  }
+  .card .tag{
+    display:inline-block;
+    font-weight:800;
+    font-size:0.68rem;
+    padding: 0 5px;
+    border-radius:5px;
+    margin-right:4px;
+    color:#0B1B2B;
+  }
+  .band.dores .card .tag{ background: var(--red); }
+  .band.ganhos .card .tag{ background: var(--green); }
+  .band.aliviadores .card .tag{ background: var(--amber); }
+  .band.criadores .card .tag{ background: var(--green); }
+  .band.tarefas .card .tag{ background: var(--gray); }
+
+  .card.lit{
+    border-color: var(--amber);
+    background: #22334a;
+    box-shadow: 0 0 0 2.5px var(--amber), 0 4px 14px rgba(232,163,61,0.30);
+    transform: translateY(-1px);
+    z-index:3;
+  }
+  .card.faded{ opacity: 0.20; }
+
+  .card.uncovered{
+    border-color: var(--red);
+    box-shadow: 0 0 0 1px rgba(214,69,61,0.5);
+  }
+  .card.uncovered .tag{ background: var(--red); }
+  .card.uncovered::after{
+    content:"sem conexão";
+    display:block;
+    color: var(--red);
+    font-size:0.62rem;
+    font-weight:700;
+    margin-top:2px;
+  }
+
+  .f-card{ cursor:pointer; }
+  .f-card:focus{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  .solution-literal{
+    background: var(--card);
+    border:1px solid rgba(246,248,250,0.14);
+    border-radius:10px;
+    padding: 10px 12px;
+    font-size:0.78rem;
+    line-height:1.4;
+    text-align:left;
+  }
+  .solution-literal b{ color: var(--amber); }
+
+  /* honesty footer */
+  .honesty{
+    max-width: 980px;
+    margin: 30px auto 0;
+    background: rgba(154,165,177,0.08);
+    border:1px solid rgba(154,165,177,0.25);
+    border-radius:10px;
+    padding: 12px 18px;
+    font-size:0.82rem;
+    color: var(--gray);
+  }
+  .honesty p{ margin: 4px 0; }
+  .honesty strong{ color: var(--text); }
+
+  .hint{
+    text-align:center;
+    color:var(--gray);
+    font-size:0.78rem;
+    margin: 16px 0 4px;
+  }
+
+  @media (max-width: 900px){
+    .canvas-wrap{ flex-direction:column; align-items:center; }
+    .shape{ width: min(560px, 94vw); }
+  }
+
+  /* ---- print ---- */
+  @media print{
+    @page{ size: landscape; margin: 10mm; }
+    html,body{
+      background:#ffffff !important;
+      color:#0B1B2B !important;
+      padding:0;
+    }
+    header.page-head h1{ color:#0B1B2B; }
+    header.page-head .sub, .hint{ display:none; }
+    .user-line .why{ color:#3a4450; border-color:#c8cdd3; background:#f2f4f6; }
+    .counter-bar span{ background:#f2f4f6; border-color:#d5d9dd; color:#0B1B2B !important; }
+    .counter-bar .n-feat{ color:#a8681e !important; }
+    .counter-bar .n-conn{ color:#1f7a52 !important; }
+    .counter-bar .n-uncov.has-gap{ color:#b23026 !important; }
+    .canvas-wrap{ flex-wrap:nowrap; gap:26px; }
+    .shape{
+      background:#ffffff !important;
+      border-color:#c8cdd3 !important;
+    }
+    .shape-title{ color:#0B1B2B; }
+    .band-label{ color:#5a6570 !important; }
+    .card{
+      background:#f7f8fa !important;
+      border-color:#c8cdd3 !important;
+      color:#0B1B2B !important;
+      box-shadow:none !important;
+    }
+    .card .tag{ color:#ffffff !important; }
+    .solution-literal{ background:#f7f8fa !important; border-color:#c8cdd3 !important; color:#0B1B2B !important; }
+    .solution-literal b{ color:#a8681e !important; }
+    .honesty{ background:#f2f4f6 !important; border-color:#d5d9dd !important; color:#3a4450 !important; }
+    .honesty strong{ color:#0B1B2B !important; }
+    svg.link-overlay path{ stroke: rgba(11,27,43,0.35) !important; }
+    svg.link-overlay circle.endpoint{ fill:#5a6570 !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <h1>Canvas de Proposta de Valor</h1>
+  <div class="sub">Visão de Rota — hackathon de mobilidade, Patos de Minas</div>
+</header>
+
+<div class="user-line">
+  <div class="who">Usuário final: a secretaria de trânsito (quem decide a mudança na via). O cidadão é beneficiário e sensor, não o comprador.</div>
+  <div class="why">por que não o cidadão: quem paga e quem autoriza o acesso à câmera é a secretaria; o cidadão entra pelo app que a cidade já tem.</div>
+</div>
+
+<div class="counter-bar" id="counterBar">
+  <span><span class="n-feat" id="cFeat">0</span> funcionalidades</span>
+  <span><span class="n-conn" id="cConn">0</span> conexões</span>
+  <span><span class="n-uncov" id="cUncov">0</span> dores sem cobertura</span>
+</div>
+
+<div class="canvas-wrap" id="canvasWrap">
+  <svg class="link-overlay" id="linkSvg"></svg>
+
+  <!-- CÍRCULO DO CLIENTE -->
+  <div class="shape circle">
+    <div class="shape-title">Cliente</div>
+
+    <div class="band tarefas">
+      <div class="band-label">Tarefas</div>
+      <div class="card-row">
+        <div class="card"><span class="tag">T1</span>decidir onde mexer primeiro, com tanta rua e pouco caixa</div>
+        <div class="card"><span class="tag">T2</span>provar que a mudança que ela fez funcionou</div>
+        <div class="card"><span class="tag">T3</span>responder a reclamação de morador e de vereador com fato, não com opinião</div>
+        <div class="card"><span class="tag">T4</span>fiscalizar o que a concessionária entrega e repassa</div>
+        <div class="card"><span class="tag">T5</span>justificar investimento novo para quem libera o dinheiro</div>
+        <div class="card"><span class="tag">T6</span>atender o cidadão que pergunta "por que mudou isso?"</div>
+      </div>
+    </div>
+
+    <div class="band dores">
+      <div class="band-label">Dores</div>
+      <div class="card-row">
+        <div class="card" id="D1"><span class="tag">D1</span>"eu tenho como tratar esses dados hoje? não tenho massa crítica"</div>
+        <div class="card" id="D2"><span class="tag">D2</span>um centro de controle completo custa da ordem de R$ 320 mil por mês</div>
+        <div class="card" id="D3"><span class="tag">D3</span>uma rede de 40 semáforos inteligentes custa R$ 6 milhões só de equipamento</div>
+        <div class="card" id="D4"><span class="tag">D4</span>hoje 1% dos semáforos fala com uma central</div>
+        <div class="card" id="D5"><span class="tag">D5</span>orçamento de cerca de R$ 20 milhões/ano, mais da metade para subsidiar o transporte</div>
+        <div class="card" id="D6"><span class="tag">D6</span>uma mudança já justificada pelos dados está parada pela resistência dos moradores</div>
+        <div class="card" id="D7"><span class="tag">D7</span>"mais importante que a infraestrutura é ter gente para tocar"</div>
+      </div>
+    </div>
+
+    <div class="band ganhos">
+      <div class="band-label">Ganhos</div>
+      <div class="card-row">
+        <div class="card" id="G1"><span class="tag">G1</span>decidir por número e não por pressão</div>
+        <div class="card" id="G2"><span class="tag">G2</span>mostrar antes e depois a quem reclamou</div>
+        <div class="card" id="G3"><span class="tag">G3</span>medir desempenho de contrato, exigido em quase toda licitação</div>
+        <div class="card" id="G4"><span class="tag">G4</span>dado pronto para pedir recurso e para prestar contas</div>
+        <div class="card" id="G5"><span class="tag">G5</span>informação ao cidadão sem app novo</div>
+        <div class="card" id="G6"><span class="tag">G6</span>começar pequeno e crescer, em vez de esperar o centro completo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUADRADO DA SOLUÇÃO -->
+  <div class="shape square">
+    <div class="shape-title">Solução</div>
+
+    <div class="band solucao">
+      <div class="band-label">A solução, literal</div>
+      <div class="solution-literal">
+        Um serviço que lê as câmeras de videomonitoramento que a cidade já tem e devolve contagem de trânsito por
+        tipo de veículo, fila e quase-acidente por faixa de 5 minutos, com painel para o gestor e relatório de antes
+        e depois de cada intervenção. <b>Não instala câmera, não lê rosto, não lê placa</b>, descarta a imagem depois
+        de contar.
+      </div>
+    </div>
+
+    <div class="band aliviadores">
+      <div class="band-label">Aliviadores de dor</div>
+      <div class="card-row">
+        <div class="card f-card" id="F1" tabindex="0" data-targets="D1,D2"><span class="tag">F1</span>processa na máquina onde a imagem já está, uma mesa em vez de um centro</div>
+        <div class="card f-card" id="F2" tabindex="0" data-targets="D2,D3"><span class="tag">F2</span>usa as câmeras já instaladas e pagas, sem equipamento novo</div>
+        <div class="card f-card" id="F3" tabindex="0" data-targets="D2,D5"><span class="tag">F3</span>piloto de 90 dias por preço que cabe na dispensa de licitação, sem edital</div>
+        <div class="card f-card" id="F4" tabindex="0" data-targets="D6"><span class="tag">F4</span>relatório de antes e depois pronto para mostrar ao morador e ao vereador</div>
+        <div class="card f-card" id="F5" tabindex="0" data-targets="D7"><span class="tag">F5</span>o serviço inclui quem lê e interpreta o dado, não só o software</div>
+        <div class="card f-card" id="F6" tabindex="0" data-targets="D4,D6"><span class="tag">F6</span>começa por 1 corredor e cresce por cenário, de poucas a centenas de câmeras</div>
+      </div>
+    </div>
+
+    <div class="band criadores">
+      <div class="band-label">Criadores de ganho</div>
+      <div class="card-row">
+        <div class="card f-card" id="F7" tabindex="0" data-targets="G1"><span class="tag">F7</span>mapa de concentração que mostra onde ler primeiro: poucos pontos alcançam metade das ocorrências</div>
+        <div class="card f-card" id="F8" tabindex="0" data-targets="G2,G3"><span class="tag">F8</span>mesmo indicador medido antes e depois de cada mudança</div>
+        <div class="card f-card" id="F9" tabindex="0" data-targets="G4"><span class="tag">F9</span>relatório semanal pronto para imprimir, com a origem de cada número</div>
+        <div class="card f-card" id="F10" tabindex="0" data-targets="G5"><span class="tag">F10</span>as informações entram no app oficial que a cidade já tem</div>
+        <div class="card f-card" id="F11" tabindex="0" data-targets="G6,D1"><span class="tag">F11</span>a leitura vira a terceira mesa do centro de controle que a própria secretaria já está desenhando</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hint">passe o mouse (ou toque) numa funcionalidade para ver as conexões dela</div>
+
+<div class="honesty">
+  <p><strong>Honestidade:</strong> T4 (fiscalizar a concessionária) e T5 (justificar investimento) ainda não têm funcionalidade dedicada — são caminho depois do piloto, não promessa de hoje.</p>
+  <p>Os números de custo são falas da própria secretaria, ditas ao time em 19/09.</p>
+  <p>A cobertura de pontos citada nas conexões é simulação nossa sobre dado público medido.</p>
+</div>
+
+<script>
+(function(){
+  var features = [
+    {id:'F1', targets:['D1','D2']},
+    {id:'F2', targets:['D2','D3']},
+    {id:'F3', targets:['D2','D5']},
+    {id:'F4', targets:['D6']},
+    {id:'F5', targets:['D7']},
+    {id:'F6', targets:['D4','D6']},
+    {id:'F7', targets:['G1']},
+    {id:'F8', targets:['G2','G3']},
+    {id:'F9', targets:['G4']},
+    {id:'F10', targets:['G5']},
+    {id:'F11', targets:['G6','D1']}
+  ];
+
+  var wrap = document.getElementById('canvasWrap');
+  var svg = document.getElementById('linkSvg');
+  var svgNS = 'http://www.w3.org/2000/svg';
+
+  // ---- counters ----
+  var allDoreIds = ['D1','D2','D3','D4','D5','D6','D7'];
+  var totalConn = 0;
+  var covered = {};
+  features.forEach(function(f){
+    totalConn += f.targets.length;
+    f.targets.forEach(function(t){ covered[t] = true; });
+  });
+  var uncoveredDores = allDoreIds.filter(function(d){ return !covered[d]; });
+
+  document.getElementById('cFeat').textContent = features.length;
+  document.getElementById('cConn').textContent = totalConn;
+  var cUncov = document.getElementById('cUncov');
+  cUncov.textContent = uncoveredDores.length + (uncoveredDores.length ? (' (' + uncoveredDores.join(', ') + ')') : '');
+  if(uncoveredDores.length > 0){ cUncov.classList.add('has-gap'); }
+
+  uncoveredDores.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.classList.add('uncovered'); }
+  });
+
+  // ---- build link geometry ----
+  function rectRelativeTo(el, containerRect){
+    var r = el.getBoundingClientRect();
+    return {
+      left: r.left - containerRect.left,
+      top: r.top - containerRect.top,
+      right: r.right - containerRect.left,
+      bottom: r.bottom - containerRect.top,
+      width: r.width,
+      height: r.height,
+      cx: (r.left + r.right)/2 - containerRect.left,
+      cy: (r.top + r.bottom)/2 - containerRect.top
+    };
+  }
+
+  function edgePoint(rect, towardX, towardY){
+    // point on the rect boundary along the line from its center toward (towardX, towardY)
+    var dx = towardX - rect.cx;
+    var dy = towardY - rect.cy;
+    if(dx === 0 && dy === 0){ return {x: rect.cx, y: rect.cy}; }
+    var hw = rect.width/2, hh = rect.height/2;
+    var scaleX = hw / Math.abs(dx || 1e-6);
+    var scaleY = hh / Math.abs(dy || 1e-6);
+    var scale = Math.min(scaleX, scaleY);
+    return { x: rect.cx + dx*scale, y: rect.cy + dy*scale };
+  }
+
+  var links = []; // {fId, tId, pathEl, dotA, dotB}
+
+  function rebuild(){
+    // clear
+    while(svg.firstChild){ svg.removeChild(svg.firstChild); }
+    links = [];
+
+    var containerRect = wrap.getBoundingClientRect();
+    svg.setAttribute('width', wrap.scrollWidth);
+    svg.setAttribute('height', wrap.scrollHeight);
+    svg.style.width = wrap.scrollWidth + 'px';
+    svg.style.height = wrap.scrollHeight + 'px';
+
+    features.forEach(function(f){
+      var fEl = document.getElementById(f.id);
+      if(!fEl) return;
+      var fRect = rectRelativeTo(fEl, containerRect);
+      f.targets.forEach(function(tId){
+        var tEl = document.getElementById(tId);
+        if(!tEl) return;
+        var tRect = rectRelativeTo(tEl, containerRect);
+
+        var p1 = edgePoint(fRect, tRect.cx, tRect.cy);
+        var p2 = edgePoint(tRect, fRect.cx, fRect.cy);
+
+        var midX = (p1.x + p2.x) / 2;
+        var d = 'M ' + p1.x + ' ' + p1.y + ' C ' + midX + ' ' + p1.y + ', ' + midX + ' ' + p2.y + ', ' + p2.x + ' ' + p2.y;
+
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('data-f', f.id);
+        path.setAttribute('data-t', tId);
+        svg.appendChild(path);
+
+        var dotA = document.createElementNS(svgNS, 'circle');
+        dotA.setAttribute('cx', p1.x); dotA.setAttribute('cy', p1.y); dotA.setAttribute('r', 3);
+        dotA.setAttribute('class', 'endpoint');
+        dotA.setAttribute('data-f', f.id);
+        svg.appendChild(dotA);
+
+        var dotB = document.createElementNS(svgNS, 'circle');
+        dotB.setAttribute('cx', p2.x); dotB.setAttribute('cy', p2.y); dotB.setAttribute('r', 3);
+        dotB.setAttribute('class', 'endpoint');
+        dotB.setAttribute('data-f', f.id);
+        svg.appendChild(dotB);
+
+        links.push({fId: f.id, tId: tId, path: path, dotA: dotA, dotB: dotB});
+      });
+    });
+  }
+
+  // ---- interaction ----
+  var pinned = null;
+
+  function activate(fId){
+    var fSet = {}; fSet[fId] = true;
+    var targetSet = {};
+    features.forEach(function(f){
+      if(f.id === fId){ f.targets.forEach(function(t){ targetSet[t] = true; }); }
+    });
+
+    document.querySelectorAll('.card').forEach(function(c){
+      if(c.id === fId || targetSet[c.id]){
+        c.classList.add('lit'); c.classList.remove('faded');
+      } else {
+        c.classList.remove('lit'); c.classList.add('faded');
+      }
+    });
+
+    links.forEach(function(l){
+      if(l.fId === fId){
+        l.path.classList.add('lit'); l.path.classList.remove('faded');
+        l.dotA.classList.add('lit'); l.dotA.classList.remove('faded');
+        l.dotB.classList.add('lit'); l.dotB.classList.remove('faded');
+      } else {
+        l.path.classList.remove('lit'); l.path.classList.add('faded');
+        l.dotA.classList.remove('lit'); l.dotA.classList.add('faded');
+        l.dotB.classList.remove('lit'); l.dotB.classList.add('faded');
+      }
+    });
+  }
+
+  function clearActive(){
+    document.querySelectorAll('.card').forEach(function(c){
+      c.classList.remove('lit'); c.classList.remove('faded');
+    });
+    links.forEach(function(l){
+      l.path.classList.remove('lit'); l.path.classList.remove('faded');
+      l.dotA.classList.remove('lit'); l.dotA.classList.remove('faded');
+      l.dotB.classList.remove('lit'); l.dotB.classList.remove('faded');
+    });
+  }
+
+  document.querySelectorAll('.f-card').forEach(function(el){
+    el.addEventListener('mouseenter', function(){ if(!pinned) activate(el.id); });
+    el.addEventListener('mouseleave', function(){ if(!pinned) clearActive(); });
+    el.addEventListener('focus', function(){ if(!pinned) activate(el.id); });
+    el.addEventListener('blur', function(){ if(!pinned) clearActive(); });
+    el.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(pinned === el.id){ pinned = null; clearActive(); }
+      else { pinned = el.id; activate(el.id); }
+    });
+  });
+  document.body.addEventListener('click', function(){ if(pinned){ pinned = null; clearActive(); } });
+
+  // ---- init ----
+  function init(){
+    rebuild();
+    var dbg = location.hash.match(/debug=([A-Za-z0-9]+)/);
+    if(dbg){ pinned = dbg[1]; activate(dbg[1]); }
+  }
+  window.addEventListener('load', init);
+  if(document.readyState === 'complete'){ init(); }
+
+  var resizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(rebuild, 120);
+  });
+
+  if(window.ResizeObserver){
+    new ResizeObserver(function(){ rebuild(); }).observe(wrap);
+  }
+})();
+</script>
+
+</body>
+</html>

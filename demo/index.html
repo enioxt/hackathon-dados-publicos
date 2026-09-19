@@ -1,19 +1,38 @@
 <!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Visão de Rota — demonstração</title><style>
-body{margin:0;background:#0B1B2B;color:#F6F8FA;font:16px/1.6 system-ui,sans-serif}
-header{padding:30px 6vw 10px}small{letter-spacing:.14em;color:#9AA5B1;font-size:12.5px}h1{margin:6px 0;font-size:30px}
-.faixa{background:#E8A33D;color:#111;padding:10px 6vw;font-weight:600}
-main{padding:22px 6vw 70px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:1100px}
-a.card{display:block;background:#12273B;border:1px solid #27425c;border-radius:14px;padding:20px;text-decoration:none;color:inherit}
-a.card:hover{border-color:#E8A33D}h2{margin:0 0 6px;font-size:19px;color:#E8A33D}p{margin:0;color:#9AA5B1;font-size:14.5px}
-footer{padding:0 6vw 50px;color:#9AA5B1;font-size:13px;max-width:1100px}
+:root{--n:#0B1B2B;--c:#12273B;--b:#27425c;--t:#F6F8FA;--a:#E8A33D;--v:#2E9E6B;--z:#9AA5B1}
+*{box-sizing:border-box}body{margin:0;background:var(--n);color:var(--t);font:16px/1.6 system-ui,sans-serif}
+header{padding:30px 6vw 8px;max-width:1150px}small{letter-spacing:.14em;color:var(--z);font-size:12.5px}
+h1{margin:6px 0;font-size:31px}.lead{color:var(--z);max-width:800px}
+.faixa{background:var(--a);color:#111;padding:10px 6vw;font-weight:600;margin-top:14px}
+h2{margin:30px 6vw 8px;font-size:14.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--a)}
+main{padding:0 6vw 70px;max-width:1150px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
+a.card{display:block;background:var(--c);border:1px solid var(--b);border-radius:13px;padding:18px 20px;text-decoration:none;color:inherit}
+a.card:hover{border-color:var(--a)}a.card h3{margin:0 0 6px;font-size:18px;color:var(--a)}a.card p{margin:0;color:var(--z);font-size:14.5px}
+footer{padding:0 6vw 50px;color:var(--z);font-size:13px;max-width:1150px}
 </style></head><body>
 <header><small>HACKATHON CIDADES INTELIGENTES · PATOS DE MINAS · 2026</small><h1>Visão de Rota — demonstração</h1>
-<p style="color:#F6F8FA">Ler as câmeras que a cidade já tem para contar o trânsito, sem rosto e sem placa, e medir o antes e o depois de cada mudança na via.</p></header>
-<div class=faixa>DEMONSTRAÇÃO — o mapa usa dado público real (ocorrências de trânsito do Estado). Câmeras, alertas, vagas e achados da frota são SIMULAÇÃO ou DADO SINTÉTICO, marcados na própria tela.</div>
+<div class=lead>Ler as câmeras que a cidade já tem para contar o trânsito, sem rosto e sem placa, e medir o antes e o depois de cada mudança na via. Tudo abaixo abre no navegador, inclusive no celular.</div></header>
+<div class=faixa>O mapa usa dado público real (ocorrências de trânsito do Estado e base nacional de sinistros). Câmeras, alertas, vagas, frota e a parede de monitores são SIMULAÇÃO ou DADO SINTÉTICO — e está dito em cada tela.</div>
 <main>
-<a class=card href="painel-gestor.html"><h2>Painel do gestor →</h2><p>Sete telas: mapa de calor com 1.100 ocorrências, zonas quentes, simulação de 10 a 600 câmeras, vagas, frota, intervenções e relatório. Clique numa câmera do mapa.</p></a>
-<a class=card href="app-cidadao.html"><h2>App do cidadão →</h2><p>Dez telas propostas para dentro do aplicativo que a cidade já tem: registrar onde perdeu tempo, vagas perto de você, a rua mudou, e a tela de privacidade.</p></a>
-<a class=card href="../"><h2>Hub de ideias →</h2><p>As ideias de todos os times, com dono, estágio e o que falta. E os dados públicos abertos a qualquer time.</p></a>
+<h2>A ideia</h2>
+<div class=g>
+<a class=card href="apresentacao.html"><h3>Apresentação →</h3><p>12 slides com setas. O problema, a virada, a prova, o custo e o que pedimos à cidade. Funciona sem internet.</p></a>
+<a class=card href="apresentacao.pdf"><h3>O mesmo em PDF →</h3><p>12 páginas em paisagem, para baixar, imprimir ou encaminhar.</p></a>
+<a class=card href="canvas.html"><h3>Canvas do problema →</h3><p>As dores de quem decide, ligadas por linha ao que a solução faz. Passe o mouse numa funcionalidade para ver o que ela resolve.</p></a>
+</div>
+<h2>O protótipo</h2>
+<div class=g>
+<a class=card href="painel-gestor.html"><h3>Painel do gestor →</h3><p>Mapa com as ocorrências reais, zonas quentes, simulação de 10 a 600 câmeras, vagas, frota e relatório. Clique numa bolinha âmbar do mapa.</p></a>
+<a class=card href="parede.html"><h3>Parede de monitores →</h3><p>O que a leitura de várias câmeras mostraria ao mesmo tempo. Escolha 2, 4, 8 ou 16 telas.</p></a>
+<a class=card href="app-cidadao.html"><h3>App do cidadão →</h3><p>10 telas propostas para dentro do aplicativo que a cidade já tem: registrar onde perdeu tempo, ver vagas, ver o que mudou na rua.</p></a>
+</div>
+<h2>Aberto a todos os times</h2>
+<div class=g>
+<a class=card href="../"><h3>A página do projeto →</h3><p>A ideia inteira em uma página.</p></a>
+<a class=card href="../hub/"><h3>Hub de ideias →</h3><p>As ideias do hackathon com dono, estágio e o que falta. Entre com GitHub e ponha a do seu time.</p></a>
+<a class=card href="https://github.com/enioxt/hackathon-dados-publicos"><h3>Dados e código →</h3><p>83 fontes públicas verificadas, ocorrências com coordenada, base legal e as técnicas que usamos.</p></a>
+</div>
 </main>
-<footer>Ocorrências de trânsito: dados abertos do Estado de Minas Gerais (2025 e início de 2026). Posição de câmera é célula escolhida por cálculo, não câmera existente. Tudo marcado SIMULAÇÃO ou DADO SINTÉTICO é exemplo de tela.</footer></body></html>
+<footer>Ocorrências de trânsito: dados abertos do Estado de Minas Gerais. Sinistros: base nacional aberta, extração de agosto de 2026. Posição de câmera é célula escolhida por cálculo, não câmera existente. Ruas com memória. Mobilidade com previsibilidade.</footer></body></html>

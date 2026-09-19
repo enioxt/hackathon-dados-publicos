@@ -1,0 +1,799 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visão de Rota — parede de monitores</title><style>
+:root{--n:#0B1B2B;--c:#12273B;--b:#27425c;--t:#F6F8FA;--a:#E8A33D;--v:#2E9E6B;--r:#D6453D;--z:#9AA5B1}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:#050d16;color:var(--t);font:14px/1.4 system-ui,sans-serif;display:flex;flex-direction:column}
+header{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--n);border-bottom:1px solid var(--b)}
+header b{font-size:16px;letter-spacing:.04em}header a{color:var(--a);text-decoration:none;font-weight:600}
+.tag{background:var(--a);color:#111;border-radius:6px;padding:2px 9px;font-size:12px;font-weight:700}
+.ctl{display:flex;gap:6px;align-items:center;margin-left:auto}
+.ctl button{background:var(--c);color:var(--t);border:1px solid var(--b);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.ctl button.on{background:var(--a);color:#111;border-color:var(--a);font-weight:700}
+.evrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:7px 16px;background:#0e1f30;border-bottom:1px solid var(--b)}
+.evrow .lbl{color:var(--z);font-size:12px}
+.evbtn{background:#1a3145;color:var(--t);border:1px solid var(--b);border-radius:7px;padding:5px 10px;cursor:pointer;font:12px/1.2 inherit}
+.evbtn:hover{border-color:var(--r)}
+#layout{flex:1;display:flex;min-height:0}
+#grade{flex:1;display:grid;gap:4px;padding:4px;min-height:0}
+.tela{position:relative;background:#0a141f;border:1px solid #1b2c3d;overflow:hidden;cursor:pointer;min-height:0}
+.tela:hover{border-color:var(--a)}.tela.alerta{border-color:var(--r);box-shadow:inset 0 0 0 2px var(--r)}
+.tela.evento-ativo{border-color:var(--r);box-shadow:inset 0 0 0 3px var(--r)}
+.tela canvas{width:100%;height:100%;display:block}
+.hud{position:absolute;left:8px;top:6px;font:600 12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none}
+.hud small{display:block;font-weight:400;color:#cdd6df}
+.cont{position:absolute;right:8px;top:6px;text-align:right;font:12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none;color:#cdd6df}
+.cont b{color:var(--a)}
+.rod{position:absolute;left:8px;bottom:6px;right:8px;display:flex;justify-content:space-between;font:11px ui-monospace,monospace;color:#9AA5B1;text-shadow:0 1px 2px #000;pointer-events:none}
+.rec{color:var(--r)}
+.rotulo-evento{position:absolute;left:8px;top:26px;background:var(--r);color:#111;font:700 11px ui-monospace,monospace;padding:2px 7px;border-radius:5px;pointer-events:none}
+aside#painel{width:290px;flex:none;background:var(--n);border-left:1px solid var(--b);padding:10px 12px;overflow-y:auto;font-size:12px}
+aside#painel h3{margin:2px 0 8px;font-size:13px;letter-spacing:.03em;color:var(--a)}
+.linhaEvento{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:8px;margin-bottom:8px}
+.linhaEvento h4{margin:0 0 4px;font-size:12px;color:var(--t)}
+.linhaEvento .passo{color:#cdd6df;font-size:11px;padding:1px 0;border-left:2px solid var(--b);padding-left:6px;margin:2px 0}
+.linhaEvento .passo.espera{color:var(--a);font-weight:700;border-left-color:var(--a)}
+.linhaEvento .hora{color:var(--z);margin-right:5px}
+.botoesDecisao{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.botoesDecisao button{background:#1a3145;border:1px solid var(--b);color:var(--t);border-radius:6px;padding:5px 7px;font-size:11px;cursor:pointer;text-align:left}
+.botoesDecisao button:hover{border-color:var(--a)}
+.botoesDecisao button.descarte{border-color:var(--z)}
+.tagPre{display:inline-block;background:var(--v);color:#062;color:#08281c;font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;margin-left:4px}
+.encerrarBtn{background:none;border:1px solid var(--z);color:var(--z);border-radius:5px;font-size:10px;padding:2px 6px;cursor:pointer;margin-top:4px}
+.mantra{color:var(--a);font-weight:700;font-size:11px;margin:6px 0}
+details#comoSeria{margin-top:10px;background:#0e1f30;border:1px solid var(--b);border-radius:8px;padding:6px 10px}
+details#comoSeria summary{cursor:pointer;color:var(--a);font-weight:700;font-size:12px}
+details#comoSeria ul{margin:6px 0 4px;padding-left:16px}
+details#comoSeria li{margin:3px 0;font-size:11px;color:#cdd6df}
+details#comoSeria .honesto{color:var(--r);font-weight:700;margin-top:6px;font-size:11px}
+footer{padding:6px 16px;background:var(--n);border-top:1px solid var(--b);color:var(--z);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:rgba(2,7,13,.86);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal[hidden]{display:none}
+.modalBox{background:var(--n);border:1px solid var(--b);border-radius:12px;width:min(1400px,96vw);height:min(880px,92vh);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.fecharModal{position:absolute;right:10px;top:10px;background:var(--c);border:1px solid var(--b);color:var(--t);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;z-index:5}
+.modalTopo{display:flex;gap:10px;padding:10px;flex:1;min-height:0}
+.cena3d{flex:1;position:relative;background:#050d16;border:1px solid var(--b);border-radius:8px;overflow:hidden;min-width:0}
+.cena3d canvas{width:100%;height:100%;display:block}
+.controles3d{position:absolute;left:8px;bottom:8px;display:flex;gap:6px}
+.controles3d button{background:rgba(18,39,59,.9);border:1px solid var(--b);color:var(--t);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:12px}
+.avisoSint{position:absolute;left:8px;top:8px;background:var(--a);color:#111;font:700 11px monospace;padding:2px 8px;border-radius:5px}
+.painelDireita{width:340px;flex:none;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.ficha{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:10px;font-size:12px}
+.ficha h4{margin:0 0 6px;color:var(--a);font-size:13px}
+.ficha .l{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #223349}
+.ficha .l span:first-child{color:var(--z)}
+.spark{width:100%;height:36px;display:block;margin-top:6px}
+.tabelaWrap{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:6px;overflow:auto;flex:1}
+table.entidades{width:100%;border-collapse:collapse;font-size:11px}
+table.entidades th{position:sticky;top:0;background:var(--c);text-align:left;color:var(--a);cursor:pointer;padding:4px 5px;border-bottom:1px solid var(--b)}
+table.entidades td{padding:3px 5px;border-bottom:1px solid #16283b;white-space:nowrap}
+table.entidades tr:hover{background:#16283b}
+table.entidades tr.sel{background:#2a2110}
+.aviso-privacidade{font-size:10px;color:var(--z);padding:4px 2px}
+.rodapeModal{padding:8px 12px;border-top:1px solid var(--b);font-size:11px;color:var(--z);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.linhaModalWrap{padding:6px 12px;border-top:1px solid var(--b);max-height:150px;overflow-y:auto}
+.resumoCard{position:absolute;inset:0;background:rgba(5,13,22,.94);display:flex;align-items:center;justify-content:center;z-index:6}
+.resumoCard .caixa{background:var(--n);border:1px solid var(--a);border-radius:10px;padding:18px 22px;min-width:320px}
+.resumoCard h3{color:var(--a);margin:0 0 10px}
+.resumoCard .l{display:flex;justify-content:space-between;padding:3px 0;font-size:13px;border-bottom:1px dotted var(--b)}
+.resumoCard button{margin-top:12px;background:var(--a);color:#111;border:none;border-radius:6px;padding:7px 14px;font-weight:700;cursor:pointer}
+</style></head><body>
+<header><b>VISÃO DE ROTA · PAREDE DE MONITORES</b><span class=tag>SIMULAÇÃO — nenhuma câmera real está ligada</span>
+<a href="painel-gestor.html">← painel do gestor</a>
+<div class=ctl><span style="color:var(--z)">telas:</span><span id=botoes></span></div></header>
+<div class=evrow><span class=lbl>eventos simuláveis:</span><span id=eventoBotoes></span></div>
+<div id=layout>
+<div id=grade></div>
+<aside id=painel><h3>Linha do tempo · fluxo de ação</h3><div class=mantra>A análise detecta. A pessoa decide.</div><div id=linhas><div class="aviso-privacidade">nenhum evento ativo</div></div>
+<details id=comoSeria><summary>Como seria de verdade</summary>
+<ul>
+<li><b>detecção e classificação de objeto</b> — um modelo aberto da família YOLO lê cada quadro e diz o que é: carro, moto, ônibus, pessoa.</li>
+<li><b>rastreamento entre quadros</b> — ByteTrack ou DeepSORT ligam a mesma detecção quadro a quadro, dando um ID e a trajetória de cada objeto.</li>
+<li><b>gravador e detector de eventos para câmera IP</b> — o Frigate lê o fluxo RTSP que a própria câmera já entrega e decide o que vira evento.</li>
+<li><b>zonas e linhas de contagem</b> — regras geométricas simples que dizem "isto é a faixa 2" ou "isto cruzou a linha de contagem".</li>
+<li><b>desfoque de rosto e placa</b> — aplicado antes de qualquer quadro ser guardado, nunca depois.</li>
+<li><b>microssimulação de tráfego aberta</b> — o SUMO reconstrói o antes e depois de um evento a partir dos dados contados.</li>
+<li><b>mapa aberto</b> — OpenStreetMap dá a base geográfica onde os cruzamentos são desenhados.</li>
+</ul>
+<div class=honesto>nada disto foi ligado a câmera real nesta demonstração.</div>
+</details>
+</aside>
+</div>
+<footer><span>Cada tela simula o que a leitura de uma câmera existente mostraria: caixas de contagem por tipo, sem rosto e sem placa.</span><span id=soma></span><span>clique numa tela para abrir a visão 3D</span></footer>
+
+<div id=modal class=modal hidden>
+  <div class=modalBox>
+    <button class=fecharModal id=fecharModal title="fechar (Esc)">✕</button>
+    <div class=modalTopo>
+      <div class=cena3d>
+        <span class=avisoSint>DADO SINTÉTICO — cena gerada por simulação</span>
+        <canvas id=cv3d></canvas>
+        <div class=controles3d>
+          <button id=girarE title="girar">⟲</button><button id=girarD title="girar">⟳</button>
+          <button id=zoomMais>+</button><button id=zoomMenos>−</button>
+          <a id=irCentral href="#" style="margin-left:10px;color:var(--a);font-size:12px;align-self:center">abrir na central</a>
+        </div>
+        <div id=resumoCard class=resumoCard hidden></div>
+      </div>
+      <div class=painelDireita>
+        <div class=ficha id=ficha><h4>Nenhuma seleção</h4><div class="aviso-privacidade">o sistema classifica o objeto; não identifica a pessoa nem o veículo.</div></div>
+        <div class=tabelaWrap>
+          <table class=entidades id=tabela><thead><tr>
+            <th data-c=id>ID</th><th data-c=classe>classe</th><th data-c=categoria>categoria</th><th data-c=velKmh>km/h</th><th data-c=estado>estado</th>
+          </tr></thead><tbody id=tabelaBody></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div class=evrow id=eventoBotoesModal><span class=lbl>eventos nesta câmera:</span></div>
+    <div class=linhaModalWrap id=linhaModal><div class="aviso-privacidade">nenhum evento ativo nesta câmera</div></div>
+    <div class=rodapeModal id=rodapeModal></div>
+  </div>
+</div>
+
+<script>
+// ===== gerador determinístico (mesma semente = mesma parede) =====
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function pad(n,l){return String(n).padStart(l||2,'0')}
+
+// ===== escala e geometria de faixa =====
+const SCALE=6, ZPX=10;      // px por metro (chão) e px por metro (altura no 3D)
+// espaçamento cobre o pior caso (ônibus/caminhão meia-largura ~8px) ao lado do corredor de moto (~2.5px)
+const FX={L1:11,FIL:23,L2:35,BIC:47};
+const ROAD_HALF=52, STOP_DIST=58;
+
+const CLASSE={carro:'veículo leve',moto:'motocicleta','ônibus':'coletivo','caminhão':'carga',bicicleta:'ativo',pedestre:'pedestre'};
+const TIPOS=[
+ {k:'carro',cor:'#7fb2e5',lenM:4.5,widM:1.8,altM:1.5,prob:.55,cats:['hatch','sedã','utilitário','SUV compacto']},
+ {k:'moto',cor:'#E8A33D',lenM:2.1,widM:0.8,altM:1.2,prob:.27,cats:['moto de entrega','moto urbana']},
+ {k:'ônibus',cor:'#2E9E6B',lenM:12,widM:2.6,altM:3.2,prob:.05,cats:['ônibus urbano','ônibus articulado']},
+ {k:'caminhão',cor:'#b58be0',lenM:9,widM:2.5,altM:3.5,prob:.06,cats:['caminhão toco','caminhão baú','carreta leve']},
+ {k:'bicicleta',cor:'#9AA5B1',lenM:1.8,widM:0.6,altM:1.1,prob:.04,cats:['bicicleta urbana','bicicleta de entrega']},
+ {k:'pedestre',cor:'#F6F8FA',lenM:0.5,widM:0.5,altM:1.7,prob:.03,cats:['pedestre adulto','pedestre com carga']}
+];
+TIPOS.forEach(t=>{t.lenPx=Math.round(t.lenM*SCALE);t.widPx=Math.round(t.widM*SCALE);t.altPx=Math.round(t.altM*ZPX)});
+const TIPOS_MAP={};TIPOS.forEach(t=>TIPOS_MAP[t.k]=t);
+function escolher(r){let x=r(),a=0;for(const t of TIPOS){a+=t.prob;if(x<a)return t}return TIPOS[0]}
+
+// tipos "objeto de evento" — mesmas convenções de desenho/ficha que um veículo
+const TIPOS_EVENTO={
+ arvore:{k:'arvore',cor:'#6b4f2a',lenM:5,widM:2.4,altM:2},
+ alagamento:{k:'alagamento',cor:'#3d7fae',lenM:6,widM:3,altM:.3},
+ parado:{k:'parado',cor:'#D6453D',lenM:4.5,widM:1.8,altM:1.5},
+ atropelamento:{k:'atropelamento',cor:'#7c8591',lenM:1.7,widM:.6,altM:.2},
+ ambulancia:{k:'ambulancia',cor:'#F6F8FA',lenM:5.8,widM:2.1,altM:2.3},
+ contramao:{k:'contramao',cor:'#E8A33D',lenM:2.1,widM:.8,altM:1.2},
+ apagado:{k:'apagado',cor:'#D6453D',lenM:1,widM:1,altM:2.6}
+};
+Object.values(TIPOS_EVENTO).forEach(t=>{t.lenPx=Math.round(t.lenM*SCALE);t.widPx=Math.round(t.widM*SCALE);t.altPx=Math.round(t.altM*ZPX)});
+
+// ===== eventos: metadados do fluxo de ação =====
+const EVENTOS={
+ arvore:{rotulo:'Árvore caída',categoria:'obstrução de via',equipe:'defesa civil e serviços urbanos',dur:[55,85]},
+ ambulancia:{rotulo:'Ambulância passando',categoria:'passagem de emergência',equipe:'registro confirmado — prioridade semafórica já aplicada',dur:[25,40],semRegistroEquipe:true},
+ acidente:{rotulo:'Acidente (colisão)',categoria:'colisão entre veículos',equipe:'agentes de trânsito e atendimento de urgência',dur:[65,100]},
+ atropelamento:{rotulo:'Atropelamento',categoria:'ocorrência com pedestre',equipe:'atendimento de urgência e agentes de trânsito',dur:[65,100]},
+ parado:{rotulo:'Veículo parado na faixa',categoria:'obstrução de via',equipe:'agentes de trânsito e reboque',dur:[45,70]},
+ contramao:{rotulo:'Moto na contramão',categoria:'circulação irregular',equipe:'agentes de trânsito',dur:[30,50]},
+ apagado:{rotulo:'Semáforo apagado',categoria:'falha de equipamento',equipe:'manutenção semafórica',dur:[65,95]},
+ alagamento:{rotulo:'Alagamento na via',categoria:'obstrução por água',equipe:'defesa civil',dur:[75,110]}
+};
+
+const NOMES=['Av. principal × rua do mercado','Rotatória do terminal','Acesso à universidade','Centro — via comercial','Saída para a rodovia','Av. do canal × ponte','Escola — travessia','Hospital — acesso','Bairro norte — entrada','Distrito industrial','Praça central','Av. sul × anel'];
+let N=+(new URLSearchParams(location.search).get('n'))||4, telas=[];
+let rngEventos=rng(4242), seqEvento=0;
+let modalAberto=null, anguloIso=0, zoomIso=1, selecionado=null, ordemTabela={c:'id',dir:1};
+
+// ===== faixa/pista =====
+function assignFaixa(tipoK,r,sent){
+  if(tipoK==='bicicleta') return {tf:'BIC',off:sent*FX.BIC};
+  if(tipoK==='moto' && r()<.55) return {tf:'FIL',off:sent*FX.FIL};
+  const l=r()<.5?'L1':'L2'; return {tf:l,off:sent*FX[l]};
+}
+function pistaId(horiz,sent,tf){return (horiz?'h':'v')+(sent>0?'+':'-')+tf}
+function faseDe(o,eixo){
+  if(o.prioridadeEixo) return eixo===o.prioridadeEixo?'verde':'vermelho';
+  const periodo=o.semaforoApagado?12:24, tt=o.tick%periodo;
+  if(o.semaforoApagado){ if(eixo==='h') return tt<periodo/2?'verde':'vermelho'; return tt<periodo/2?'vermelho':'verde'; }
+  if(eixo==='h'){ if(tt<9)return'verde'; if(tt<12)return'amarelo'; return'vermelho'; }
+  if(tt<12)return'vermelho'; if(tt<21)return'verde'; return'amarelo';
+}
+
+// ===== criação de tela =====
+function criar(k){
+  const r=rng(1000+k*97),el=document.createElement('div');el.className='tela';
+  el.innerHTML='<canvas></canvas><div class=hud>CAM '+pad(k)+'<small>'+NOMES[(k-1)%NOMES.length]+'</small></div><div class=cont></div><div class=rod><span class=rec>● lendo</span><span class=fl></span><span>sem rosto · sem placa</span></div>';
+  el.onclick=()=>abrirModal(k);
+  const cv=el.querySelector('canvas'),cx=cv.getContext('2d');
+  const o={k,el,cv,cx,r,v:[],cont:{},fila:0,densidade:.35+r()*.9,tick:0,seq:0,grupos:{},eventosAtivos:[],semaforoApagado:false,prioridadeEixo:null};
+  return o;
+}
+
+// ===== física =====
+function retanguloDe(v){const w=v.horiz?v.lenPx:v.widPx,h=v.horiz?v.widPx:v.lenPx;return{minx:v.x-w/2,maxx:v.x+w/2,miny:v.y-h/2,maxy:v.y+h/2}}
+function intersecta(a,b){return a.minx<b.maxx&&a.maxx>b.minx&&a.miny<b.maxy&&a.maxy>b.miny}
+
+function spawnVeiculo(o,dt){
+  const r=o.r;
+  if(r()>=o.densidade*dt*2.2) return;
+  const tipo=escolher(r);
+  if(tipo.k==='pedestre'){ spawnPedestre(o,r); return }
+  const horiz=r()<.62, sent=r()<.5?1:-1, W=o.cv.width,H=o.cv.height;
+  const fx=assignFaixa(tipo.k,r,sent), pista=pistaId(horiz,sent,fx.tf);
+  const entryP=sent>0?-60:(horiz?W:H)+60;
+  const grp=o.grupos[pista]||[];
+  const bloqueado=grp.some(v=>Math.abs(v.p-entryP) < (tipo.lenPx/2+(v.lenPx||10)/2+24));
+  if(bloqueado) return;
+  o.seq++;
+  const conf=r(),confianca=conf<.72?'alta':conf<.93?'média':'baixa';
+  o.v.push({id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:tipo,classe:CLASSE[tipo.k],categoria:tipo.cats[Math.floor(r()*tipo.cats.length)],confianca,
+    horiz,sent,pista,faixa:fx.off,p:entryP,vel:(38+r()*50)*(tipo.k==='bicicleta'?.5:1),
+    lenPx:tipo.lenPx,widPx:tipo.widPx,altPx:tipo.altPx,contado:false,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[]});
+}
+function spawnPedestre(o,r){
+  const W=o.cv.width,H=o.cv.height;
+  if(faseDe(o,'h')!=='vermelho') return;
+  const ocupado=o.v.some(v=>v.horiz&&!v.isPed&&!v.isObstaculo&&Math.abs(v.p-W/2)<ROAD_HALF+4);
+  if(ocupado) return;
+  const pedX=-Math.min(FX.BIC+34,W/2-20), sent=r()<.5?1:-1, y0=sent>0?H/2-ROAD_HALF-30:H/2+ROAD_HALF+30;
+  const tipo=TIPOS_MAP.pedestre;
+  const grpPed=o.grupos['ped']||[];
+  const bloqueadoEntrada=grpPed.some(v=>Math.abs(v.p-y0)<(tipo.lenPx/2+(v.lenPx||6)/2+10));
+  if(bloqueadoEntrada) return;
+  o.seq++;const conf=r(),confianca=conf<.72?'alta':conf<.93?'média':'baixa';
+  o.v.push({id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:tipo,classe:CLASSE.pedestre,categoria:tipo.cats[Math.floor(r()*tipo.cats.length)],confianca,
+    isPed:true,horiz:false,sent,pista:'ped',faixa:pedX,p:y0,vel:38*.35,lenPx:tipo.lenPx,widPx:tipo.widPx,altPx:tipo.altPx,
+    contado:false,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[]});
+}
+function pedestreBloqueadoPorVeiculo(o,v){
+  const W=o.cv.width;
+  const aproximaOuDentro = Math.abs(v.p-o.cv.height/2) < ROAD_HALF+60;
+  if(!aproximaOuDentro) return false;
+  return o.v.some(v2=>v2.horiz&&!v2.isPed&&!v2.isObstaculo&&Math.abs(v2.p-W/2)<ROAD_HALF+4);
+}
+
+function medirFila(o){
+  let max=0;
+  Object.values(o.grupos).forEach(arr=>{
+    const parados=arr.filter(v=>v.para&&!v.isPed&&!v.isObstaculo);
+    const obst=arr.find(v=>v.isObstaculo);
+    const ps=parados.map(v=>v.p); if(obst) ps.push(obst.p);
+    if(ps.length<1) return;
+    const span=Math.max(...ps)-Math.min(...ps);
+    const extra=parados[0]?parados[0].lenPx:20;
+    const m=(span+extra)/SCALE; if(m>max) max=m;
+  });
+  return Math.round(max*10)/10;
+}
+
+function fisica(o,dt){
+  o.tick+=dt;
+  const W=o.cv.width,H=o.cv.height;
+  // agrupar por pista (estado do início do passo, usado por spawn e vizinhança)
+  const grp={}; o.v.forEach(v=>{(grp[v.pista]=grp[v.pista]||[]).push(v)}); o.grupos=grp;
+  spawnVeiculo(o,dt);
+  o.v.forEach(v=>{
+    if(v._remove) return;
+    if(v.isObstaculo){ v.tempo+=dt; return }
+    const centerC=v.horiz?W/2:H/2;
+    const freeAdv=v.vel*dt;
+    let gapEdge=Infinity;
+    (grp[v.pista]||[]).forEach(o2=>{
+      if(o2===v) return;
+      const ahead=(o2.p-v.p)*v.sent;
+      if(ahead>0){
+        let g=ahead-(v.lenPx/2+o2.lenPx/2);
+        if(o2.sent===-v.sent && !o2.isObstaculo) g*=0.5; // fluxo de mão contrária/cruzando: divide a folga para nunca se tocarem
+        if(g<gapEdge) gapEdge=g;
+      }
+    });
+    let stopGap=Infinity;
+    if(v.isPed){
+      if(pedestreBloqueadoPorVeiculo(o,v)) stopGap=0;
+    } else {
+      const eixo=v.horiz?'h':'v', fase=faseDe(o,eixo);
+      const passouLinha = v.sent>0? v.p>=centerC-STOP_DIST : v.p<=centerC+STOP_DIST;
+      if(fase!=='verde' && !passouLinha && !v.prioridade){
+        const linha=v.sent>0?centerC-STOP_DIST:centerC+STOP_DIST;
+        stopGap=(linha-v.p)*v.sent-v.lenPx/2;
+      }
+    }
+    const gapDisp=Math.min(gapEdge,stopGap);
+    const folga=9+(v.vel>5?v.vel*0.28:0);
+    const permitido=Math.max(0,gapDisp-folga);
+    const avanco=Math.min(freeAdv,permitido);
+    v.para = avanco < freeAdv-0.01 && avanco<0.6;
+    v.p += v.sent*avanco;
+    v.tempo+=dt; v.distM+=avanco/SCALE; v.velKmh = dt>0 ? (avanco/dt)/SCALE*3.6 : 0;
+    v.hist.push(v.velKmh); if(v.hist.length>40)v.hist.shift();
+    v.x = v.horiz? v.p : W/2+v.faixa; v.y = v.horiz? H/2+v.faixa : v.p;
+    v.rastro.push({x:v.x,y:v.y}); if(v.rastro.length>50)v.rastro.shift();
+    if(!v.isPed && !v.contado){ const cline=v.horiz?W*.72:H*.74; if((v.sent>0&&v.p>cline)||(v.sent<0&&v.p<cline)){v.contado=true;o.cont[v.t.k]=(o.cont[v.t.k]||0)+1} }
+    if(v.isPed){
+      const destino=v.sent>0?H/2+ROAD_HALF+30:H/2-ROAD_HALF-30;
+      v._remove = ((v.sent>0&&v.p>=destino)||(v.sent<0&&v.p<=destino)) || v.p<-90 || v.p>H+90;
+    } else {
+      v._remove = !(v.p>-90 && v.p<(v.horiz?W:H)+90);
+    }
+  });
+  o.v=o.v.filter(v=>!v._remove);
+  o.fila=medirFila(o);
+  o.el.classList.toggle('alerta',o.fila>=39);
+  o.eventosAtivos.forEach(evt=>{ if(o.fila>evt.filaMax) evt.filaMax=o.fila; });
+}
+
+function ajustar(){telas.forEach(o=>{const b=o.el.getBoundingClientRect();o.cv.width=Math.max(200,Math.round(b.width));o.cv.height=Math.max(120,Math.round(b.height))})}
+
+function desenhar2D(o){
+  const W=o.cv.width,H=o.cv.height,cx=o.cx;
+  cx.fillStyle='#0f1a26';cx.fillRect(0,0,W,H);
+  cx.fillStyle='#1d2a38';cx.fillRect(0,H/2-ROAD_HALF,W,ROAD_HALF*2);cx.fillRect(W/2-ROAD_HALF,0,ROAD_HALF*2,H);
+  cx.strokeStyle='#3a4c5f';cx.setLineDash([14,12]);cx.lineWidth=2;cx.beginPath();cx.moveTo(0,H/2);cx.lineTo(W,H/2);cx.moveTo(W/2,0);cx.lineTo(W/2,H);cx.stroke();cx.setLineDash([]);
+  cx.fillStyle='#51657a';for(let i=-30;i<=30;i+=10){cx.fillRect(W/2-STOP_DIST-6,H/2+i-3,12,6);cx.fillRect(W/2+STOP_DIST-6,H/2+i-3,12,6)}
+  cx.strokeStyle='rgba(232,163,61,.75)';cx.lineWidth=2;cx.beginPath();
+  cx.moveTo(W/2-STOP_DIST,H/2-ROAD_HALF);cx.lineTo(W/2-STOP_DIST,H/2+ROAD_HALF);
+  cx.moveTo(W/2+STOP_DIST,H/2-ROAD_HALF);cx.lineTo(W/2+STOP_DIST,H/2+ROAD_HALF);
+  cx.moveTo(W/2-ROAD_HALF,H/2-STOP_DIST);cx.lineTo(W/2+ROAD_HALF,H/2-STOP_DIST);
+  cx.moveTo(W/2-ROAD_HALF,H/2+STOP_DIST);cx.lineTo(W/2+ROAD_HALF,H/2+STOP_DIST);
+  cx.stroke();
+  o.v.forEach(v=>{
+    if(v.x===undefined) return;
+    const w=v.horiz?v.lenPx:v.widPx, h=v.horiz?v.widPx:v.lenPx;
+    const cor = v.contramaoAtiva ? '#D6453D' : v.t.cor;
+    if(v.t.k==='atropelamento'){
+      cx.fillStyle='rgba(124,133,145,.85)';cx.beginPath();cx.ellipse(v.x,v.y,w/2,h/2,v.horiz?0:Math.PI/2,0,7);cx.fill();return;
+    }
+    cx.fillStyle=cor;cx.globalAlpha=v.isObstaculo?1:.85;cx.fillRect(v.x-w/2,v.y-h/2,w,h);cx.globalAlpha=1;
+    cx.strokeStyle=cor;cx.lineWidth=1;cx.strokeRect(v.x-w/2-4,v.y-h/2-4,w+8,h+8);
+    cx.fillStyle=cor;cx.font='10px ui-monospace,monospace';cx.fillText(v.t.k,v.x-w/2-4,v.y-h/2-7);
+  });
+  cx.fillStyle='rgba(255,255,255,.025)';for(let i=0;i<40;i++)cx.fillRect(o.r()*W,o.r()*H,2,1);
+  const tot=Object.values(o.cont).reduce((a,b)=>a+b,0);
+  o.el.querySelector('.cont').innerHTML=TIPOS.slice(0,4).map(t=>t.k+' <b>'+(o.cont[t.k]||0)+'</b>').join('<br>');
+  o.el.querySelector('.fl').textContent='fila '+o.fila+' m · total '+tot;
+  const rotEl=o.el.querySelector('.rotulo-evento');
+  if(o.eventosAtivos.length){
+    o.el.classList.add('evento-ativo');
+    const txt=EVENTOS[o.eventosAtivos[0].tipo].rotulo;
+    if(rotEl) rotEl.textContent=txt; else {const d=document.createElement('div');d.className='rotulo-evento';d.textContent=txt;o.el.appendChild(d)}
+  } else {
+    o.el.classList.remove('evento-ativo');
+    if(rotEl) rotEl.remove();
+  }
+}
+
+function montar(n){
+  N=n;const g=document.getElementById('grade');g.innerHTML='';telas=[];
+  const col=n<=2?n:n<=4?2:n<=6?3:n<=8?4:n<=12?4:Math.ceil(Math.sqrt(n));
+  g.style.gridTemplateColumns='repeat('+col+',1fr)';g.style.gridTemplateRows='repeat('+Math.ceil(n/col)+',1fr)';
+  for(let k=1;k<=n;k++){const o=criar(k);g.append(o.el);telas.push(o)}
+  document.querySelectorAll('#botoes button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n));
+  ajustar();
+  history.replaceState(null,'','?n='+n);
+}
+function avancarSimulado(segundos){
+  const passos=Math.round(segundos/0.05);
+  for(let i=0;i<passos;i++) telas.forEach(o=>fisica(o,0.05));
+}
+const bt=document.getElementById('botoes');[2,4,6,8,12,16].forEach(n=>{const b=document.createElement('button');b.textContent=n;b.dataset.n=n;b.onclick=()=>montar(n);bt.append(b)});
+const mais=document.createElement('button');mais.textContent='+2';mais.title='acrescentar duas telas';mais.onclick=()=>montar(Math.min(N+2,36));bt.append(mais);
+addEventListener('resize',ajustar);
+let ant=performance.now();
+function laco(t){
+  const dt=Math.min(.05,(t-ant)/1000);ant=t;
+  telas.forEach(o=>{fisica(o,dt);desenhar2D(o)});
+  const s=telas.reduce((a,o)=>a+Object.values(o.cont).reduce((x,y)=>x+y,0),0),al=telas.filter(o=>o.el.classList.contains('alerta')).length;
+  document.getElementById('soma').textContent=N+' telas · '+s+' contagens simuladas · '+al+' com fila acima de 39 m';
+  if(modalAberto) desenharModal();
+  requestAnimationFrame(laco);
+}
+
+// ===== overlap check (prova) =====
+window.vrSobreposicoes=function(){
+  let n=0;
+  telas.forEach(o=>{
+    const arr=o.v.filter(v=>v.x!==undefined);
+    for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){
+      const a=arr[i],b=arr[j];
+      if(a.colisaoIgnorar && b.colisaoIgnorar && a.eventoRef===b.eventoRef) continue;
+      if(intersecta(retanguloDe(a),retanguloDe(b))) n++;
+    }
+  });
+  return n;
+};
+
+// ===================== EVENTOS: FLUXO DE AÇÃO =====================
+function criarObstaculo(o,tipoKey,horiz,sent,tf,categoriaTxt,extra){
+  const tipo=TIPOS_EVENTO[tipoKey], W=o.cv.width,H=o.cv.height;
+  const faixa=sent*FX[tf], pista=pistaId(horiz,sent,tf);
+  const p = horiz? W/2 : H/2;
+  o.seq++;
+  const v=Object.assign({id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:tipo,classe:'evento',categoria:categoriaTxt,confianca:'alta',
+    horiz,sent,pista,faixa,p,isObstaculo:true,contado:true,para:true,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
+    x:horiz?p:W/2+faixa, y:horiz?H/2+faixa:p, lenPx:tipo.lenPx,widPx:tipo.widPx,altPx:tipo.altPx},extra||{});
+  o.v.push(v);
+  return v;
+}
+function horaAgora(){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())}
+
+function dispararEvento(tipoId,telaK){
+  const meta=EVENTOS[tipoId]; if(!meta) return null;
+  let o=telas.find(t=>t.k===telaK);
+  if(!o) o=telas[0];
+  if(o.eventosAtivos.length){ const livre=telas.find(t=>!t.eventosAtivos.length); if(livre) o=livre; else return null; }
+  const r=rngEventos;
+  const evt={id:++seqEvento,tipo:tipoId,meta,o,inicio:horaAgora(),tickInicio:o.tick,passos:[],estado:'rodando',obstaculos:[],filaMax:0,decidido:null,timerId:null};
+  const horiz=r()<.5, sent=r()<.5?1:-1;
+  if(tipoId==='arvore'||tipoId==='alagamento'||tipoId==='parado'){
+    const ob=criarObstaculo(o,tipoId,horiz,sent,'L1',meta.rotulo,{eventoRef:evt});
+    ob.colisaoIgnorar=false; evt.obstaculos.push(ob);
+  } else if(tipoId==='atropelamento'){
+    const ob=criarObstaculo(o,'atropelamento',true,sent,'L1',meta.rotulo,{eventoRef:evt});
+    evt.obstaculos.push(ob);
+  } else if(tipoId==='acidente'){
+    const a=criarObstaculo(o,'parado',true,r()<.5?1:-1,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
+    const b=criarObstaculo(o,'parado',false,r()<.5?1:-1,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
+    a.x=o.cv.width/2; a.y=o.cv.height/2; b.x=o.cv.width/2; b.y=o.cv.height/2;
+    evt.obstaculos.push(a,b);
+  } else if(tipoId==='apagado'){
+    o.semaforoApagado=true;
+    const ob=criarObstaculo(o,'apagado',true,1,'L1','falha de equipamento semafórico',{eventoRef:evt,pista:'evento-marca-apagado'});
+    evt.obstaculos.push(ob);
+  } else if(tipoId==='ambulancia'){
+    o.prioridadeEixo=horiz?'h':'v';
+    evt.axis=horiz?'h':'v';
+    const W=o.cv.width,H=o.cv.height, pista=pistaId(horiz,sent,'FIL');
+    o.seq++;
+    const amb={id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:TIPOS_EVENTO.ambulancia,classe:'evento',categoria:'ambulância em deslocamento',confianca:'alta',
+      horiz,sent,pista,faixa:sent*FX.FIL,p:sent>0?-60:(horiz?W:H)+60,prioridade:true,contado:true,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
+      lenPx:TIPOS_EVENTO.ambulancia.lenPx,widPx:TIPOS_EVENTO.ambulancia.widPx,altPx:TIPOS_EVENTO.ambulancia.altPx,eventoRef:evt};
+    o.v.push(amb); evt.obstaculos.push(amb); evt.veiculoRef=amb;
+    evt.passos.push({hora:horaAgora(),texto:'prioridade semafórica aplicada',tag:'PRÉ-AUTORIZADA'});
+  } else if(tipoId==='contramao'){
+    const canonSent=sent, W=o.cv.width,H=o.cv.height, pista=pistaId(horiz,canonSent,'FIL');
+    o.seq++;
+    const moto={id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:TIPOS_EVENTO.contramao,classe:'evento',categoria:'motocicleta na contramão',confianca:'média',
+      horiz,sent:-canonSent,pista,faixa:canonSent*FX.FIL,p:-canonSent>0?-60:(horiz?W:H)+60,contramaoAtiva:true,contado:true,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
+      lenPx:TIPOS_EVENTO.contramao.lenPx,widPx:TIPOS_EVENTO.contramao.widPx,altPx:TIPOS_EVENTO.contramao.altPx,eventoRef:evt,vel:34};
+    o.v.push(moto); evt.obstaculos.push(moto);
+  }
+  o.eventosAtivos.push(evt);
+  evt.passos.push({hora:horaAgora(),texto:'detectado pela leitura da câmera'});
+  agendarProximo(evt,'classificado');
+  renderPainelLateral(); if(modalAberto===o.k) renderLinhaModal(evt);
+  return evt;
+}
+function agendarProximo(evt,proximo,ms){
+  if(evt._modoTeste) return; // no modo teste avançamos manualmente e de forma síncrona
+  evt.timerId=setTimeout(()=>{ passoTimeline(evt,proximo); },ms||2000);
+}
+function passoTimeline(evt,fase){
+  if(evt.estado==='encerrado') return;
+  if(fase==='classificado'){
+    evt.passos.push({hora:horaAgora(),texto:'classificado: '+evt.meta.categoria+' · confiança '+(evt.obstaculos[0]?evt.obstaculos[0].confianca:'alta')});
+    agendarProximo(evt,'alerta');
+  } else if(fase==='alerta'){
+    evt.passos.push({hora:horaAgora(),texto:'alerta na fila de decisão da central'});
+    agendarProximo(evt,'aguardando');
+  } else if(fase==='aguardando'){
+    evt.passos.push({hora:horaAgora(),texto:'AGUARDANDO DECISÃO HUMANA',espera:true});
+    evt.estado='aguardando';
+  }
+  renderPainelLateral(); if(modalAberto===evt.o.k) renderLinhaModal(evt);
+}
+function avancarAteAguardando(evt){
+  evt._modoTeste=true;
+  passoTimeline(evt,'classificado'); passoTimeline(evt,'alerta'); passoTimeline(evt,'aguardando');
+}
+function decidirEvento(evt,acao){
+  if(evt.estado==='encerrado') return;
+  evt.decidido=acao;
+  evt.horaDecisao=horaAgora(); evt.tickDecisao=evt.o.tick;
+  if(acao==='descartar'){
+    evt.passos.push({hora:horaAgora(),texto:'descartado — falso alarme'});
+    finalizarEvento(evt); return;
+  }
+  if(acao==='equipe' && !evt.meta.semRegistroEquipe){
+    evt.passos.push({hora:horaAgora(),texto:'equipe acionada: '+evt.meta.equipe});
+  } else if(acao==='equipe' && evt.meta.semRegistroEquipe){
+    evt.passos.push({hora:horaAgora(),texto:evt.meta.equipe});
+  }
+  const cont=()=>{
+    evt.passos.push({hora:horaAgora(),texto:'aviso publicado no app da cidade e nos aplicativos de navegação: evite o trecho'});
+    renderPainelLateral(); if(modalAberto===evt.o.k) renderLinhaModal(evt);
+    const cont2=()=>{
+      evt.passos.push({hora:horaAgora(),texto:'rota alternativa sugerida'});
+      renderPainelLateral(); if(modalAberto===evt.o.k) renderLinhaModal(evt);
+      const cont3=()=>{ finalizarEvento(evt); };
+      if(evt._modoTeste) cont3(); else evt.timerId=setTimeout(cont3,1800);
+    };
+    if(evt._modoTeste) cont2(); else evt.timerId=setTimeout(cont2,1800);
+  };
+  if(evt._modoTeste) cont(); else evt.timerId=setTimeout(cont,1800);
+  renderPainelLateral(); if(modalAberto===evt.o.k) renderLinhaModal(evt);
+}
+function finalizarEvento(evt){
+  if(evt.estado==='encerrado') return;
+  evt.estado='encerrado';
+  const o=evt.o;
+  const duracaoS=Math.round((o.tick-evt.tickInicio)*10)/10;
+  evt.passos.push({hora:horaAgora(),texto:'evento encerrado · duração '+duracaoS+'s · fila máxima '+evt.filaMax+' m · registro guardado para o antes e depois'});
+  evt.duracaoS=duracaoS;
+  // libera efeitos
+  if(evt.tipo==='apagado') o.semaforoApagado=false;
+  if(evt.tipo==='ambulancia') o.prioridadeEixo=null;
+  o.v=o.v.filter(v=>!evt.obstaculos.includes(v));
+  o.eventosAtivos=o.eventosAtivos.filter(e=>e!==evt);
+  renderPainelLateral(); if(modalAberto===o.k) { renderLinhaModal(null); mostrarResumo(evt); }
+}
+
+// ===== painel lateral (parede) =====
+function renderPainelLateral(){
+  const div=document.getElementById('linhas');
+  const ativos=[]; telas.forEach(o=>o.eventosAtivos.forEach(e=>ativos.push(e)));
+  if(!ativos.length){ div.innerHTML='<div class="aviso-privacidade">nenhum evento ativo</div>'; return; }
+  div.innerHTML=ativos.map(evt=>blocoEvento(evt,false)).join('');
+  ativos.forEach(evt=>{
+    const elId='btE'+evt.id;
+    const bl=document.getElementById(elId); if(!bl) return;
+    bl.querySelectorAll('[data-acao]').forEach(b=>b.onclick=()=>decidirEvento(evt,b.dataset.acao));
+    const enc=bl.querySelector('.encerrarBtn'); if(enc) enc.onclick=()=>finalizarEvento(evt);
+  });
+}
+function blocoEvento(evt,noModal){
+  const passosHtml=evt.passos.map(p=>'<div class="passo'+(p.espera?' espera':'')+'">'+'<span class=hora>'+p.hora+'</span>'+p.texto+(p.tag?'<span class=tagPre>'+p.tag+'</span>':'')+'</div>').join('');
+  let decisao='';
+  if(evt.estado==='aguardando'){
+    decisao='<div class=botoesDecisao>'+
+      '<button data-acao=equipe>Confirmar e enviar equipe</button>'+
+      '<button data-acao=publicar>Confirmar e publicar no app</button>'+
+      '<button data-acao=descartar class=descarte>Descartar — falso alarme</button></div>';
+  }
+  return '<div class=linhaEvento id="btE'+evt.id+'"><h4>CAM '+pad(evt.o.k)+' · '+evt.meta.rotulo+'</h4>'+passosHtml+decisao+
+    (evt.estado!=='encerrado'?'<button class=encerrarBtn>encerrar evento</button>':'')+'</div>';
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-acao]'); if(!b) return;
+  // delegação adicional (garante clique mesmo após rerender)
+});
+
+// ===== barra de botões de evento =====
+function montarBarraEventos(container,alvoFn){
+  container.innerHTML='';
+  Object.keys(EVENTOS).forEach(id=>{
+    const b=document.createElement('button');b.className='evbtn';b.textContent=EVENTOS[id].rotulo;
+    b.onclick=()=>{ const k=alvoFn(); if(k) dispararEvento(id,k); };
+    container.appendChild(b);
+  });
+}
+montarBarraEventos(document.getElementById('eventoBotoes'), ()=>{
+  if(modalAberto) return modalAberto;
+  return 1+Math.floor(rngEventos()*telas.length);
+});
+montarBarraEventos(document.getElementById('eventoBotoesModal'), ()=>modalAberto);
+
+// ===================== MODAL 3D =====================
+function abrirModal(k){
+  modalAberto=k; selecionado=null;
+  document.getElementById('modal').hidden=false;
+  document.getElementById('irCentral').href='/#controle:cam'+k;
+  document.getElementById('resumoCard').hidden=true;
+  ajustarCv3d();
+  const o=telas.find(t=>t.k===k);
+  o.eventosAtivos.length? renderLinhaModal(o.eventosAtivos[0]) : renderLinhaModal(null);
+  desenharModal();
+}
+function fecharModal(){modalAberto=null;document.getElementById('modal').hidden=true}
+document.getElementById('fecharModal').onclick=fecharModal;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&modalAberto)fecharModal()});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')fecharModal()});
+document.getElementById('girarE').onclick=()=>{anguloIso=(anguloIso+3)%4};
+document.getElementById('girarD').onclick=()=>{anguloIso=(anguloIso+1)%4};
+document.getElementById('zoomMais').onclick=()=>{zoomIso=Math.min(2.4,zoomIso+.2)};
+document.getElementById('zoomMenos').onclick=()=>{zoomIso=Math.max(.5,zoomIso-.2)};
+function ajustarCv3d(){
+  const cv=document.getElementById('cv3d'), b=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(200,Math.round(b.width)); cv.height=Math.max(200,Math.round(b.height));
+}
+addEventListener('resize',()=>{if(modalAberto)ajustarCv3d()});
+
+function rot(x,y,ang){ // ang: 0,1,2,3 => 0/90/180/270
+  for(let i=0;i<ang;i++){const nx=-y,ny=x;x=nx;y=ny}
+  return [x,y];
+}
+function iso(x,y,z,cx0,cy0,zoom){
+  const isoX=(x-y)*0.866*zoom, isoY=((x+y)*0.5-z)*zoom;
+  return [cx0+isoX, cy0+isoY];
+}
+function desenharModal(){
+  const o=telas.find(t=>t.k===modalAberto); if(!o) return;
+  const cv=document.getElementById('cv3d'), cx=cv.getContext('2d'), W=cv.width,H=cv.height;
+  cx.fillStyle='#050d16'; cx.fillRect(0,0,W,H);
+  const cx0=W/2, cy0=H*.62, zoom=zoomIso;
+  // chão: vias
+  function poligonoChao(pontos,cor){
+    cx.beginPath(); pontos.forEach((p,i)=>{const[rx,ry]=rot(p[0],p[1],anguloIso);const[sx,sy]=iso(rx,ry,0,cx0,cy0,zoom); i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});
+    cx.closePath(); cx.fillStyle=cor; cx.fill();
+  }
+  poligonoChao([[-260,-ROAD_HALF],[260,-ROAD_HALF],[260,ROAD_HALF],[-260,ROAD_HALF]],'#17293c');
+  poligonoChao([[-ROAD_HALF,-260],[ROAD_HALF,-260],[ROAD_HALF,260],[-ROAD_HALF,260]],'#17293c');
+  poligonoChao([[-ROAD_HALF,-ROAD_HALF],[ROAD_HALF,-ROAD_HALF],[ROAD_HALF,ROAD_HALF],[-ROAD_HALF,ROAD_HALF]],'#1f374e');
+  // entidades ordenadas por profundidade
+  const lista=o.v.filter(v=>v.x!==undefined).map(v=>{
+    const lx=v.x-o.cv.width/2, ly=v.y-o.cv.height/2; // recentra em torno do cruzamento
+    const[rx,ry]=rot(lx,ly,anguloIso);
+    return {v,rx,ry,depth:rx+ry};
+  }).sort((a,b)=>a.depth-b.depth);
+  lista.forEach(({v,rx,ry})=>{
+    const w=(v.horiz?v.lenPx:v.widPx)/2, d=(v.horiz?v.widPx:v.lenPx)/2, alt=v.altPx||10;
+    // sombra
+    const[sx0,sy0]=iso(rx-w,ry-d,0,cx0,cy0,zoom),[sx1]=iso(rx+w,ry-d,0,cx0,cy0,zoom),[sx2,sy2]=iso(rx+w,ry+d,0,cx0,cy0,zoom),[sx3,sy3]=iso(rx-w,ry+d,0,cx0,cy0,zoom);
+    cx.beginPath();cx.moveTo(sx0,sy0);cx.lineTo(sx1,sy0);cx.lineTo(sx2,sy2);cx.lineTo(sx3,sy3);cx.closePath();
+    cx.fillStyle='rgba(0,0,0,.35)';cx.fill();
+    // rastro
+    if(v.rastro && v.rastro.length>2){
+      cx.beginPath();
+      v.rastro.forEach((p,i)=>{const lx2=p.x-o.cv.width/2, ly2=p.y-o.cv.height/2;const[rx2,ry2]=rot(lx2,ly2,anguloIso);const[sx,sy]=iso(rx2,ry2,1,cx0,cy0,zoom); i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});
+      cx.strokeStyle='rgba(232,163,61,.35)';cx.lineWidth=1.4;cx.stroke();
+    }
+    const cor = v.contramaoAtiva? '#D6453D' : v.t.cor;
+    const sel = selecionado && selecionado.id===v.id;
+    if(v.t.k==='atropelamento'){
+      const[fx,fy]=iso(rx,ry,1,cx0,cy0,zoom);
+      cx.fillStyle='rgba(124,133,145,.9)';cx.beginPath();cx.ellipse(fx,fy,w*zoom,d*.5*zoom,0,0,7);cx.fill();
+      return;
+    }
+    const P=(x,y,z)=>iso(x,y,z,cx0,cy0,zoom);
+    const b0=P(rx-w,ry-d,0),b1=P(rx+w,ry-d,0),b2=P(rx+w,ry+d,0),b3=P(rx-w,ry+d,0);
+    const t0=P(rx-w,ry-d,alt),t1=P(rx+w,ry-d,alt),t2=P(rx+w,ry+d,alt),t3=P(rx-w,ry+d,alt);
+    function face(p1,p2,p3,p4,shade){cx.beginPath();cx.moveTo(...p1);cx.lineTo(...p2);cx.lineTo(...p3);cx.lineTo(...p4);cx.closePath();cx.fillStyle=shade;cx.fill();cx.strokeStyle=sel?'#E8A33D':'rgba(0,0,0,.35)';cx.lineWidth=sel?2.4:1;cx.stroke();}
+    face(b1,b2,t2,t1, sombrear(cor,-18)); // lado direito
+    face(b2,b3,t3,t2, sombrear(cor,-38)); // lado frente
+    face(t0,t1,t2,t3, sombrear(cor,14));  // topo
+    v._pts3d={t0,t1,t2,t3,b0,b1,b2,b3,cx0:(t0[0]+t2[0])/2,cy0:(t0[1]+t2[1])/2};
+  });
+  const legenda=document.querySelector('.avisoSint');
+  atualizarPainelDireita(o);
+}
+function sombrear(hex,delta){
+  const c=hex.replace('#',''); const n=parseInt(c.length===3?c.split('').map(x=>x+x).join(''):c,16);
+  let r=(n>>16)+delta, g=((n>>8)&255)+delta, b=(n&255)+delta;
+  r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
+  return 'rgb('+r+','+g+','+b+')';
+}
+document.getElementById('cv3d').addEventListener('click',e=>{
+  const o=telas.find(t=>t.k===modalAberto); if(!o) return;
+  const rect=e.target.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  let melhor=null, melhorD=22*zoomIso;
+  o.v.forEach(v=>{
+    if(!v._pts3d) return;
+    const d=Math.hypot(mx-v._pts3d.cx0,my-v._pts3d.cy0);
+    if(d<melhorD){melhorD=d;melhor=v}
+  });
+  if(melhor) selecionado={id:melhor.id, k:o.k};
+});
+
+// ===== tabela + ficha =====
+function estadoDe(v){
+  if(v.isObstaculo) return 'obstáculo fixo';
+  if(v.para) return 'parado na fila';
+  const centro = v.horiz? v.p-(v._W||0)/2 : v.p;
+  return Math.abs((v.horiz?v.x-( telas.find(t=>t.k===v.k)?telas.find(t=>t.k===v.k).cv.width/2:0):v.y-(telas.find(t=>t.k===v.k)?telas.find(t=>t.k===v.k).cv.height/2:0)))<ROAD_HALF ? 'atravessando':'em movimento';
+}
+function atualizarPainelDireita(o){
+  const corpo=document.getElementById('tabelaBody');
+  let linhas=o.v.filter(v=>v.x!==undefined).map(v=>({v,estado:estadoDe(v)}));
+  const campo=ordemTabela.c;
+  linhas.sort((a,b)=>{
+    const av=campo==='velKmh'?a.v.velKmh:a.v[campo]||a.estado, bv=campo==='velKmh'?b.v.velKmh:b.v[campo]||b.estado;
+    if(av<bv) return -1*ordemTabela.dir; if(av>bv) return 1*ordemTabela.dir; return 0;
+  });
+  corpo.innerHTML=linhas.map(({v,estado})=>'<tr data-id="'+v.id+'" class="'+(selecionado&&selecionado.id===v.id?'sel':'')+'"><td>'+v.id+'</td><td>'+v.classe+'</td><td>'+v.categoria+'</td><td>'+v.velKmh.toFixed(0)+'</td><td>'+estado+'</td></tr>').join('');
+  corpo.querySelectorAll('tr').forEach(tr=>tr.onclick=()=>{selecionado={id:tr.dataset.id,k:o.k}});
+  // ficha
+  const fichaEl=document.getElementById('ficha');
+  const alvo = selecionado? o.v.find(v=>v.id===selecionado.id) : null;
+  if(!alvo){ fichaEl.innerHTML='<h4>Nenhuma seleção</h4><div class="aviso-privacidade">o sistema classifica o objeto; não identifica a pessoa nem o veículo.</div>'; return }
+  const estado=estadoDe(alvo);
+  fichaEl.innerHTML='<h4>'+alvo.id+'</h4>'+
+    linha('classe',alvo.classe)+linha('categoria',alvo.categoria)+linha('confiança',alvo.confianca)+
+    linha('velocidade',alvo.velKmh.toFixed(0)+' km/h')+linha('faixa',alvo.pista)+linha('sentido',alvo.sent>0?'crescente':'decrescente')+
+    linha('tempo em cena',alvo.tempo.toFixed(1)+' s')+linha('distância percorrida',alvo.distM.toFixed(1)+' m')+linha('estado',estado)+
+    '<canvas class=spark id=spark></canvas>'+
+    '<div class="aviso-privacidade">o sistema classifica o objeto; não identifica a pessoa nem o veículo.</div>';
+  const sc=document.getElementById('spark'); sc.width=300;sc.height=36;
+  const sx=sc.getContext('2d'); sx.clearRect(0,0,300,36);
+  const hist=alvo.hist.length?alvo.hist:[0];
+  const max=Math.max(10,...hist);
+  sx.strokeStyle='#E8A33D';sx.lineWidth=1.6;sx.beginPath();
+  hist.forEach((v,i)=>{const x=i/(hist.length-1||1)*298+1, y=34-(v/max)*30; i?sx.lineTo(x,y):sx.moveTo(x,y)});
+  sx.stroke();
+}
+function linha(a,b){return '<div class=l><span>'+a+'</span><span>'+b+'</span></div>'}
+document.querySelectorAll('#tabela th').forEach(th=>th.onclick=()=>{
+  const c=th.dataset.c; if(ordemTabela.c===c) ordemTabela.dir*=-1; else {ordemTabela.c=c;ordemTabela.dir=1}
+});
+
+function renderLinhaModal(evt){
+  const el=document.getElementById('linhaModal');
+  if(!evt){ el.innerHTML='<div class="aviso-privacidade">nenhum evento ativo nesta câmera</div>'; document.getElementById('rodapeModal').innerHTML=''; return }
+  el.innerHTML=blocoEvento(evt,true);
+  const bl=el.querySelector('.linhaEvento');
+  if(bl){
+    bl.querySelectorAll('[data-acao]').forEach(b=>b.onclick=()=>decidirEvento(evt,b.dataset.acao));
+    const enc=bl.querySelector('.encerrarBtn'); if(enc) enc.onclick=()=>finalizarEvento(evt);
+  }
+  document.getElementById('rodapeModal').innerHTML='fila atual '+evt.o.fila+' m · fase '+faseDe(evt.o,evt.axis||'h')+' · DADO SINTÉTICO — a leitura de uma câmera real produziria esta mesma ficha';
+}
+function mostrarResumo(evt){
+  const card=document.getElementById('resumoCard');
+  const tDet= 6; // detectado→aguardando é sempre ~3 passos fixos no fluxo (declarado)
+  const tDecisao = evt.tickDecisao!==undefined? Math.round((evt.tickDecisao-evt.tickInicio)*10)/10 : null;
+  const picoVeic = Math.max(0,...Object.values(evt.o.grupos||{}).map(a=>a.filter(v=>v.para&&!v.isPed&&!v.isObstaculo).length));
+  card.hidden=false;
+  card.innerHTML='<div class=caixa><h3>Cartão-resumo · '+evt.meta.rotulo+'</h3>'+
+    linha('tempo até detectar','~2 s (simulado)')+
+    linha('tempo até a decisão humana',(tDecisao!==null?tDecisao:'—')+' s')+
+    linha('tempo total',(evt.duracaoS||0)+' s')+
+    linha('fila máxima',evt.filaMax+' m')+
+    linha('veículos afetados (pico na fila)',picoVeic)+
+    '<div class="aviso-privacidade">tudo dado sintético — nenhuma câmera real está ligada.</div>'+
+    '<button id=fecharResumo>fechar</button></div>';
+  document.getElementById('fecharResumo').onclick=()=>card.hidden=true;
+}
+
+// ===================== BOOT =====================
+window.onerror=function(msg,src,line,col,err){
+  const d=document.createElement('div'); d.id='erroJS'; d.style.display='none';
+  d.textContent='ERRO: '+msg+' @'+line+':'+col+' '+(err&&err.stack||'');
+  document.body.appendChild(d);
+};
+const params=new URLSearchParams(location.search);
+montar(N%2?N+1:N);
+avancarSimulado(13);
+requestAnimationFrame(laco);
+
+if(params.get('abrir')){
+  abrirModal(+params.get('abrir'));
+  atualizarPainelDireita(telas.find(t=>t.k===+params.get('abrir')));
+  if(params.get('sel')==='1'){
+    const o=telas.find(t=>t.k===modalAberto);
+    const ordenado=o.v.filter(v=>v.x!==undefined).slice().sort((a,b)=>a.id<b.id?-1:1);
+    if(ordenado[0]) selecionado={id:ordenado[0].id,k:o.k};
+  }
+}
+if(params.get('evento')){
+  const tipoEv=params.get('evento'), telaAlvo=+(params.get('eventoTela')||1), alvoEstado=params.get('eventoAte')||'aguardando';
+  const evt=dispararEvento(tipoEv,telaAlvo);
+  if(evt){
+    avancarAteAguardando(evt);
+    if(alvoEstado==='resumo'){
+      avancarSimulado(35);
+      decidirEvento(evt,'equipe');
+      avancarSimulado(25);
+    }
+  }
+}
+if(params.get('teste')==='1'){
+  avancarSimulado(90);
+  telas.forEach(o=>desenhar2D(o));
+  const n=window.vrSobreposicoes();
+  const ent=telas.reduce((a,o)=>a+o.v.length,0);
+  const div=document.createElement('div'); div.id='testeSaida'; div.style.display='none';
+  div.textContent='SOBREPOSICOES='+n+' TELAS='+telas.length+' ENTIDADES='+ent;
+  document.body.appendChild(div);
+  if(params.get('debug')==='1'){
+    let linhas=[];
+    telas.forEach(o=>{
+      const arr=o.v.filter(v=>v.x!==undefined);
+      for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){
+        const a=arr[i],b=arr[j];
+        if(a.colisaoIgnorar&&b.colisaoIgnorar&&a.eventoRef===b.eventoRef) continue;
+        if(intersecta(retanguloDe(a),retanguloDe(b))){
+          linhas.push('k='+o.k+' '+a.id+'('+a.pista+',p='+a.p.toFixed(1)+',horiz='+a.horiz+',sent='+a.sent+',isObst='+!!a.isObstaculo+',isPed='+!!a.isPed+') x '+b.id+'('+b.pista+',p='+b.p.toFixed(1)+',horiz='+b.horiz+',sent='+b.sent+',isObst='+!!b.isObstaculo+',isPed='+!!b.isPed+')');
+        }
+      }
+    });
+    const d2=document.createElement('div'); d2.id='debugSaida'; d2.style.display='none';
+    d2.textContent=linhas.slice(0,15).join(' || ');
+    document.body.appendChild(d2);
+  }
+}
+</script></body></html>

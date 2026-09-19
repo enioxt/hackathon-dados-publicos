@@ -4,6 +4,23 @@
 Este repositório é **aberto a todos os times** do hackathon (e a quem mais quiser). Tem o que levantamos de **fonte pública** sobre mobilidade em Patos de Minas, as **técnicas** que usamos para achar e provar cada número, e a **base jurídica** para usar câmeras já existentes em análise de trânsito. Não tem estratégia de time, dado de empresa nem dado pessoal.
 
 
+
+## 🖥️ Tudo que dá para abrir agora (GitHub Pages)
+
+| Abrir | O que é |
+|---|---|
+| **[A página do projeto](https://enioxt.github.io/hackathon-dados-publicos/)** | A ideia inteira em uma página |
+| **[Hub de ideias](https://enioxt.github.io/hackathon-dados-publicos/hub/)** | As ideias dos times, com dono e estágio — entre com GitHub e ponha a sua |
+| **[Demonstração — índice](https://enioxt.github.io/hackathon-dados-publicos/demo/)** | Porta de entrada das telas abaixo |
+| [Apresentação, 12 slides](https://enioxt.github.io/hackathon-dados-publicos/demo/apresentacao.html) · [em PDF](https://enioxt.github.io/hackathon-dados-publicos/demo/apresentacao.pdf) | O problema, a prova, o custo e o pedido |
+| [Canvas do problema](https://enioxt.github.io/hackathon-dados-publicos/demo/canvas.html) | As dores ligadas por linha ao que a solução faz |
+| [Painel do gestor](https://enioxt.github.io/hackathon-dados-publicos/demo/painel-gestor.html) | Mapa, zonas quentes, simulação de câmeras, vagas, frota e relatório |
+| [Parede de monitores](https://enioxt.github.io/hackathon-dados-publicos/demo/parede.html) | O que a leitura de várias câmeras mostraria ao mesmo tempo |
+| [App do cidadão](https://enioxt.github.io/hackathon-dados-publicos/demo/app-cidadao.html) | 10 telas para dentro do aplicativo que a cidade já tem |
+
+Dado real: ocorrências de trânsito do Estado e base nacional de sinistros. Câmeras, alertas, vagas e frota são simulação ou exemplo — e está dito em cada tela.
+
+
 ## 🔗 Hub de ideias — página aberta
 
 **[enioxt.github.io/hackathon-dados-publicos](https://enioxt.github.io/hackathon-dados-publicos/)** — as ideias do hackathon com dono, estágio e o que falta, e os dados abertos para qualquer time usar. Para entrar ou colocar a ideia do seu time, clique em **Entrar com GitHub** na página.
