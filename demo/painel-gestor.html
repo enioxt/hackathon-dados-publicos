@@ -35,13 +35,16 @@
   .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--amber);flex:none;}
   .brand-text{font-weight:700;letter-spacing:.04em;font-size:13px;}
   .brand-sub{font-size:10.5px;color:var(--gray);margin-top:1px;}
-  .nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+  .nav{display:flex;flex-direction:column;gap:4px;flex:1;}
   .nav a{
-    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:11px 10px;border-radius:8px;font-size:13px;
     color:var(--gray);text-decoration:none;cursor:default;
   }
   .nav a .ico{width:16px;text-align:center;font-size:13px;}
+  .nav a .nav-row{display:flex;align-items:center;gap:10px;}
+  .nav a .nav-desc{font-size:10px;color:var(--gray);padding-left:26px;line-height:1.35;}
   .nav a.active{background:var(--card);color:var(--ice);font-weight:600;box-shadow:inset 2px 0 0 var(--amber);}
+  .nav a.active .nav-desc{color:#C7D1DE;}
   .sidebar-foot{font-size:10.5px;color:var(--gray);padding:10px 6px 2px;border-top:1px solid var(--border);margin-top:10px;}
 
   /* Main */
@@ -199,6 +202,21 @@
   .main{padding:22px 26px 90px;}
   .tag-sint{background:rgba(107,124,153,0.18);color:#9FB0CC;border:1px solid rgba(107,124,153,0.5);}
 
+  /* ---------- 3 telas (evolução 2026-09-19 tarde) ---------- */
+  .abas-agora{display:flex;gap:6px;margin-bottom:10px;}
+  .zonas-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;}
+  .zonas-strip .zona-item{min-width:190px;flex:none;margin-bottom:0;}
+  .decidir-index{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .decidir-index a{
+    background:var(--card);border:1px solid var(--border);color:var(--ice);text-decoration:none;
+    padding:8px 14px;border-radius:20px;font-size:12.5px;font-weight:600;
+  }
+  .decidir-index a:hover{border-color:var(--amber);color:var(--amber);}
+  .decidir-block{margin-bottom:28px;scroll-margin-top:14px;}
+  .decidir-h2{font-size:16px;margin:0 0 3px;}
+  .decidir-sub{font-size:12px;color:var(--gray);margin-bottom:12px;}
+  .decidir-sub a{color:var(--amber);}
+
   .alertas-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
   @media (max-width:900px){ .alertas-strip{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:520px){ .alertas-strip{grid-template-columns:1fr;} }
@@ -321,6 +339,62 @@
   .saude-selo{font-size:10.5px;color:var(--green);background:rgba(46,158,107,0.14);border:1px solid rgba(46,158,107,0.4);padding:5px 9px;border-radius:20px;display:inline-block;margin-top:8px;}
   .painel-cams-cobrem{font-size:11.5px;color:var(--gray);line-height:1.7;}
 
+  /* ---------- Camadas seletor + fluxo nas vias + abas do painel + Rua com Memória (evolução 2026-09-19 noite) ---------- */
+  .camadas-box{position:absolute;top:10px;right:10px;z-index:500;background:rgba(11,27,43,0.95);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:11.5px;color:var(--ice);min-width:196px;max-width:calc(100% - 20px);}
+  .camadas-head{display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:8px;font-weight:700;user-select:none;}
+  .camadas-head .car{transition:transform .15s;color:var(--gray);}
+  .camadas-box.fechado .camadas-list{display:none;}
+  .camadas-box.fechado .camadas-head .car{transform:rotate(-90deg);}
+  .camadas-list{margin-top:9px;display:flex;flex-direction:column;gap:7px;}
+  .camada-item{display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none;color:var(--ice);}
+  .camada-item input{margin:0;accent-color:var(--amber);}
+  .camada-item .camada-tag{margin-left:auto;font-size:8.5px;font-weight:700;padding:1px 5px;border-radius:4px;white-space:nowrap;}
+  .camada-item.camada-link{color:var(--gray);border-top:1px dashed var(--border);padding-top:7px;margin-top:1px;}
+  .camada-item.camada-link:first-of-type{border-top:1px dashed var(--border);}
+  .camada-item.camada-link:hover{color:var(--amber);}
+
+  .painel-tabs{display:flex;gap:6px;margin:12px 0 14px;flex-wrap:wrap;}
+  .situacao-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:20px;margin-bottom:10px;}
+  .situacao-normal{background:rgba(46,158,107,0.16);color:var(--green);}
+  .situacao-acima{background:rgba(232,163,61,0.16);color:var(--amber);}
+  .situacao-critica{background:rgba(214,69,61,0.18);color:var(--red);}
+  .causas-list{margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--ice);line-height:1.7;}
+  .causas-nota{font-size:10.5px;color:var(--gray);margin-top:4px;font-style:italic;}
+
+  .hist-legend{display:flex;gap:14px;align-items:center;font-size:10.5px;color:var(--gray);margin:8px 0 4px;}
+  .hist-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:4px;}
+  .hist-dual{display:flex;align-items:flex-end;gap:2px;height:90px;margin-top:6px;position:relative;}
+  .hist-dual-col{flex:1;display:flex;align-items:flex-end;height:100%;position:relative;}
+  .hist-dual-atual{width:60%;margin:0 auto;background:var(--amber);border-radius:2px 2px 0 0;min-height:2px;}
+  .hist-dual-habitual-tick{position:absolute;left:8%;right:8%;height:2px;background:#9AA5B1;}
+  .hist-diff{font-size:12.5px;margin:6px 0;}
+  .hist-diff b{font-size:16px;}
+
+  .cam-canvas-wrap{background:#0A1826;border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;}
+  .cam-canvas-wrap canvas{max-width:100%;border-radius:6px;}
+  .cam-parede-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--amber);text-decoration:none;}
+  .cam-parede-link:hover{text-decoration:underline;}
+
+  .memoria-sel{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .memoria-sel select{background:var(--card2);border:1px solid var(--border);color:var(--ice);padding:6px 9px;border-radius:7px;font-family:inherit;font-size:12.5px;}
+  .memoria-timeline{display:flex;flex-direction:column;gap:0;}
+  .memoria-evento{display:flex;gap:12px;padding-bottom:18px;position:relative;}
+  .memoria-evento:last-child{padding-bottom:0;}
+  .memoria-evento:not(:last-child)::before{content:"";position:absolute;left:13px;top:30px;bottom:0;width:2px;background:var(--border);}
+  .memoria-ico{width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;border:2px solid var(--card);z-index:1;}
+  .memoria-ico.problema{background:rgba(214,69,61,0.22);color:var(--red);}
+  .memoria-ico.evidencia{background:rgba(107,124,153,0.28);color:#9FB0CC;}
+  .memoria-ico.intervencao{background:rgba(232,163,61,0.22);color:var(--amber);}
+  .memoria-ico.resultado{background:rgba(46,158,107,0.22);color:var(--green);}
+  .memoria-body{flex:1;padding-top:3px;min-width:0;}
+  .memoria-top{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:700;flex-wrap:wrap;}
+  .memoria-data{font-size:10.5px;color:var(--gray);font-weight:600;white-space:nowrap;}
+  .memoria-texto{font-size:12px;margin-top:2px;}
+  .memoria-fonte{font-size:10.5px;color:var(--gray);margin-top:4px;display:flex;align-items:center;gap:6px;}
+  .memoria-resumo-mini{font-size:11.5px;color:var(--ice);line-height:1.7;padding:4px 0;border-bottom:1px solid var(--border);}
+  .memoria-resumo-mini:last-child{border-bottom:none;}
+  .memoria-resumo-mini b{color:var(--gray);font-weight:600;}
+
   /* ---------- #vagas ---------- */
   .vagas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
   .vaga-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
@@ -384,14 +458,19 @@
       </div>
     </div>
     <nav class="nav">
-      <a class="active" href="#controle" data-screen="controle"><span class="ico">▣</span> Centro de controle</a>
-      <a href="#zonas" data-screen="zonas"><span class="ico">◎</span> Zonas quentes</a>
-      <a href="#fontes" data-screen="fontes"><span class="ico">⇄</span> Fontes conectadas</a>
-      <a href="#frota" data-screen="frota"><span class="ico">🚐</span> Frota sensor</a>
-      <a href="#vagas" data-screen="vagas"><span class="ico">🅿</span> Vagas</a>
-      <a href="#intervencoes" data-screen="intervencoes"><span class="ico">✦</span> Intervenções</a>
-      <a href="#relatorios" data-screen="relatorios"><span class="ico">▤</span> Relatórios</a>
-      <a href="/custos"><span class="ico">⚙</span> Custos</a>
+      <a class="active" href="#agora" data-screen="agora">
+        <span class="nav-row"><span class="ico">▣</span> O que está acontecendo</span>
+        <span class="nav-desc">Mapa, zonas quentes e frota — agora</span>
+      </a>
+      <a href="#decidir" data-screen="decidir">
+        <span class="nav-row"><span class="ico">✦</span> O que eu decido agora</span>
+        <span class="nav-desc">Ligar fonte, abrir vaga, registrar intervenção</span>
+      </a>
+      <a href="#resultado" data-screen="resultado">
+        <span class="nav-row"><span class="ico">▤</span> O que mudou depois</span>
+        <span class="nav-desc">Antes×depois e relatório da semana</span>
+      </a>
+      <a href="https://enioxt.github.io/hackathon-dados-publicos/demo/"><span class="nav-row"><span class="ico">⚙</span> Custos</span></a>
     </nav>
     <div class="sidebar-foot">Demonstração · hackathon 19–20/09/2026</div>
   </aside>
@@ -405,8 +484,8 @@
       <div class="clock" id="clock">—</div>
     </div>
 
-    <!-- ===================== #controle ===================== -->
-    <section class="screen" id="screen-controle">
+    <!-- ===================== #agora ===================== -->
+    <section class="screen" id="screen-agora">
       <div class="demo-banner">
         <span>⚠</span>
         <div><b>DEMONSTRAÇÃO —</b> o mapa usa dado público real; câmeras, alertas e conexões abaixo são SIMULAÇÃO do que o sistema mostraria depois de autorizado.</div>
@@ -438,6 +517,21 @@
           <div class="num" id="stat-fontes">1 de 9</div>
           <div class="lbl">fontes conectadas hoje</div>
         </div>
+        <div class="stat">
+          <span class="tag tag-sint">DADO SINTÉTICO</span>
+          <div class="num" id="stat-veiculos-agora">—</div>
+          <div class="lbl">veículos/h na cidade agora</div>
+        </div>
+        <div class="stat">
+          <span class="tag tag-sint">DADO SINTÉTICO</span>
+          <div class="num" id="stat-pontos-anormais">—</div>
+          <div class="lbl">pontos acima do normal</div>
+        </div>
+        <div class="stat">
+          <span class="tag tag-sint">DADO SINTÉTICO</span>
+          <div class="num" id="stat-fluidez-mes">—</div>
+          <div class="lbl">fluidez comparada ao mês anterior</div>
+        </div>
       </div>
 
       <div class="grid2">
@@ -445,31 +539,104 @@
           <div class="panel">
             <h2>Mapa da mobilidade <span class="sub-note">calor + zonas quentes (MEDIDO) · câmeras (SIMULAÇÃO)</span></h2>
 
-            <div class="map-controls">
-              <div class="ctrl-group">
-                <span class="ctrl-label">Cenário de câmeras</span>
-                <button class="chip cenario-btn" data-n="10">10</button>
-                <button class="chip cenario-btn" data-n="50">50</button>
-                <button class="chip cenario-btn on" data-n="100">100</button>
-                <button class="chip cenario-btn" data-n="400">400</button>
-                <button class="chip cenario-btn" data-n="600">600</button>
-              </div>
-              <div class="ctrl-group">
-                <button class="chip layer-toggle on" id="tg-calor">calor</button>
-                <button class="chip layer-toggle on" id="tg-zonas">zonas quentes</button>
-                <button class="chip layer-toggle on" id="tg-cameras">câmeras</button>
-              </div>
-              <div class="ctrl-group">
-                <span class="ctrl-label">Filtro</span>
-                <button class="chip filtro-btn on" data-f="todas">todas</button>
-                <button class="chip filtro-btn" data-f="graves">só graves e fatais</button>
-              </div>
+            <div class="abas-agora" id="abas-agora">
+              <button class="chip aba-btn on" data-aba="transito">Trânsito</button>
+              <button class="chip aba-btn" data-aba="zonas">Zonas quentes</button>
+              <button class="chip aba-btn" data-aba="frota">Frota</button>
             </div>
-            <div class="cenario-note" id="cenario-note"></div>
 
-            <div class="map-wrap">
+            <div id="agora-pane-transito">
+              <div class="map-controls">
+                <div class="ctrl-group">
+                  <span class="ctrl-label">Cenário de câmeras</span>
+                  <button class="chip cenario-btn" data-n="10">10</button>
+                  <button class="chip cenario-btn" data-n="50">50</button>
+                  <button class="chip cenario-btn on" data-n="100">100</button>
+                  <button class="chip cenario-btn" data-n="400">400</button>
+                  <button class="chip cenario-btn" data-n="600">600</button>
+                </div>
+                <div class="ctrl-group">
+                  <span class="ctrl-label">Filtro</span>
+                  <button class="chip filtro-btn on" data-f="todas">todas</button>
+                  <button class="chip filtro-btn" data-f="graves">só graves e fatais</button>
+                </div>
+              </div>
+              <div class="cenario-note" id="cenario-note"></div>
+            </div>
+
+            <div class="map-wrap" id="agora-map-wrap">
               <div id="map"></div>
               <div class="map-fallback" id="map-fallback" hidden>⚪ mapa não carregou</div>
+              <div class="camadas-box" id="camadas-box">
+                <div class="camadas-head" id="camadas-head"><span>Camadas do mapa</span><span class="car">▾</span></div>
+                <div class="camadas-list" id="camadas-list"></div>
+              </div>
+            </div>
+
+            <div id="agora-pane-zonas" hidden>
+              <h3 class="mini-h">12 zonas <span class="tag tag-medido">MEDIDO</span></h3>
+              <div id="zonas-list" class="zonas-strip"></div>
+              <div id="zona-detalhe"></div>
+            </div>
+
+            <div id="agora-pane-frota" hidden>
+              <div class="demo-banner">
+                <span>⚠</span>
+                <div><b class="tag tag-sint" style="margin-right:6px;">DADO SINTÉTICO</b> esta aba inteira é exemplo — rotas e achados não são leitura real de nenhum veículo.</div>
+              </div>
+
+              <div class="stats">
+                <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-total">—</div><div class="lbl">achados na quinzena</div></div>
+                <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-tipo">—</div><div class="lbl">tipo mais frequente</div></div>
+                <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-pct">—</div><div class="lbl">% da malha percorrida</div></div>
+                <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-resolvidos">—</div><div class="lbl">achados já resolvidos</div></div>
+              </div>
+
+              <div class="frota-filtros" id="frota-filtros"></div>
+              <div class="map-wrap">
+                <div id="map-frota" style="height:460px;"></div>
+              </div>
+              <div class="cenario-note">cidade percorrida nesta quinzena: <b id="frota-pct">—</b> da malha (DADO SINTÉTICO)</div>
+
+              <div class="two-col" style="margin-top:16px;">
+                <div class="panel">
+                  <h2>Contagem por tipo</h2>
+                  <div id="frota-contadores"></div>
+                </div>
+                <div class="panel">
+                  <h2>10 mais recentes</h2>
+                  <div id="frota-recentes"></div>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="panel">
+                  <h2>Como funciona</h2>
+                  <div class="passos-row">
+                    <div class="passo-card"><span class="ico">🚐</span><b>1. o veículo já roda</b><p>rota normal da frota municipal, sem desvio nem despesa extra.</p></div>
+                    <div class="passo-card"><span class="ico">📷</span><b>2. a câmera grava</b><p>capta a via enquanto o veículo passa no trajeto de sempre.</p></div>
+                    <div class="passo-card"><span class="ico">⚙</span><b>3. processa no pátio</b><p>o vídeo é lido pelo wi-fi do pátio quando o veículo volta.</p></div>
+                    <div class="passo-card"><span class="ico">📋</span><b>4. vira ordem de serviço</b><p>o achado sai com foto e coordenada, pronto para a equipe.</p></div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <h2>O que isso substitui hoje</h2>
+                  <div class="substitui-row">
+                    <div class="substitui-col hoje">
+                      <h4>hoje</h4>
+                      <ul><li>vistoria por reclamação</li><li>mutirão pontual</li><li>planilha manual</li></ul>
+                    </div>
+                    <div class="substitui-col novo">
+                      <h4>com a frota sensor</h4>
+                      <ul><li>varredura contínua, sem rota extra</li></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div style="font-size:11.5px;color:var(--gray);">Rosto e placa borrados antes de guardar; vídeo processado quando o veículo volta ao pátio.</div>
+              </div>
             </div>
           </div>
 
@@ -498,167 +665,107 @@
       </footer>
     </section>
 
-    <!-- ===================== #zonas ===================== -->
-    <section class="screen" id="screen-zonas" hidden>
-      <div class="zonas-layout">
+    <!-- ===================== #decidir ===================== -->
+    <section class="screen" id="screen-decidir" hidden>
+      <div class="decidir-index">
+        <a href="#decidir:fontes">1 · Ligar uma fonte</a>
+        <a href="#decidir:vagas">2 · Abrir uma vaga</a>
+        <a href="#decidir:registrar">3 · Registrar uma intervenção</a>
+      </div>
+
+      <div class="decidir-block" id="ancora-fontes">
+        <h2 class="decidir-h2">1 · Ligar uma fonte</h2>
+        <div class="decidir-sub">quem autoriza e qual é o próximo passo, fonte a fonte.</div>
         <div class="panel">
-          <h2>12 zonas <span class="tag tag-medido">MEDIDO</span></h2>
-          <div id="zonas-list"></div>
-        </div>
-        <div class="panel">
-          <div id="zona-detalhe"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== #fontes ===================== -->
-    <section class="screen" id="screen-fontes" hidden>
-      <div class="panel">
-        <h2>Como os dados convergem</h2>
-        <div class="diagrama-wrap" id="fontes-diagrama"></div>
-      </div>
-      <div class="panel">
-        <h2>As 9 fontes — estado real hoje</h2>
-        <div class="fontes-grid" id="fontes-grid"></div>
-      </div>
-    </section>
-
-    <!-- ===================== #frota ===================== -->
-    <section class="screen" id="screen-frota" hidden>
-      <div class="demo-banner">
-        <span>⚠</span>
-        <div><b class="tag tag-sint" style="margin-right:6px;">DADO SINTÉTICO</b> esta tela inteira é exemplo — rotas e achados não são leitura real de nenhum veículo.</div>
-      </div>
-
-      <div class="stats">
-        <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-total">—</div><div class="lbl">achados na quinzena</div></div>
-        <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-tipo">—</div><div class="lbl">tipo mais frequente</div></div>
-        <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-pct">—</div><div class="lbl">% da malha percorrida</div></div>
-        <div class="stat"><span class="tag tag-sint">DADO SINTÉTICO</span><div class="num" id="frota-stat-resolvidos">—</div><div class="lbl">achados já resolvidos</div></div>
-      </div>
-
-      <div class="grid2">
-        <div>
-          <div class="panel">
-            <h2>Rotas da frota e achados <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
-            <div class="frota-filtros" id="frota-filtros"></div>
-            <div class="map-wrap">
-              <div id="map-frota" style="height:460px;"></div>
-            </div>
-            <div class="cenario-note">cidade percorrida nesta quinzena: <b id="frota-pct">—</b> da malha (DADO SINTÉTICO)</div>
-          </div>
-        </div>
-        <div>
-          <div class="panel">
-            <h2>Contagem por tipo</h2>
-            <div id="frota-contadores"></div>
-          </div>
-          <div class="panel">
-            <h2>10 mais recentes</h2>
-            <div id="frota-recentes"></div>
-          </div>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="panel">
-          <h2>Como funciona</h2>
-          <div class="passos-row">
-            <div class="passo-card"><span class="ico">🚐</span><b>1. o veículo já roda</b><p>rota normal da frota municipal, sem desvio nem despesa extra.</p></div>
-            <div class="passo-card"><span class="ico">📷</span><b>2. a câmera grava</b><p>capta a via enquanto o veículo passa no trajeto de sempre.</p></div>
-            <div class="passo-card"><span class="ico">⚙</span><b>3. processa no pátio</b><p>o vídeo é lido pelo wi-fi do pátio quando o veículo volta.</p></div>
-            <div class="passo-card"><span class="ico">📋</span><b>4. vira ordem de serviço</b><p>o achado sai com foto e coordenada, pronto para a equipe.</p></div>
-          </div>
+          <h2>Como os dados convergem</h2>
+          <div class="diagrama-wrap" id="fontes-diagrama"></div>
         </div>
         <div class="panel">
-          <h2>O que isso substitui hoje</h2>
-          <div class="substitui-row">
-            <div class="substitui-col hoje">
-              <h4>hoje</h4>
-              <ul><li>vistoria por reclamação</li><li>mutirão pontual</li><li>planilha manual</li></ul>
-            </div>
-            <div class="substitui-col novo">
-              <h4>com a frota sensor</h4>
-              <ul><li>varredura contínua, sem rota extra</li></ul>
-            </div>
-          </div>
+          <h2>As 9 fontes — estado real hoje</h2>
+          <div class="fontes-grid" id="fontes-grid"></div>
         </div>
       </div>
 
-      <div class="panel">
-        <div style="font-size:11.5px;color:var(--gray);">Rosto e placa borrados antes de guardar; vídeo processado quando o veículo volta ao pátio.</div>
-      </div>
-    </section>
-
-    <!-- ===================== #vagas ===================== -->
-    <section class="screen" id="screen-vagas" hidden>
-      <div class="demo-banner">
-        <span>⚠</span>
-        <div><b class="tag tag-sint" style="margin-right:6px;">DADO SINTÉTICO</b> conceito de demonstração inteiro — nenhum estacionamento real está conectado hoje. A ideia: o parceiro declara a capacidade, uma câmera que já filma a entrada conta quem entra e sai, e o saldo vai para o app oficial da cidade.</div>
-      </div>
-
-      <div class="grid2">
-        <div>
-          <div class="panel">
-            <h2>Estacionamentos parceiros <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
-            <div class="vagas-grid" id="vagas-grid"></div>
-          </div>
-          <div class="panel">
-            <h2>Mapa dos parceiros <span class="sub-note">cor por lotação</span></h2>
-            <div class="map-wrap"><div id="map-vagas" style="height:360px;"></div></div>
-          </div>
-          <div class="panel">
-            <h2>Vagas na rua (zona azul) <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
-            <div id="quadras-list"></div>
-            <div style="font-size:11px;color:var(--gray);margin-top:10px;">quando a concessão da zona azul digital começar, o veículo de fiscalização com câmeras passa a ser a fonte.</div>
-          </div>
+      <div class="decidir-block" id="ancora-vagas">
+        <h2 class="decidir-h2">2 · Abrir uma vaga</h2>
+        <div class="decidir-sub">o parceiro declara a capacidade, uma câmera que já filma a entrada conta quem entra e sai, o saldo vai para o app oficial da cidade.</div>
+        <div class="demo-banner">
+          <span>⚠</span>
+          <div><b class="tag tag-sint" style="margin-right:6px;">DADO SINTÉTICO</b> conceito de demonstração inteiro — nenhum estacionamento real está conectado hoje.</div>
         </div>
 
-        <div>
-          <div class="panel">
-            <h2>Como aparece no app da cidade <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
-            <div class="phone-mock">
-              <div class="phone-head">vagas perto de você</div>
-              <div id="phone-list"></div>
+        <div class="grid2">
+          <div>
+            <div class="panel">
+              <h2>Estacionamentos parceiros <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
+              <div class="vagas-grid" id="vagas-grid"></div>
+            </div>
+            <div class="panel">
+              <h2>Mapa dos parceiros <span class="sub-note">cor por lotação</span></h2>
+              <div class="map-wrap"><div id="map-vagas" style="height:360px;"></div></div>
+            </div>
+            <div class="panel">
+              <h2>Vagas na rua (zona azul) <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
+              <div id="quadras-list"></div>
+              <div style="font-size:11px;color:var(--gray);margin-top:10px;">quando a concessão da zona azul digital começar, o veículo de fiscalização com câmeras passa a ser a fonte.</div>
             </div>
           </div>
-          <div class="panel">
-            <h2>O que cada lado ganha</h2>
-            <div class="ganha-cols">
-              <div>
-                <h4>O parceiro (dono do estacionamento)</h4>
-                <p>aparece no app oficial da cidade sem precisar comprar equipamento novo — a câmera que já filma a entrada é a fonte.</p>
+
+          <div>
+            <div class="panel">
+              <h2>Como aparece no app da cidade <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
+              <div class="phone-mock">
+                <div class="phone-head">vagas perto de você</div>
+                <div id="phone-list"></div>
               </div>
-              <div>
-                <h4>A cidade</h4>
-                <p>enxerga a ocupação real da vaga privada, e o motorista encontra vaga mais rápido, com menos volta na quadra.</p>
+            </div>
+            <div class="panel">
+              <h2>O que cada lado ganha</h2>
+              <div class="ganha-cols">
+                <div>
+                  <h4>O parceiro (dono do estacionamento)</h4>
+                  <p>aparece no app oficial da cidade sem precisar comprar equipamento novo — a câmera que já filma a entrada é a fonte.</p>
+                </div>
+                <div>
+                  <h4>A cidade</h4>
+                  <p>enxerga a ocupação real da vaga privada, e o motorista encontra vaga mais rápido, com menos volta na quadra.</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="decidir-block" id="ancora-registrar">
+        <h2 class="decidir-h2">3 · Registrar uma intervenção</h2>
+        <div class="decidir-sub">toda mudança ganha um antes e um depois — acompanhe em <a href="#resultado">O que mudou depois</a>.</div>
+        <div class="panel">
+          <h2>Nova intervenção <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
+          <form class="form-interv" id="form-interv">
+            <input type="text" id="iv-local" placeholder="Local (ex.: Zona quente nº 3)" required>
+            <select id="iv-tipo">
+              <option>Tempo de semáforo ajustado</option>
+              <option>Faixa de pedestre repintada</option>
+              <option>Ponto de ônibus recuado</option>
+              <option>Sinalização de curva reforçada</option>
+              <option>Redutor de velocidade instalado</option>
+            </select>
+            <input type="date" id="iv-data">
+            <button type="submit" class="chip on">acrescentar</button>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Últimas intervenções <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
+          <div id="interv-recentes"></div>
+        </div>
+      </div>
     </section>
 
-    <!-- ===================== #intervencoes ===================== -->
-    <section class="screen" id="screen-intervencoes" hidden>
+    <!-- ===================== #resultado ===================== -->
+    <section class="screen" id="screen-resultado" hidden>
       <div class="panel">
         <h2>Resumo das intervenções <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
         <div class="relatorio-stats" id="interv-resumo"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Nova intervenção <span class="tag tag-sint">DADO SINTÉTICO</span></h2>
-        <form class="form-interv" id="form-interv">
-          <input type="text" id="iv-local" placeholder="Local (ex.: Zona quente nº 3)" required>
-          <select id="iv-tipo">
-            <option>Tempo de semáforo ajustado</option>
-            <option>Faixa de pedestre repintada</option>
-            <option>Ponto de ônibus recuado</option>
-            <option>Sinalização de curva reforçada</option>
-            <option>Redutor de velocidade instalado</option>
-          </select>
-          <input type="date" id="iv-data">
-          <button type="submit" class="chip on">acrescentar</button>
-        </form>
       </div>
 
       <div class="panel">
@@ -680,6 +787,16 @@
       </div>
 
       <div class="panel">
+        <h2>Rua com Memória <span class="sub-note">problema vem de ocorrência real (MEDIDO) · o resto é DADO SINTÉTICO</span></h2>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">cada ponto tem uma história: problema → evidência → intervenção → resultado, com data e fonte de cada registro.</div>
+        <div class="memoria-sel">
+          <span class="ctrl-label">Ponto</span>
+          <select id="memoria-select"></select>
+        </div>
+        <div id="memoria-timeline"></div>
+      </div>
+
+      <div class="panel">
         <h2>O ciclo</h2>
         <div class="ciclo-row">
           <span class="ciclo-step">1. detectar</span><span class="ciclo-arrow">→</span>
@@ -690,6 +807,9 @@
         </div>
       </div>
 
+      <div class="panel relatorio-print" id="relatorio-conteudo"></div>
+      <button class="chip on" id="btn-imprimir">imprimir</button>
+
       <div class="panel">
         <h2>Privacidade por desenho</h2>
         <div class="selos">
@@ -699,12 +819,6 @@
           <span class="selo"><span class="ico">✓</span> processamento na máquina onde a imagem já está</span>
         </div>
       </div>
-    </section>
-
-    <!-- ===================== #relatorios ===================== -->
-    <section class="screen" id="screen-relatorios" hidden>
-      <div class="panel relatorio-print" id="relatorio-conteudo"></div>
-      <button class="chip on" id="btn-imprimir">imprimir</button>
     </section>
 
   </main>
@@ -721,6 +835,17 @@
   "use strict";
 
   var SCREENS = ['controle','zonas','fontes','frota','vagas','intervencoes','relatorios'];
+  // ---------- 3 telas (evolução 2026-09-19 tarde) ----------
+  var TELAS = ['agora','decidir','resultado'];
+  var LEGACY_TELA_MAP = {
+    controle:      { tela:'agora',    aba:'transito' },
+    zonas:         { tela:'agora',    aba:'zonas' },
+    frota:         { tela:'agora',    aba:'frota' },
+    fontes:        { tela:'decidir',  ancora:'fontes' },
+    vagas:         { tela:'decidir',  ancora:'vagas' },
+    intervencoes:  { tela:'decidir',  ancora:'registrar' },
+    relatorios:    { tela:'resultado', ancora:null }
+  };
 
   // ---------- Relógio ----------
   function tickClock(){
@@ -781,10 +906,13 @@
     showCalor: true,
     showZonas: true,
     showCameras: true,
+    showFluxo: true,
     cenario: 100,
     fontesSimuladas: {},
     telaAtual: 'controle',
+    abaAgora: 'transito',
     zonaSelecionada: 0,
+    memoriaSelZona: 0,
     intervPrefill: null,
     filaAlertas: [],
     decisoes: []
@@ -843,7 +971,7 @@
   }
 
   // ---------- #controle: mapa principal ----------
-  var mapControle = null, heatLayer = null, zonasLayer = null, camerasLayer = null;
+  var mapControle = null, heatLayer = null, zonasLayer = null, camerasLayer = null, fluxoLayer = null;
   var mapControleInit = false;
 
   var LEGENDA_CONTROLE =
@@ -860,6 +988,8 @@
     renderHeat();
     renderZonas();
     renderCameras();
+    renderFluxoVias();
+    renderCamadasBox();
   }
 
   function ocorrenciasFiltradas(){
@@ -983,6 +1113,88 @@
     camerasLayer.addTo(mapControle);
   }
 
+  // ---------- Fluxo nas vias (DADO SINTÉTICO — 25 trechos entre zonas quentes reais e câmeras simuladas) ----------
+  var FLUXO_CACHE = null;
+  function gerarFluxoVias(){
+    if(FLUXO_CACHE) return FLUXO_CACHE;
+    var zonas = computarZonas();
+    var pos = DATA.posicoes.slice(0, 40);
+    var nos = zonas.map(function(z){ return [z.lat, z.lon]; }).concat(pos);
+    var rnd = mulberry32(seedFor('VISAODEROTA-FLUXOVIAS') + 5);
+    var trechos = [];
+    var tentativas = 0;
+    while(trechos.length < 25 && tentativas < 300){
+      tentativas++;
+      var a = nos[Math.floor(rnd()*nos.length)];
+      var b = nos[Math.floor(rnd()*nos.length)];
+      if(!a || !b || a === b) continue;
+      if(distMetros(a[0],a[1],b[0],b[1]) < 60) continue;
+      var rel = 0.55 + rnd()*1.15;
+      trechos.push({ a:a, b:b, rel:rel });
+    }
+    FLUXO_CACHE = trechos;
+    return trechos;
+  }
+  function corFluxo(rel){
+    return rel < 1.0 ? '#2E9E6B' : (rel < 1.3 ? '#E8A33D' : '#D6453D');
+  }
+  function renderFluxoVias(){
+    if(!mapControle) return;
+    if(fluxoLayer){ mapControle.removeLayer(fluxoLayer); fluxoLayer = null; }
+    if(!state.showFluxo) return;
+    fluxoLayer = L.layerGroup();
+    gerarFluxoVias().forEach(function(t, idx){
+      var line = L.polyline([t.a, t.b], { color: corFluxo(t.rel), weight:5, opacity:0.82 });
+      line.on('click', function(){
+        var pct = Math.round((t.rel-1)*100);
+        line.bindPopup('<b>Trecho '+(idx+1)+'</b><br>fluxo atual ÷ habitual: '+t.rel.toFixed(2)+'× ('+(pct>=0?'+':'')+pct+'%)<br><span style="color:#9AA5B1;">DADO SINTÉTICO — traçado reto entre nós, não segue a rua exata</span>').openPopup();
+      });
+      line.addTo(fluxoLayer);
+    });
+    fluxoLayer.addTo(mapControle);
+  }
+
+  // ---------- Seletor de camadas (lista de caixas de marcar sobre o mapa) ----------
+  var CAMADAS_DEF = [
+    { id:'fluxo', label:'Fluxo nas vias', tag:'SINTÉTICO', tagCls:'tag-sint', stateKey:'showFluxo', render:function(){ renderFluxoVias(); } },
+    { id:'calor', label:'Calor de ocorrências', tag:'MEDIDO', tagCls:'tag-medido', stateKey:'showCalor', render:function(){ renderHeat(); } },
+    { id:'zonas', label:'Zonas quentes', tag:'MEDIDO', tagCls:'tag-medido', stateKey:'showZonas', render:function(){ renderZonas(); } },
+    { id:'cameras', label:'Câmeras', tag:'SIMULAÇÃO', tagCls:'tag-sim', stateKey:'showCameras', render:function(){ renderCameras(); } }
+  ];
+  var CAMADAS_LINKS = [
+    { label:'Frota', tag:'SINTÉTICO', hash:'agora:frota' },
+    { label:'Vagas', tag:'SINTÉTICO', hash:'decidir:vagas' },
+    { label:'Intervenções', tag:'SINTÉTICO', hash:'decidir:registrar' }
+  ];
+  var camadasWired = false;
+  function renderCamadasBox(){
+    var wrap = document.getElementById('camadas-list');
+    if(!wrap) return;
+    wrap.innerHTML = CAMADAS_DEF.map(function(c){
+      return '<label class="camada-item"><input type="checkbox" data-camada="'+c.id+'"'+(state[c.stateKey]?' checked':'')+'><span>'+c.label+'</span><span class="camada-tag '+c.tagCls+'">'+c.tag+'</span></label>';
+    }).join('') + CAMADAS_LINKS.map(function(l){
+      return '<a class="camada-item camada-link" href="#'+l.hash+'"><span>→ '+l.label+'</span><span class="camada-tag tag-sint">'+l.tag+'</span></a>';
+    }).join('');
+    Array.prototype.forEach.call(wrap.querySelectorAll('input[data-camada]'), function(cb){
+      cb.addEventListener('change', function(){
+        var def = CAMADAS_DEF.filter(function(c){ return c.id === cb.getAttribute('data-camada'); })[0];
+        if(!def) return;
+        state[def.stateKey] = cb.checked;
+        def.render();
+      });
+    });
+    if(!camadasWired){
+      camadasWired = true;
+      var head = document.getElementById('camadas-head');
+      if(head){
+        head.addEventListener('click', function(){
+          var box = document.getElementById('camadas-box');
+          if(box) box.classList.toggle('fechado');
+        });
+      }
+    }
+  }
+
   function cenarioAtual(){
     var found = DATA.cenarios.find(function(c){ return c.cameras === state.cenario; });
     return found || DATA.cenarios[0];
@@ -1004,6 +1216,25 @@
       } else {
         note.textContent = c.maquinas + ' máquinas de leitura estimadas (SIMULAÇÃO) · ' + c.graves_fatais_cobertas + ' ocorrências graves/fatais cobertas (' + String(c.pct_graves_fatais).replace('.', ',') + '%).';
       }
+    }
+  }
+
+  // ---------- Indicadores sintéticos do topo (#agora) ----------
+  function updateIndicadoresTopo(){
+    var rnd = mulberry32(seedFor('VISAODEROTA-INDICADORES') + 11);
+    var elV = document.getElementById('stat-veiculos-agora');
+    if(elV) elV.textContent = Math.round(3800 + rnd()*3400).toLocaleString('pt-BR');
+    var zonas = computarZonas();
+    var anormais = 0;
+    zonas.forEach(function(z, i){
+      if(situacaoDoPonto('VISAODEROTA-ZONA-'+i).nivel !== 'normal') anormais++;
+    });
+    var elP = document.getElementById('stat-pontos-anormais');
+    if(elP) elP.textContent = anormais + ' de ' + zonas.length;
+    var elF = document.getElementById('stat-fluidez-mes');
+    if(elF){
+      var fluidez = Math.round((rnd()*24 - 8));
+      elF.textContent = (fluidez>=0?'+':'') + fluidez + '%';
     }
   }
 
@@ -1283,7 +1514,7 @@
     setInterval(function(){
       if(state.filaAlertas.length < 8){
         state.filaAlertas.push(novoAlerta());
-        if(state.telaAtual === 'controle'){ renderAlertas(); }
+        if(state.telaAtual === 'agora'){ renderAlertas(); }
       }
     }, 25000);
   }
@@ -1626,6 +1857,7 @@
 
     renderIntervResumo();
     renderIntervChart();
+    renderIntervRecentes();
   }
 
   function renderIntervResumo(){
@@ -1670,6 +1902,17 @@
       renderIntervencoesTabela();
       form.reset();
     });
+  }
+
+  // ---------- #decidir: lista leve das últimas intervenções (mesmo dado de gerarIntervencoes) ----------
+  function renderIntervRecentes(){
+    var wrap = document.getElementById('interv-recentes');
+    if(!wrap) return;
+    var dados = gerarIntervencoes().slice().reverse();
+    wrap.innerHTML = dados.map(function(r){
+      var statusTxt = (typeof r.antes === 'number') ? ('antes×depois em ' + '<a href="#resultado" style="color:var(--amber);">O que mudou depois</a>') : 'recém-criada, sem medição ainda';
+      return '<div class="decisao-row"><span>'+r.local+' — '+r.tipo+'</span><span class="quem">'+r.data+' · '+statusTxt+'</span></div>';
+    }).join('') || '<div style="color:var(--gray);font-size:12px;">nenhuma intervenção ainda.</div>';
   }
 
   // ---------- #relatorios ----------
@@ -1746,6 +1989,199 @@
   }
 
   // ---------- Painel lateral: câmera / zona (evolução 2026-09-19) ----------
+  // ---------- Situação do ponto + possíveis causas (hipótese por regra simples, declarada) ----------
+  function situacaoDoPonto(seedKey){
+    var rnd = mulberry32(seedFor(seedKey) + 77);
+    var r = rnd();
+    var nivel = r < 0.55 ? 'normal' : (r < 0.83 ? 'acima' : 'critica');
+    var permanencia = Math.round(5 + rnd()*40);
+    return { nivel:nivel, permanencia:permanencia };
+  }
+  var SITUACAO_LABEL = { normal:'normal', acima:'acima do normal', critica:'crítica' };
+  var SITUACAO_CLASSE = { normal:'situacao-normal', acima:'situacao-acima', critica:'situacao-critica' };
+  function causasPossiveis(nivel, seedKey){
+    if(nivel === 'normal') return [];
+    var rnd = mulberry32(seedFor(seedKey) + 88);
+    var pool = ['horário de pico', 'ocorrência próxima nas últimas horas', 'intervenção ativa no entorno', 'evento na região'];
+    var n = nivel === 'critica' ? 3 : 2;
+    var copia = pool.slice();
+    for(var i=copia.length-1;i>0;i--){ var j = Math.floor(rnd()*(i+1)); var tmp=copia[i]; copia[i]=copia[j]; copia[j]=tmp; }
+    return copia.slice(0, n);
+  }
+  function situacaoBlocoHtml(sit, causas){
+    var html = '<div class="situacao-badge '+SITUACAO_CLASSE[sit.nivel]+'">● situação: '+SITUACAO_LABEL[sit.nivel]+' · permanência: '+sit.permanencia+' min</div>';
+    if(causas.length){
+      html += '<div><b style="font-size:11px;color:var(--gray);">possíveis causas</b><ul class="causas-list">'+
+        causas.map(function(c){ return '<li>'+c+'</li>'; }).join('')+
+        '</ul><div class="causas-nota">hipóteses por regra simples — a pessoa confirma.</div></div>';
+    }
+    return html;
+  }
+
+  // ---------- Histórico: fluxo atual × habitual ao longo do dia ----------
+  function histDualHtml(habitual, atual){
+    var max = 1;
+    habitual.forEach(function(v,i){ if(v>max) max=v; if(atual[i]>max) max=atual[i]; });
+    return '<div class="hist-dual">' + habitual.map(function(hv, hh){
+      var av = atual[hh];
+      var pctA = Math.max(3, Math.round(av/max*100));
+      var pctH = Math.max(3, Math.round(hv/max*100));
+      return '<div class="hist-dual-col" title="'+hh+'h — atual ~'+av+' · habitual ~'+hv+'"><div class="hist-dual-habitual-tick" style="bottom:'+pctH+'%"></div><div class="hist-dual-atual" style="height:'+pctA+'%"></div></div>';
+    }).join('') + '</div>';
+  }
+  function historicoBlocoHtml(seedKey, periodo, tituloCtx){
+    periodo = periodo || 'hoje';
+    var horaAgora = new Date().getHours();
+    var rndBase = mulberry32(seedFor(seedKey) + 501);
+    var habitual = [];
+    for(var hr=0; hr<24; hr++){
+      var curva = Math.exp(-Math.pow(hr-8,2)/8) + Math.exp(-Math.pow(hr-18,2)/10)*1.15 + 0.15;
+      habitual.push(Math.max(1, Math.round((6 + rndBase()*10) * curva)));
+    }
+    var sit = situacaoDoPonto(seedKey);
+    var rndAtual = mulberry32(seedFor(seedKey + '-' + periodo) + 909);
+    var atual = habitual.map(function(hv, hh){
+      var fator;
+      if(hh === horaAgora){
+        fator = sit.nivel === 'critica' ? (1.5+rndAtual()*0.3) : (sit.nivel === 'acima' ? (1.15+rndAtual()*0.25) : (0.9+rndAtual()*0.2));
+      } else {
+        fator = 0.82 + rndAtual()*0.32;
+      }
+      return Math.max(1, Math.round(hv*fator));
+    });
+    var diffPct = Math.round((atual[horaAgora]-habitual[horaAgora]) / habitual[horaAgora] * 100);
+    var periodoLbl = periodo === '30d' ? 'últimos 30 dias' : (periodo === '7d' ? 'últimos 7 dias' : 'hoje');
+    return '<div class="painel-hist-sel">'+
+        '<button class="chip'+(periodo==='hoje'?' on':'')+'" data-periodo="'+ (tituloCtx||'hist') +':hoje">hoje</button>'+
+        '<button class="chip'+(periodo==='7d'?' on':'')+'" data-periodo="'+ (tituloCtx||'hist') +':7d">7 dias</button>'+
+        '<button class="chip'+(periodo==='30d'?' on':'')+'" data-periodo="'+ (tituloCtx||'hist') +':30d">30 dias</button>'+
+      '</div>'+
+      '<div class="hist-legend"><span><span class="hist-swatch" style="background:var(--amber);"></span>fluxo atual</span><span><span class="hist-swatch" style="background:#9AA5B1;height:3px;"></span>fluxo habitual</span></div>'+
+      histDualHtml(habitual, atual)+
+      '<div class="hist-diff">agora ('+horaAgora+'h, '+periodoLbl+'): <b style="color:'+(diffPct>0?'var(--amber)':'var(--green)')+';">'+(diffPct>=0?'+':'')+diffPct+'%</b> em relação ao habitual</div>';
+  }
+
+  // ---------- Antes × depois por ponto (reaproveita gerarIntervencoes) ----------
+  function antesDepoisHtml(localLabel){
+    var interv = gerarIntervencoes().filter(function(r){ return r.local === localLabel; })[0];
+    if(!interv || typeof interv.antes !== 'number'){
+      return '<div style="color:var(--gray);font-size:12px;">sem intervenção com antes×depois registrada neste ponto ainda. <a href="#decidir:registrar" style="color:var(--amber);">registrar uma</a></div>';
+    }
+    var max = Math.max(interv.antes, interv.depois, 1);
+    var pctA = Math.round(interv.antes/max*100), pctD = Math.round(interv.depois/max*100);
+    var melhora = interv.variacao <= 0;
+    return '<div style="font-size:11.5px;color:var(--gray);margin-bottom:8px;">tipo: '+interv.tipo+' · '+interv.metrica+'</div>'+
+      '<div class="bar-wrap" style="margin-bottom:6px;"><span style="width:44px;">antes</span><div class="bar before"><i style="width:'+pctA+'%"></i></div><span>'+interv.antes+'</span></div>'+
+      '<div class="bar-wrap"><span style="width:44px;">depois</span><div class="bar after"><i style="width:'+pctD+'%"></i></div><span>'+interv.depois+'</span></div>'+
+      '<div style="margin-top:10px;font-weight:700;color:'+(melhora?'var(--green)':'var(--red)')+';">'+(interv.variacao>0?'+':'')+interv.variacao+'% — '+(melhora?'avaliação positiva':'sem melhora')+'</div>';
+  }
+
+  // ---------- Desenho esquemático de cruzamento (canvas, nunca foto) ----------
+  function desenharCruzamento(canvasId, seedKey){
+    var cv = document.getElementById(canvasId);
+    if(!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d');
+    var w = cv.width, h = cv.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#0A1826'; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = '#243449';
+    ctx.fillRect(0, h/2-34, w, 68);
+    ctx.fillRect(w/2-34, 0, 68, h);
+    ctx.strokeStyle = '#E8A33D'; ctx.lineWidth = 2; ctx.setLineDash([9,9]);
+    ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(w/2,0); ctx.lineTo(w/2,h); ctx.stroke();
+    ctx.setLineDash([]);
+    var rnd = mulberry32(seedFor(seedKey) + 13);
+    ctx.fillStyle = '#E8A33D';
+    for(var i=0;i<6;i++){
+      var horizontal = rnd() > 0.5;
+      if(horizontal){
+        ctx.fillRect(rnd()*w, h/2-26+rnd()*44, 15, 8);
+      } else {
+        ctx.fillRect(w/2-26+rnd()*44, rnd()*h, 8, 15);
+      }
+    }
+    ctx.strokeStyle = 'rgba(246,248,250,0.15)'; ctx.lineWidth = 1;
+    ctx.strokeRect(0.5,0.5,w-1,h-1);
+  }
+
+  // ---------- Rua com Memória: Problema → Evidência → Intervenção → Resultado ----------
+  function localLabelDaZona(i){ return 'Zona quente nº ' + (i+1); }
+  function gerarMemoria(zonaIdx){
+    var zonas = computarZonas();
+    var z = zonas[zonaIdx];
+    var localLabel = localLabelDaZona(zonaIdx);
+    var eventos = [];
+    if(z && z.mesPico){
+      eventos.push({ tipo:'problema', titulo:'Problema', data: mesLabel(z.mesPico), tag:'MEDIDO', fonte:'registro de ocorrência',
+        texto:'Concentração de ocorrências identificada — '+z.count+' no total, '+z.gf+' graves/fatais, pico em '+mesLabel(z.mesPico)+'.' });
+    }
+    var rnd = mulberry32(seedFor('VISAODEROTA-MEMORIA-'+zonaIdx) + 55);
+    var pctFluxo = Math.round(15 + rnd()*40);
+    eventos.push({ tipo:'evidencia', titulo:'Evidência', data:'leitura contínua', tag:'DADO SINTÉTICO', fonte:'leitura de câmera',
+      texto:'Leitura de câmera simulada aponta fluxo '+pctFluxo+'% acima do habitual no horário de pico.' });
+    var interv = gerarIntervencoes().filter(function(r){ return r.local === localLabel; })[0];
+    if(interv){
+      eventos.push({ tipo:'intervencao', titulo:'Intervenção', data: interv.data, tag:'DADO SINTÉTICO', fonte:'decisão do gestor', texto: interv.tipo });
+      if(typeof interv.antes === 'number'){
+        var melhora = interv.variacao <= 0;
+        eventos.push({ tipo:'resultado', titulo:'Resultado', data:'14 dias depois', tag:'DADO SINTÉTICO', fonte:'leitura de câmera',
+          texto: interv.metrica+': '+interv.antes+' → '+interv.depois+' ('+(interv.variacao>0?'+':'')+interv.variacao+'%) — '+(melhora?'melhora':'sem melhora')+'.' });
+      }
+    }
+    return eventos;
+  }
+  var MEMORIA_ICO = { problema:'⚠', evidencia:'◉', intervencao:'⚙', resultado:'✓' };
+  function renderMemoriaTimeline(eventos, elId){
+    var wrap = document.getElementById(elId);
+    if(!wrap) return;
+    if(!eventos.length){ wrap.innerHTML = '<div style="color:var(--gray);font-size:12px;">sem histórico registrado neste ponto ainda.</div>'; return; }
+    wrap.innerHTML = '<div class="memoria-timeline">' + eventos.map(function(e){
+      return '<div class="memoria-evento">'+
+        '<div class="memoria-ico '+e.tipo+'">'+(MEMORIA_ICO[e.tipo]||'•')+'</div>'+
+        '<div class="memoria-body">'+
+          '<div class="memoria-top"><span>'+e.titulo+'</span><span class="memoria-data">'+e.data+'</span></div>'+
+          '<div class="memoria-texto">'+e.texto+'</div>'+
+          '<div class="memoria-fonte"><span class="tag '+(e.tag==='MEDIDO'?'tag-medido':'tag-sint')+'" style="font-size:8px;padding:1px 5px;">'+e.tag+'</span> fonte: '+e.fonte+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('') + '</div>';
+  }
+  function memoriaResumoMiniHtml(zonaIdx){
+    var eventos = gerarMemoria(zonaIdx).slice(0,4);
+    if(!eventos.length) return '<div style="color:var(--gray);font-size:11.5px;">sem histórico ainda.</div>';
+    return eventos.map(function(e){
+      return '<div class="memoria-resumo-mini"><b>'+e.titulo+' ('+e.data+'):</b> '+e.texto+'</div>';
+    }).join('');
+  }
+  function renderMemoriaResultado(){
+    var sel = document.getElementById('memoria-select');
+    if(!sel) return;
+    var zonas = computarZonas();
+    if(!sel.options.length){
+      sel.innerHTML = zonas.map(function(z,i){ return '<option value="'+i+'">Zona quente nº '+(i+1)+(i===0?' — mais crítica':'')+'</option>'; }).join('');
+      sel.addEventListener('change', function(){
+        state.memoriaSelZona = parseInt(sel.value,10) || 0;
+        renderMemoriaTimeline(gerarMemoria(state.memoriaSelZona), 'memoria-timeline');
+      });
+    }
+    var idx = (typeof state.memoriaSelZona === 'number') ? state.memoriaSelZona : 0;
+    sel.value = String(idx);
+    renderMemoriaTimeline(gerarMemoria(idx), 'memoria-timeline');
+  }
+  window.vrIrParaMemoria = function(zonaIdx){
+    state.memoriaSelZona = zonaIdx;
+    location.hash = 'resultado';
+  };
+
+  // ---------- Abas do painel lateral (Visão geral / Histórico / Antes×Depois / Câmeras) ----------
+  var PAINEL_ABAS = [['geral','Visão geral'], ['historico','Histórico'], ['antesdepois','Antes × Depois'], ['cameras','Câmeras']];
+  function painelTabsHtml(abaAtual){
+    return '<div class="painel-tabs">' + PAINEL_ABAS.map(function(a){
+      return '<button class="chip painel-tab-btn'+(abaAtual===a[0]?' on':'')+'" data-tab="'+a[0]+'">'+a[1]+'</button>';
+    }).join('') + '</div>';
+  }
+
   function painelMostrar(html){
     var root = document.getElementById('painel-lateral-root');
     if(!root) return;
@@ -1858,7 +2294,8 @@
     };
   }
 
-  function renderPainelCamera(k, periodo){
+  function renderPainelCamera(k, aba, periodo){
+    aba = aba || 'geral';
     periodo = periodo || 'hoje';
     var pos = posicoesCenario(state.cenario);
     var p = pos[k-1];
@@ -1870,92 +2307,75 @@
     var lat = p[0], lon = p[1];
     var reais = ocorrenciasPertoDe(lat, lon, 100);
     var gf = reais.filter(function(o){ return o.p==='G'||o.p==='F'; }).length;
-    var porMes = {};
-    reais.forEach(function(o){
-      var chave = o.a+'-'+String(o.m).padStart(2,'0');
-      porMes[chave] = (porMes[chave]||0)+1;
-    });
-    var mesesOrd = Object.keys(porMes).sort();
-    var maxMes = 1; mesesOrd.forEach(function(m){ if(porMes[m]>maxMes) maxMes=porMes[m]; });
-    var mesesHtml = mesesOrd.length ? mesesOrd.map(function(m){
-      var v = porMes[m]; var pct = Math.max(4, Math.round(v/maxMes*100));
-      return '<div class="mes-bar"><div class="mes-bar-fill" style="height:'+pct+'%"></div><div class="mes-bar-val">'+v+'</div><div class="mes-bar-lbl">'+mesLabel(m)+'</div></div>';
-    }).join('') : '<div style="color:var(--gray);font-size:11.5px;">nenhuma ocorrência real a até 100 m</div>';
+    var seedKey = 'VISAODEROTA-CAM-' + k;
+    var sit = situacaoDoPonto(seedKey);
+    var causas = causasPossiveis(sit.nivel, seedKey);
+    var zonaProx = zonaMaisProxima(lat, lon);
+    var localLabel = zonaProx ? localLabelDaZona(zonaProx.idx) : null;
 
-    var periodoDias = periodo==='30d' ? 30 : (periodo==='7d' ? 7 : 1);
-    var leitura = gerarLeituraCamera(k, periodoDias);
-    var direita = Math.max(0, 100 - leitura.conv.segue - leitura.conv.esquerda);
-
-    var maxHora = 1; leitura.horas.forEach(function(v){ if(v>maxHora) maxHora=v; });
-    var horasHtml = leitura.horas.map(function(v,hh){
-      var pct = Math.max(3, Math.round(v/maxHora*100));
-      return '<div class="hora-bar" title="'+hh+'h: ~'+v+'"><div class="hora-bar-fill" style="height:'+pct+'%"></div></div>';
-    }).join('');
-
-    var tiposHtml = TIPOS_VEICULO.map(function(t){
-      return '<div class="tipo-item"><span>'+t.label+'</span><b>'+(leitura.porTipo[t.k]||0).toLocaleString('pt-BR')+'</b></div>';
-    }).join('');
-
-    var eventosHtml = leitura.eventos.map(function(e){
-      return '<div class="painel-lista-evento"><span>'+e.texto+'</span><span class="hora">'+e.hora+'</span></div>';
-    }).join('');
-
-    var agora = new Date();
-    var pad = function(n){ return String(n).padStart(2,'0'); };
-    var ultimaLeitura = pad(agora.getHours())+':'+pad(agora.getMinutes());
-    var periodoLbl = periodo==='30d' ? '30 dias' : (periodo==='7d' ? '7 dias' : 'hoje');
+    var corpo = '';
+    if(aba === 'geral'){
+      var porMes = {};
+      reais.forEach(function(o){
+        var chave = o.a+'-'+String(o.m).padStart(2,'0');
+        porMes[chave] = (porMes[chave]||0)+1;
+      });
+      var mesesOrd = Object.keys(porMes).sort();
+      var maxMes = 1; mesesOrd.forEach(function(m){ if(porMes[m]>maxMes) maxMes=porMes[m]; });
+      var mesesHtml = mesesOrd.length ? mesesOrd.map(function(m){
+        var v = porMes[m]; var pct = Math.max(4, Math.round(v/maxMes*100));
+        return '<div class="mes-bar"><div class="mes-bar-fill" style="height:'+pct+'%"></div><div class="mes-bar-val">'+v+'</div><div class="mes-bar-lbl">'+mesLabel(m)+'</div></div>';
+      }).join('') : '<div style="color:var(--gray);font-size:11.5px;">nenhuma ocorrência real a até 100 m</div>';
+      var leituraR = gerarLeituraCamera(k, 1);
+      corpo = situacaoBlocoHtml(sit, causas)+
+        '<div class="painel-bloco"><h4>Ocorrências reais a até 100 m <span class="tag tag-medido">MEDIDO</span></h4>'+
+          '<div style="font-size:13px;margin-bottom:8px;">'+reais.length+' ocorrência(s) · '+gf+' grave(s)/fatal(is)</div>'+
+          '<div class="mes-chart">'+mesesHtml+'</div>'+
+        '</div>'+
+        '<div class="painel-bloco"><h4>Leitura agora <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+          '<div style="font-size:12.5px;">agora: <b>~'+leituraR.agora+'</b> veículos/pessoas · fila média <b>'+leituraR.filaMedia+' m</b> · '+leituraR.saudePct+'% do tempo com imagem útil</div>'+
+        '</div>'+
+        (localLabel ? '<div class="painel-bloco"><h4>Rua com Memória — resumo <span class="tag tag-sint">DADO SINTÉTICO parcial</span></h4>'+
+          memoriaResumoMiniHtml(zonaProx.idx)+
+          '<button class="chip" id="painel-ver-historia" style="margin-top:8px;">ver a história completa →</button>'+
+        '</div>' : '')+
+        '<div class="painel-btns">'+
+          '<button class="chip" id="painel-ver-zona">ver zona quente mais próxima</button>'+
+          '<button class="chip on" id="painel-criar-interv">criar intervenção aqui</button>'+
+        '</div>';
+    } else if(aba === 'historico'){
+      corpo = '<div class="painel-bloco"><h4>Fluxo atual × habitual <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+        historicoBlocoHtml(seedKey, periodo, 'cam') +
+      '</div>';
+    } else if(aba === 'antesdepois'){
+      corpo = '<div class="painel-bloco"><h4>Antes × Depois <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+        (localLabel ? antesDepoisHtml(localLabel) : '<div style="color:var(--gray);font-size:12px;">sem zona quente próxima para comparar.</div>')+
+      '</div>';
+    } else if(aba === 'cameras'){
+      corpo = '<div class="painel-bloco"><h4>Câmera nº '+k+' <span class="tag tag-sim">SIMULAÇÃO</span></h4>'+
+        '<div class="cam-canvas-wrap"><canvas id="cam-canvas-'+k+'" width="320" height="200"></canvas>'+
+        '<div style="font-size:10.5px;color:var(--gray);margin-top:6px;">desenho esquemático do cruzamento — nunca foto</div>'+
+        '<a class="cam-parede-link" href="parede.html">abrir na parede de monitores →</a></div>'+
+      '</div>';
+    }
 
     var html =
       '<div class="painel-head"><h2>Câmera nº '+k+' — posição simulada</h2><button class="painel-x" id="painel-fechar-btn">✕</button></div>'+
       '<div class="painel-sub"><span class="tag tag-sim">SIMULAÇÃO</span> posição é célula calculada, não câmera existente</div>'+
-
-      '<div class="painel-bloco"><h4>Ocorrências reais a até 100 m <span class="tag tag-medido">MEDIDO</span></h4>'+
-        '<div style="font-size:13px;margin-bottom:8px;">'+reais.length+' ocorrência(s) · '+gf+' grave(s)/fatal(is)</div>'+
-        '<div class="mes-chart">'+mesesHtml+'</div>'+
-      '</div>'+
-
-      '<div class="painel-bloco"><h4>O que esta câmera contaria <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
-        '<div class="painel-hist-sel">'+
-          '<button class="chip'+(periodo==='hoje'?' on':'')+'" data-periodo="hoje">hoje</button>'+
-          '<button class="chip'+(periodo==='7d'?' on':'')+'" data-periodo="7d">7 dias</button>'+
-          '<button class="chip'+(periodo==='30d'?' on':'')+'" data-periodo="30d">30 dias</button>'+
-        '</div>'+
-        '<div style="font-size:12.5px;margin-bottom:8px;">agora: <b>~'+leitura.agora+'</b> veículos/pessoas · últimas 24 h: <b>'+leitura.totalHoje+'</b> · '+periodoLbl+' (acumulado): <b>'+Object.keys(leitura.porTipo).reduce(function(s,k2){return s+leitura.porTipo[k2];},0).toLocaleString('pt-BR')+'</b></div>'+
-        '<div class="sint-row">'+
-          '<div class="sint-col"><h4>Fluxo por hora (dia típico)</h4><div class="hora-chart">'+horasHtml+'</div></div>'+
-          '<div class="sint-col"><h4>Por tipo (período)</h4><div class="tipos-list">'+tiposHtml+'</div></div>'+
-        '</div>'+
-        '<div class="sint-row2">'+
-          '<div><b>'+leitura.filaMedia+' m</b><span>fila média</span></div>'+
-          '<div><b>'+leitura.filaMax+' m</b><span>fila máxima</span></div>'+
-          '<div><b>'+leitura.velMedia+' km/h</b><span>velocidade média</span></div>'+
-          '<div><b>'+leitura.quaseAcidentes+'</b><span>quase-acidentes/semana</span></div>'+
-        '</div>'+
-        '<h4 style="margin-top:12px;">Conversões por movimento</h4>'+
-        '<div class="tipos-list">'+
-          '<div class="tipo-item"><span>segue em frente</span><b>'+leitura.conv.segue+'%</b></div>'+
-          '<div class="tipo-item"><span>vira à esquerda</span><b>'+leitura.conv.esquerda+'%</b></div>'+
-          '<div class="tipo-item"><span>vira à direita</span><b>'+direita+'%</b></div>'+
-        '</div>'+
-        '<h4 style="margin-top:12px;">Eventos vistos na semana</h4>'+
-        eventosHtml+
-      '</div>'+
-
-      '<div class="painel-bloco"><h4>Saúde da leitura <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
-        '<div style="font-size:12.5px;">'+leitura.saudePct+'% do tempo com imagem útil · última leitura '+ultimaLeitura+'</div>'+
-        '<span class="saude-selo">✓ sem rosto · sem placa · imagem descartada após a contagem</span>'+
-      '</div>'+
-
-      '<div class="painel-btns">'+
-        '<button class="chip" id="painel-ver-zona">ver zona quente mais próxima</button>'+
-        '<button class="chip on" id="painel-criar-interv">criar intervenção aqui</button>'+
-      '</div>';
+      painelTabsHtml(aba) +
+      corpo;
 
     painelMostrar(html);
     destacarEPanComPainel(lat, lon);
 
+    Array.prototype.forEach.call(document.querySelectorAll('#painel-lateral-root .painel-tab-btn'), function(btn){
+      btn.addEventListener('click', function(){ renderPainelCamera(k, btn.getAttribute('data-tab'), periodo); });
+    });
     Array.prototype.forEach.call(document.querySelectorAll('#painel-lateral-root [data-periodo]'), function(btn){
-      btn.addEventListener('click', function(){ renderPainelCamera(k, btn.getAttribute('data-periodo')); });
+      btn.addEventListener('click', function(){
+        var val = (btn.getAttribute('data-periodo')||'').split(':')[1] || 'hoje';
+        renderPainelCamera(k, 'historico', val);
+      });
     });
     var btnZona = document.getElementById('painel-ver-zona');
     if(btnZona) btnZona.addEventListener('click', function(){
@@ -1969,23 +2389,32 @@
       painelFechar();
       location.hash = 'intervencoes';
     });
+    var btnHistoria = document.getElementById('painel-ver-historia');
+    if(btnHistoria) btnHistoria.addEventListener('click', function(){
+      var z = zonaMaisProxima(lat, lon);
+      painelFechar();
+      if(z) window.vrIrParaMemoria(z.idx);
+    });
+    if(aba === 'cameras'){ desenharCruzamento('cam-canvas-'+k, 'CAM-'+k); }
   }
 
-  window.abrirPainelCamera = function(k){
+  window.abrirPainelCamera = function(k, aba){
     var kn = parseInt(k,10) || 1;
-    if(state.telaAtual !== 'controle'){ location.hash = 'controle'; }
-    renderPainelCamera(kn, 'hoje');
+    var mapaVisivel = state.telaAtual === 'agora' && (state.abaAgora === 'transito' || state.abaAgora === 'zonas');
+    if(!mapaVisivel){ location.hash = 'controle'; }
+    renderPainelCamera(kn, aba || 'geral', 'hoje');
   };
 
-  function renderPainelZona(i){
+  function renderPainelZona(i, aba, periodo){
+    aba = aba || 'geral';
+    periodo = periodo || 'hoje';
     var zonas = computarZonas();
     var z = zonas[i];
     if(!z){ return; }
-    var maxMes = 1; z.mesesOrdenados.forEach(function(m){ if(z.porMes[m]>maxMes) maxMes=z.porMes[m]; });
-    var mesesHtml = z.mesesOrdenados.map(function(m){
-      var v = z.porMes[m]; var pct = Math.max(4, Math.round(v/maxMes*100));
-      return '<div class="mes-bar"><div class="mes-bar-fill" style="height:'+pct+'%"></div><div class="mes-bar-val">'+v+'</div><div class="mes-bar-lbl">'+mesLabel(m)+'</div></div>';
-    }).join('');
+    var localLabel = localLabelDaZona(i);
+    var seedKey = 'VISAODEROTA-ZONA-' + i;
+    var sit = situacaoDoPonto(seedKey);
+    var causas = causasPossiveis(sit.nivel, seedKey);
 
     var pos = posicoesCenario(state.cenario);
     var cobrem = [];
@@ -1993,20 +2422,58 @@
       if(distMetros(p[0],p[1],z.lat,z.lon) <= 250) cobrem.push(idx+1);
     });
 
+    var corpo = '';
+    if(aba === 'geral'){
+      var maxMes = 1; z.mesesOrdenados.forEach(function(m){ if(z.porMes[m]>maxMes) maxMes=z.porMes[m]; });
+      var mesesHtml = z.mesesOrdenados.map(function(m){
+        var v = z.porMes[m]; var pct = Math.max(4, Math.round(v/maxMes*100));
+        return '<div class="mes-bar"><div class="mes-bar-fill" style="height:'+pct+'%"></div><div class="mes-bar-val">'+v+'</div><div class="mes-bar-lbl">'+mesLabel(m)+'</div></div>';
+      }).join('');
+      corpo = situacaoBlocoHtml(sit, causas)+
+        '<div class="painel-bloco"><h4>Ocorrências por mês <span class="tag tag-medido">MEDIDO</span></h4>'+
+        '<div style="font-size:12px;color:var(--gray);margin-bottom:6px;">'+z.count+' ocorrências · '+z.gf+' graves/fatais · mês com mais ocorrências: '+(z.mesPico?mesLabel(z.mesPico):'—')+'</div>'+
+        '<div class="mes-chart">'+mesesHtml+'</div></div>'+
+        '<div class="painel-bloco"><h4>Rua com Memória — resumo <span class="tag tag-sint">DADO SINTÉTICO parcial</span></h4>'+
+          memoriaResumoMiniHtml(i)+
+          '<button class="chip" id="painel-ver-historia-zona" style="margin-top:8px;">ver a história completa →</button>'+
+        '</div>'+
+        '<div class="painel-btns">'+
+          '<button class="chip" id="painel-zona-completa">abrir ficha completa da zona</button>'+
+          '<button class="chip on" id="painel-criar-interv-zona">criar intervenção aqui</button>'+
+        '</div>';
+    } else if(aba === 'historico'){
+      corpo = '<div class="painel-bloco"><h4>Fluxo atual × habitual <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+        historicoBlocoHtml(seedKey, periodo, 'zona') +
+      '</div>';
+    } else if(aba === 'antesdepois'){
+      corpo = '<div class="painel-bloco"><h4>Antes × Depois <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+        antesDepoisHtml(localLabel)+
+      '</div>';
+    } else if(aba === 'cameras'){
+      corpo = '<div class="painel-bloco"><h4>Câmeras simuladas que cobrem esta zona <span class="tag tag-sim">SIMULAÇÃO</span></h4>'+
+        '<div class="painel-cams-cobrem">'+(cobrem.length ? ('câmera(s) nº '+cobrem.slice(0,12).join(', ')+(cobrem.length>12?'…':'')+' (raio de 250 m, cenário de '+pos.length+' câmeras)') : 'nenhuma câmera simulada a até 250 m neste cenário — aumente o cenário de câmeras em Centro de controle')+'</div>'+
+        (cobrem.length ? '<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">'+cobrem.slice(0,12).map(function(c){ return '<button class="chip painel-abrir-cam" data-cam="'+c+'">câmera nº '+c+'</button>'; }).join('')+'</div>' : '')+
+      '</div>';
+    }
+
     var html =
       '<div class="painel-head"><h2>Zona quente nº '+(i+1)+'</h2><button class="painel-x" id="painel-fechar-btn">✕</button></div>'+
-      '<div class="painel-sub"><span class="tag tag-medido">MEDIDO</span> '+z.count+' ocorrências · '+z.gf+' graves/fatais · mês com mais ocorrências: '+(z.mesPico?mesLabel(z.mesPico):'—')+'</div>'+
-      '<div class="painel-bloco"><h4>Ocorrências por mês <span class="tag tag-medido">MEDIDO</span></h4><div class="mes-chart">'+mesesHtml+'</div></div>'+
-      '<div class="painel-bloco"><h4>Câmeras simuladas que cobrem esta zona <span class="tag tag-sim">SIMULAÇÃO</span></h4>'+
-        '<div class="painel-cams-cobrem">'+(cobrem.length ? ('câmera(s) nº '+cobrem.slice(0,12).join(', ')+(cobrem.length>12?'…':'')+' (raio de 250 m, cenário de '+pos.length+' câmeras)') : 'nenhuma câmera simulada a até 250 m neste cenário — aumente o cenário de câmeras em Centro de controle')+'</div>'+
-      '</div>'+
-      '<div class="painel-btns">'+
-        '<button class="chip" id="painel-zona-completa">abrir ficha completa da zona</button>'+
-        '<button class="chip on" id="painel-criar-interv-zona">criar intervenção aqui</button>'+
-      '</div>';
+      '<div class="painel-sub"><span class="tag tag-medido">MEDIDO</span> ponto vem de coordenadas reais de ocorrência</div>'+
+      painelTabsHtml(aba) +
+      corpo;
 
     painelMostrar(html);
     destacarEPanComPainel(z.lat, z.lon);
+
+    Array.prototype.forEach.call(document.querySelectorAll('#painel-lateral-root .painel-tab-btn'), function(btn){
+      btn.addEventListener('click', function(){ renderPainelZona(i, btn.getAttribute('data-tab'), periodo); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#painel-lateral-root [data-periodo]'), function(btn){
+      btn.addEventListener('click', function(){
+        var val = (btn.getAttribute('data-periodo')||'').split(':')[1] || 'hoje';
+        renderPainelZona(i, 'historico', val);
+      });
+    });
     var btnCompleta = document.getElementById('painel-zona-completa');
     if(btnCompleta) btnCompleta.addEventListener('click', function(){
       painelFechar();
@@ -2018,10 +2485,20 @@
       painelFechar();
       location.hash = 'intervencoes';
     });
+    var btnHistoria = document.getElementById('painel-ver-historia-zona');
+    if(btnHistoria) btnHistoria.addEventListener('click', function(){
+      painelFechar();
+      window.vrIrParaMemoria(i);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#painel-lateral-root .painel-abrir-cam'), function(btn){
+      btn.addEventListener('click', function(){
+        window.abrirPainelCamera(parseInt(btn.getAttribute('data-cam'),10), 'geral');
+      });
+    });
   }
 
-  window.abrirPainelZona = function(i){
-    renderPainelZona(i);
+  window.abrirPainelZona = function(i, aba){
+    renderPainelZona(i, aba || 'geral');
   };
 
   // ---------- #vagas (DADO SINTÉTICO inteiro) ----------
@@ -2129,81 +2606,147 @@
 
   // ---------- Router (hash) ----------
   var TITULOS = {
-    controle: ['Centro de controle da mobilidade', 'Patos de Minas'],
-    zonas: ['Zonas quentes', '12 zonas calculadas a partir de dado público (MEDIDO)'],
-    fontes: ['Fontes conectadas', 'O que já fala com o sistema, e o que falaria depois de autorizado'],
-    frota: ['Frota sensor', 'Achados da frota municipal — DADO SINTÉTICO'],
-    vagas: ['Vagas', 'Estacionamentos parceiros e zona azul — DADO SINTÉTICO'],
-    intervencoes: ['Intervenções', 'Toda mudança ganha um antes e um depois'],
-    relatorios: ['Relatórios', 'Relatório da semana, pronto para imprimir']
+    agora: ['O que está acontecendo', 'Patos de Minas'],
+    decidir: ['O que eu decido agora', 'Ligar uma fonte · abrir uma vaga · registrar uma intervenção'],
+    resultado: ['O que mudou depois', 'Antes×depois das intervenções e relatório da semana, pronto para imprimir']
   };
+  var TITULOS_ABA_AGORA = {
+    transito: 'Patos de Minas — trânsito (calor + zonas quentes MEDIDO · câmeras SIMULAÇÃO)',
+    zonas: '12 zonas quentes calculadas a partir de dado público (MEDIDO)',
+    frota: 'Achados da frota municipal — DADO SINTÉTICO'
+  };
+  var ABAS_AGORA = ['transito','zonas','frota'];
 
   function parseHash(){
     var h = location.hash.replace('#','');
     var parts = h.split(':');
-    var tela = parts[0] || 'controle';
-    if(SCREENS.indexOf(tela) === -1) tela = 'controle';
+    var first = parts[0] || 'agora';
+    var second = parts[1];
+
+    var tela, aba = null, ancora = null;
+    if(TELAS.indexOf(first) !== -1){
+      tela = first;
+    } else if(LEGACY_TELA_MAP[first]){
+      tela = LEGACY_TELA_MAP[first].tela;
+      aba = LEGACY_TELA_MAP[first].aba || null;
+      ancora = LEGACY_TELA_MAP[first].ancora || null;
+    } else {
+      tela = 'agora';
+    }
+
     var zonaNum = null, camNum = null;
-    if(parts[1]){
-      if(/^cam/i.test(parts[1])){
-        camNum = parseInt(parts[1].replace(/[^0-9]/g,''),10) || 1;
-      } else {
-        zonaNum = parseInt(parts[1],10);
+    if(second){
+      if(/^cam/i.test(second)){
+        camNum = parseInt(second.replace(/[^0-9]/g,''),10) || 1;
+      } else if(tela === 'agora' && ABAS_AGORA.indexOf(second) !== -1){
+        aba = second;
+      } else if((tela === 'decidir' || tela === 'resultado') && /^[a-z]+$/i.test(second)){
+        ancora = second;
+      } else if(/^\d+$/.test(second)){
+        zonaNum = parseInt(second, 10);
+        if(tela === 'agora') aba = aba || 'zonas';
       }
     }
-    return { tela: tela, zonaNum: zonaNum, camNum: camNum };
+    if(tela === 'agora' && !aba) aba = 'transito';
+    return { tela: tela, aba: aba, ancora: ancora, zonaNum: zonaNum, camNum: camNum };
   }
 
-  function refreshScreen(tela){
-    if(tela === 'controle'){
+  // ---------- #agora: troca de aba (Trânsito / Zonas quentes / Frota) ----------
+  function switchAbaAgora(aba){
+    if(ABAS_AGORA.indexOf(aba) === -1) aba = 'transito';
+    state.abaAgora = aba;
+
+    document.querySelectorAll('.aba-btn').forEach(function(b){
+      b.classList.toggle('on', b.getAttribute('data-aba') === aba);
+    });
+
+    var paneTransito = document.getElementById('agora-pane-transito');
+    var mapWrap = document.getElementById('agora-map-wrap');
+    var paneZonas = document.getElementById('agora-pane-zonas');
+    var paneFrota = document.getElementById('agora-pane-frota');
+    if(paneTransito) paneTransito.hidden = (aba !== 'transito');
+    if(mapWrap) mapWrap.hidden = (aba === 'frota');
+    if(paneZonas) paneZonas.hidden = (aba !== 'zonas');
+    if(paneFrota) paneFrota.hidden = (aba !== 'frota');
+
+    var sub = TITULOS_ABA_AGORA[aba];
+    var subEl = document.getElementById('scr-sub');
+    if(subEl && state.telaAtual === 'agora' && sub) subEl.textContent = sub;
+
+    if(aba === 'transito' || aba === 'zonas'){
       if(!mapControleInit){ mapControleInit = true; initMapControle(); }
       else if(mapControle){ setTimeout(function(){ mapControle.invalidateSize(); }, 0); }
-      renderAlertas();
-      renderDecisoes();
-    } else if(tela === 'zonas'){
-      renderZonasLista();
-      renderZonaDetalhe();
-    } else if(tela === 'fontes'){
-      renderFontesGrande();
-      renderDiagrama();
-    } else if(tela === 'frota'){
+      if(aba === 'zonas'){
+        renderZonasLista();
+        renderZonaDetalhe();
+      }
+    } else if(aba === 'frota'){
       initOrRefreshFrota();
-    } else if(tela === 'vagas'){
-      initOrRefreshVagas();
-    } else if(tela === 'intervencoes'){
-      renderIntervencoesTabela();
-    } else if(tela === 'relatorios'){
-      renderRelatorio();
     }
   }
 
-  function activateScreen(tela){
-    SCREENS.forEach(function(s){
+  function scrollParaAncora(id){
+    setTimeout(function(){
+      var el = document.getElementById('ancora-' + id);
+      if(el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 30);
+  }
+
+  function refreshScreen(tela, aba){
+    if(tela === 'agora'){
+      switchAbaAgora(aba || state.abaAgora || 'transito');
+      renderFontes();
+      renderAlertas();
+      renderDecisoes();
+      updateIndicadoresTopo();
+    } else if(tela === 'decidir'){
+      renderFontesGrande();
+      renderDiagrama();
+      initOrRefreshVagas();
+      renderIntervencoesTabela();
+    } else if(tela === 'resultado'){
+      renderIntervencoesTabela();
+      renderRelatorio();
+      renderMemoriaResultado();
+    }
+  }
+
+  function activateScreen(tela, aba){
+    if(TELAS.indexOf(tela) === -1) tela = 'agora';
+    TELAS.forEach(function(s){
       var el = document.getElementById('screen-'+s);
       if(el) el.hidden = (s !== tela);
     });
     document.querySelectorAll('.nav a[data-screen]').forEach(function(a){
       a.classList.toggle('active', a.getAttribute('data-screen') === tela);
     });
-    var t = TITULOS[tela] || TITULOS.controle;
+    var t = TITULOS[tela] || TITULOS.agora;
     var titleEl = document.getElementById('scr-title');
     var subEl = document.getElementById('scr-sub');
     if(titleEl) titleEl.textContent = t[0];
     if(subEl) subEl.textContent = t[1];
     state.telaAtual = tela;
-    refreshScreen(tela);
+    refreshScreen(tela, aba);
   }
 
   function onHashChange(){
     var p = parseHash();
     if(p.zonaNum){ selecionarZona(p.zonaNum - 1); }
-    activateScreen(p.tela);
+    activateScreen(p.tela, p.aba);
+    if(p.ancora){ scrollParaAncora(p.ancora); }
     if(p.camNum){ window.abrirPainelCamera(p.camNum); }
   }
   window.addEventListener('hashchange', onHashChange);
 
-  // ---------- Controles fixos (#controle) ----------
+  // ---------- Controles fixos (#agora) ----------
   function wireControls(){
+    document.querySelectorAll('.aba-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var aba = btn.getAttribute('data-aba');
+        location.hash = 'agora:' + aba;
+      });
+    });
+
     document.querySelectorAll('.cenario-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         document.querySelectorAll('.cenario-btn').forEach(function(b){ b.classList.remove('on'); });
@@ -2223,21 +2766,7 @@
       });
     });
 
-    document.getElementById('tg-calor').addEventListener('click', function(){
-      state.showCalor = !state.showCalor;
-      this.classList.toggle('on', state.showCalor);
-      renderHeat();
-    });
-    document.getElementById('tg-zonas').addEventListener('click', function(){
-      state.showZonas = !state.showZonas;
-      this.classList.toggle('on', state.showZonas);
-      renderZonas();
-    });
-    document.getElementById('tg-cameras').addEventListener('click', function(){
-      state.showCameras = !state.showCameras;
-      this.classList.toggle('on', state.showCameras);
-      renderCameras();
-    });
+    renderCamadasBox();
 
     var btnImprimir = document.getElementById('btn-imprimir');
     if(btnImprimir){
@@ -2254,11 +2783,11 @@
       var feitos = [];
 
       if(cmd.tela !== undefined){
-        if(SCREENS.indexOf(cmd.tela) !== -1){
+        if(TELAS.indexOf(cmd.tela) !== -1 || SCREENS.indexOf(cmd.tela) !== -1){
           location.hash = cmd.tela;
           feitos.push('tela → ' + cmd.tela);
         } else {
-          return 'não entendi: tela "' + cmd.tela + '" não existe (use ' + SCREENS.join('|') + ')';
+          return 'não entendi: tela "' + cmd.tela + '" não existe (use ' + TELAS.concat(SCREENS).join('|') + ')';
         }
       }
 
@@ -2290,24 +2819,61 @@
         }
       }
 
+      var marcarCamadaCheckbox = function(id, valor){
+        var el = document.querySelector('#camadas-list input[data-camada="'+id+'"]');
+        if(el) el.checked = valor;
+      };
+
       if(cmd.camadas !== undefined && typeof cmd.camadas === 'object' && cmd.camadas !== null){
+        if(typeof cmd.camadas.fluxo === 'boolean'){
+          state.showFluxo = cmd.camadas.fluxo;
+          marcarCamadaCheckbox('fluxo', state.showFluxo);
+          renderFluxoVias();
+          feitos.push('fluxo → ' + state.showFluxo);
+        }
         if(typeof cmd.camadas.calor === 'boolean'){
           state.showCalor = cmd.camadas.calor;
-          var elC = document.getElementById('tg-calor'); if(elC) elC.classList.toggle('on', state.showCalor);
+          marcarCamadaCheckbox('calor', state.showCalor);
           renderHeat();
           feitos.push('calor → ' + state.showCalor);
         }
         if(typeof cmd.camadas.zonas === 'boolean'){
           state.showZonas = cmd.camadas.zonas;
-          var elZ = document.getElementById('tg-zonas'); if(elZ) elZ.classList.toggle('on', state.showZonas);
+          marcarCamadaCheckbox('zonas', state.showZonas);
           renderZonas();
           feitos.push('zonas → ' + state.showZonas);
         }
         if(typeof cmd.camadas.cameras === 'boolean'){
           state.showCameras = cmd.camadas.cameras;
-          var elK = document.getElementById('tg-cameras'); if(elK) elK.classList.toggle('on', state.showCameras);
+          marcarCamadaCheckbox('cameras', state.showCameras);
           renderCameras();
           feitos.push('câmeras → ' + state.showCameras);
+        }
+      }
+
+      if(cmd.camada !== undefined){
+        var camadasValidas = { fluxo:'showFluxo', calor:'showCalor', zonas:'showZonas', cameras:'showCameras' };
+        var renderPorCamada = { fluxo:renderFluxoVias, calor:renderHeat, zonas:renderZonas, cameras:renderCameras };
+        if(camadasValidas[cmd.camada] && typeof cmd.ligada === 'boolean'){
+          state[camadasValidas[cmd.camada]] = cmd.ligada;
+          marcarCamadaCheckbox(cmd.camada, cmd.ligada);
+          renderPorCamada[cmd.camada]();
+          feitos.push('camada ' + cmd.camada + ' → ' + cmd.ligada);
+        } else {
+          return 'não entendi: camada "' + cmd.camada + '" inválida ou "ligada" (boolean) ausente — use fluxo|calor|zonas|cameras';
+        }
+      }
+
+      if(cmd.ponto !== undefined){
+        var pn = parseInt(cmd.ponto, 10);
+        var maxPonto = posicoesCenario(state.cenario).length;
+        if(pn >= 1 && pn <= maxPonto){
+          var abasValidas = ['geral','historico','antesdepois','cameras'];
+          var abaSel = abasValidas.indexOf(cmd.aba) !== -1 ? cmd.aba : 'geral';
+          window.abrirPainelCamera(pn, abaSel);
+          feitos.push('ponto → câmera ' + pn + ' · aba ' + abaSel);
+        } else {
+          return 'não entendi: ponto "' + cmd.ponto + '" fora do intervalo 1–' + maxPonto + ' no cenário atual';
         }
       }
 
@@ -2336,7 +2902,7 @@
         var tiposValidos = ACHADO_TIPOS.map(function(t){ return t.k; }).concat(['todos']);
         if(tiposValidos.indexOf(cmd.tipoAchado) !== -1){
           frotaState.filtro = cmd.tipoAchado;
-          if(state.telaAtual !== 'frota'){ location.hash = 'frota'; }
+          if(!(state.telaAtual === 'agora' && state.abaAgora === 'frota')){ location.hash = 'frota'; }
           renderFrotaFiltros();
           renderFrotaMarcadores();
           renderFrotaContadores();
