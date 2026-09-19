@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Como funciona por dentro — Visão de Rota</title>
+<style>
+  :root{
+    --bg:#0B1B2B;
+    --panel:#12273B;
+    --panel-2:#0F2032;
+    --ink:#F6F8FA;
+    --ink-dim:#B9C4D0;
+    --amber:#E8A33D;
+    --green:#2E9E6B;
+    --red:#D6453D;
+    --gray:#9AA5B1;
+    --line: rgba(246,248,250,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    padding: 28px clamp(16px,3vw,56px) 60px;
+    line-height:1.42;
+  }
+  img{max-width:100%;}
+  [hidden]{display:none!important;}
+
+  header.top{
+    max-width:1500px; margin:0 auto 22px; padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  header.top .eyebrow{
+    color:var(--amber); text-transform:uppercase; letter-spacing:.14em;
+    font-size:14px; font-weight:700; margin:0 0 6px;
+  }
+  header.top h1{
+    margin:0 0 8px; font-size:clamp(28px,3.4vw,44px); font-weight:800; letter-spacing:-0.01em;
+  }
+  header.top p.sub{ margin:0; color:var(--ink-dim); font-size:clamp(15px,1.4vw,19px); max-width:920px;}
+
+  main{max-width:1500px; margin:0 auto;}
+
+  .section{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:20px;
+    overflow:hidden;
+  }
+  .section > .head{
+    display:flex; align-items:center; gap:16px;
+    width:100%; text-align:left; cursor:pointer;
+    background:transparent; border:0; color:var(--ink);
+    padding: 22px 26px;
+    font-family:inherit;
+  }
+  .section > .head:hover{ background:rgba(255,255,255,0.03); }
+  .section > .head .num{
+    flex:0 0 auto;
+    width:44px;height:44px;border-radius:12px;
+    background:var(--panel-2); border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px; font-weight:800; color:var(--amber);
+  }
+  .section > .head .title{ flex:1 1 auto; }
+  .section > .head .title h2{ margin:0; font-size:clamp(19px,2vw,26px); font-weight:800;}
+  .section > .head .title .tag{ margin-top:3px; color:var(--ink-dim); font-size:14px; font-weight:500;}
+  .section > .head .chev{
+    flex:0 0 auto; font-size:22px; color:var(--ink-dim);
+    transition: transform .18s ease;
+  }
+  .section[data-open="true"] > .head .chev{ transform:rotate(90deg); color:var(--amber);}
+  .section > .body{ padding: 4px 26px 30px; }
+  .section[data-open="false"] > .body{ display:none; }
+
+  .big-line{
+    font-size:clamp(22px,3vw,36px); font-weight:800; text-align:center;
+    margin: 26px auto 18px; max-width:900px; letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  .big-line .hl{ color:var(--amber); }
+
+  .counterpoint{
+    max-width:1000px; margin: 8px auto 6px; padding:16px 20px;
+    background:var(--panel-2); border-left:4px solid var(--gray);
+    border-radius:10px; color:var(--ink-dim); font-size:15px;
+  }
+
+  /* ---- diagram scroller ---- */
+  .diagram-wrap{ overflow-x:auto; padding-bottom:6px; }
+  .diagram-wrap svg{ display:block; min-width:1180px; width:100%; height:auto; }
+
+  .step-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+    height:100%; padding:10px 12px; font-size:12.5px; color:var(--ink);
+  }
+  .step-card h3{ margin:0 0 6px; font-size:14px; font-weight:800; color:var(--amber); line-height:1.2;}
+  .step-card .row{ margin:6px 0; }
+  .step-card .row b{ display:block; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:1px;}
+  .step-card .row.entra b{ color:#8fd6b3; }
+  .step-card .row.sai b{ color:#9cc4ec; }
+  .step-card .row.descarta b{ color:var(--gray); }
+  .step-card .row.nunca{ margin-top:8px; padding-top:8px; border-top:1px dashed rgba(214,69,61,0.45); }
+  .step-card .row.nunca b{ color:var(--red); }
+  .step-card .row.nunca span{ color:#f3b7b2; font-weight:600;}
+
+  /* ---- table ---- */
+  table.legal{
+    width:100%; border-collapse:collapse; margin-top:6px; font-size:14.5px;
+  }
+  table.legal caption{ caption-side:top; text-align:left; color:var(--ink-dim); font-size:13.5px; margin-bottom:10px;}
+  table.legal th{
+    text-align:left; background:var(--panel-2); color:var(--amber);
+    padding:12px 14px; font-size:13px; text-transform:uppercase; letter-spacing:.04em;
+    border-bottom:2px solid var(--line);
+  }
+  table.legal td{ padding:13px 14px; border-bottom:1px solid var(--line); vertical-align:top;}
+  table.legal tr:last-child td{ border-bottom:0; }
+  table.legal td.prova{ color:var(--ink-dim); }
+  .wrap-table{ overflow-x:auto; }
+
+  details.pack{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+    margin-top:16px; padding: 4px 18px;
+  }
+  details.pack summary{
+    cursor:pointer; padding:14px 0; font-weight:700; font-size:15.5px; color:var(--ink);
+    list-style:none; display:flex; align-items:center; gap:10px;
+  }
+  details.pack summary::-webkit-details-marker{ display:none; }
+  details.pack summary::before{ content:"▸"; color:var(--amber); font-size:14px; }
+  details.pack[open] summary::before{ content:"▾"; }
+  details.pack ol, details.pack ul{ margin:0 0 16px; padding-left:22px; color:var(--ink-dim); font-size:14px; }
+  details.pack ol li, details.pack ul li{ margin:9px 0; }
+  details.pack ol li b, details.pack ul li b{ color:var(--ink); }
+
+  /* ---- section 3 agents ---- */
+  .agents-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px;
+  }
+  @media (max-width:1050px){ .agents-grid{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .agents-grid{ grid-template-columns:1fr;} }
+  .agent-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:14px 15px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .agent-card .name{ font-weight:800; font-size:15px; }
+  .agent-card .when{
+    align-self:flex-start; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+    padding:3px 9px; border-radius:999px; color:var(--bg);
+  }
+  .when-continuo{ background:var(--green); }
+  .when-evento{ background:var(--amber); }
+  .when-pedido{ background:#8fb3e6; }
+  .when-agendado{ background:var(--gray); }
+  .agent-card .kv{ font-size:12.5px; color:var(--ink-dim); }
+  .agent-card .kv b{ color:var(--ink); font-weight:700; display:inline;}
+  .agent-card .click{
+    margin-top:auto; font-size:11.5px; font-weight:700; padding:6px 9px; border-radius:8px;
+    text-align:center;
+  }
+  .click-auto{ background:rgba(46,158,107,0.16); color:#7fd6ab; border:1px solid rgba(46,158,107,0.4); }
+  .click-humano{ background:rgba(232,163,61,0.16); color:var(--amber); border:1px solid rgba(232,163,61,0.4); }
+
+  .center-rule{
+    margin: 20px auto 8px; max-width:760px; text-align:center;
+    background:linear-gradient(180deg, rgba(232,163,61,0.12), transparent);
+    border:1px solid rgba(232,163,61,0.35); border-radius:14px; padding:18px 22px;
+  }
+  .center-rule .k{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--amber); font-weight:800;}
+  .center-rule p{ margin:6px 0 0; font-size:16px; }
+  .center-rule .acts{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+  .center-rule .acts span{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:999px;
+    padding:6px 12px; font-size:12.5px; color:var(--ink);
+  }
+
+  .honesty{
+    max-width:1000px; margin: 20px auto 4px; padding:14px 18px;
+    background:rgba(154,165,177,0.10); border:1px solid var(--line); border-radius:10px;
+    color:var(--ink-dim); font-size:14px; text-align:center;
+  }
+
+  /* ---- section 4 ---- */
+  .obs-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:6px;
+  }
+  @media (max-width:1050px){ .obs-grid{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .obs-grid{ grid-template-columns:1fr;} }
+  .obs-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 16px 14px;
+  }
+  .obs-card h4{ margin:0 0 10px; font-size:14.5px; font-weight:800; color:var(--amber); }
+  .obs-card ul{ margin:0; padding-left:18px; font-size:13px; color:var(--ink-dim); }
+  .obs-card ul li{ margin:6px 0; }
+  .obs-card .alarm{
+    margin-top:10px; padding-top:9px; border-top:1px dashed rgba(214,69,61,0.4);
+    font-size:12px; color:#f3b7b2;
+  }
+  .obs-card .alarm b{ color:var(--red); }
+
+  .closing-rule{
+    margin:22px auto 4px; max-width:980px; text-align:center;
+    padding:18px 22px; border-radius:14px;
+    background:rgba(214,69,61,0.10); border:1px solid rgba(214,69,61,0.4);
+    font-size:clamp(16px,1.8vw,20px); font-weight:700;
+  }
+
+  .panel-example{
+    margin-top:26px; background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px 20px;
+  }
+  .panel-example .ph{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;}
+  .panel-example .ph h4{ margin:0; font-size:15px; font-weight:800; }
+  .badge-synth{
+    font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--bg); background:var(--amber); padding:4px 10px; border-radius:999px;
+  }
+  .gauges{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  @media (max-width:1050px){ .gauges{ grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:560px){ .gauges{ grid-template-columns:repeat(2,1fr);} }
+  .gauge{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:12px 10px; text-align:center;
+  }
+  .gauge .dot{
+    width:16px;height:16px;border-radius:50%; margin:0 auto 8px;
+  }
+  .dot-verde{ background:var(--green); box-shadow:0 0 0 4px rgba(46,158,107,0.22);}
+  .dot-amarelo{ background:var(--amber); box-shadow:0 0 0 4px rgba(232,163,61,0.22);}
+  .dot-cinza{ background:var(--gray); box-shadow:0 0 0 4px rgba(154,165,177,0.22);}
+  .gauge .label{ font-size:11.5px; font-weight:700; margin-bottom:3px; }
+  .gauge .val{ font-size:12px; color:var(--ink-dim); }
+
+  footer.note{
+    max-width:1500px; margin:26px auto 0; color:var(--ink-dim); font-size:12.5px; text-align:center;
+  }
+
+  /* ---- print ---- */
+  @media print{
+    body{ background:#fff; color:#111; padding:0 24px; }
+    header.top{ border-bottom-color:#ccc; }
+    header.top .eyebrow{ color:#8a5a12; }
+    .section{ background:#fff; border-color:#ccc; break-inside:avoid; margin-bottom:14px; }
+    .section > .head{ color:#111; cursor:default; }
+    .section[data-open="false"] > .body{ display:block !important; }
+    .section > .head .chev{ display:none; }
+    .step-card, .agent-card, .obs-card, .gauge, details.pack, .counterpoint, .honesty, .panel-example{
+      background:#f6f8fa; border-color:#ccc; color:#111;
+    }
+    .step-card .row b, .agent-card .kv, .obs-card ul, .gauge .val{ color:#555; }
+    table.legal th{ background:#eef1f4; color:#8a5a12; }
+    table.legal td{ border-bottom-color:#ddd; }
+    .closing-rule{ background:#fdecea; border-color:#e0a39c; color:#111; }
+    .big-line{ color:#111; }
+    .big-line .hl{ color:#8a5a12; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <p class="eyebrow">Visão de Rota — hackathon mobilidade, Patos de Minas</p>
+  <h1>Como funciona por dentro</h1>
+  <p class="sub">Quatro camadas: o caminho do dado dentro da câmera, o que a lei exige e como se cumpre, quem faz o quê no sistema, e como se prova que está tudo rodando. Cada seção abre para o nível de detalhe que a conversa pedir.</p>
+</header>
+
+<main>
+
+  <!-- SECAO 1 -->
+  <section class="section" data-open="true" id="sec-1">
+    <button class="head" type="button" aria-expanded="true">
+      <span class="num">1</span>
+      <span class="title">
+        <h2>O caminho do dado — anonimização por desenho</h2>
+        <span class="tag">Seis etapas, do quadro de vídeo ao número agregado</span>
+      </span>
+      <span class="chev">▸</span>
+    </button>
+    <div class="body">
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1580 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama do caminho do dado em seis etapas">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L8,3 z" fill="#E8A33D"></path>
+            </marker>
+          </defs>
+
+          <!-- connectors -->
+          <line x1="248" y1="215" x2="288" y2="215" stroke="#E8A33D" stroke-width="3" marker-end="url(#arrow)"></line>
+          <line x1="508" y1="215" x2="548" y2="215" stroke="#E8A33D" stroke-width="3" marker-end="url(#arrow)"></line>
+          <line x1="768" y1="215" x2="808" y2="215" stroke="#E8A33D" stroke-width="3" marker-end="url(#arrow)"></line>
+          <line x1="1028" y1="215" x2="1068" y2="215" stroke="#E8A33D" stroke-width="3" marker-end="url(#arrow)"></line>
+          <line x1="1288" y1="215" x2="1328" y2="215" stroke="#E8A33D" stroke-width="3" marker-end="url(#arrow)"></line>
+
+          <!-- step boxes via foreignObject -->
+          <foreignObject x="0" y="20" width="248" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>1 · Câmera que já existe</h3>
+              <div class="row entra"><b>Entra</b>nada — é o ponto de partida</div>
+              <div class="row sai"><b>Sai</b>fluxo de vídeo contínuo</div>
+              <div class="row descarta"><b>Descarta</b>—</div>
+              <div class="row nunca"><b>Nunca</b><span>o fluxo sai da câmera para fora da rede local de leitura</span></div>
+            </div>
+          </foreignObject>
+
+          <foreignObject x="288" y="20" width="220" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>2 · Leitura do quadro</h3>
+              <div class="row entra"><b>Entra</b>fluxo de vídeo</div>
+              <div class="row sai"><b>Sai</b>um quadro decodificado, em memória, na própria máquina onde a imagem já está</div>
+              <div class="row descarta"><b>Descarta</b>o quadro anterior — não se acumula</div>
+              <div class="row nunca"><b>Nunca</b><span>gravar o quadro em disco ou enviá-lo para outra máquina</span></div>
+            </div>
+          </foreignObject>
+
+          <foreignObject x="548" y="20" width="220" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>3 · Detecção e classificação</h3>
+              <div class="row entra"><b>Entra</b>o quadro decodificado</div>
+              <div class="row sai"><b>Sai</b>objetos encontrados, classificados por tipo (pessoa, moto, carro, ônibus)</div>
+              <div class="row descarta"><b>Descarta</b>o quadro, assim que os objetos são extraídos dele</div>
+              <div class="row nunca"><b>Nunca</b><span>ler rosto ou placa como campo de identificação</span></div>
+            </div>
+          </foreignObject>
+
+          <foreignObject x="808" y="20" width="220" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>4 · Rastreamento temporário</h3>
+              <div class="row entra"><b>Entra</b>objetos detectados no quadro atual</div>
+              <div class="row sai"><b>Sai</b>um identificador que liga a mesma silhueta entre quadros, só enquanto ela está em cena</div>
+              <div class="row descarta"><b>Descarta</b>o identificador — ele morre no instante em que o objeto sai de cena</div>
+              <div class="row nunca"><b>Nunca</b><span>gravar esse identificador num cadastro ou ligá-lo a um documento</span></div>
+            </div>
+          </foreignObject>
+
+          <foreignObject x="1068" y="20" width="220" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>5 · O que sobrevive</h3>
+              <div class="row entra"><b>Entra</b>as trajetórias curtas, de identificador já expirado</div>
+              <div class="row sai"><b>Sai</b>só número: contagem por tipo, fila, velocidade, trajetória agregada</div>
+              <div class="row descarta"><b>Descarta</b>qualquer resquício do identificador temporário</div>
+              <div class="row nunca"><b>Nunca</b><span>reconstruir depois a trajetória de um indivíduo específico</span></div>
+            </div>
+          </foreignObject>
+
+          <foreignObject x="1328" y="20" width="248" height="400">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="step-card">
+              <h3>6 · O quadro é descartado</h3>
+              <div class="row entra"><b>Entra</b>nada além do que já foi processado</div>
+              <div class="row sai"><b>Sai</b>o número da etapa anterior — é o que viaja adiante</div>
+              <div class="row descarta"><b>Descarta</b>o quadro de vídeo, sempre — não existe banco de imagens</div>
+              <div class="row nunca"><b>Nunca</b><span>guardar o vídeo "só por precaução"</span></div>
+            </div>
+          </foreignObject>
+        </svg>
+      </div>
+
+      <p class="big-line">"não é borrar depois; <span class="hl">é não capturar</span>"</p>
+
+      <p class="counterpoint">
+        Leitura de placa e reconhecimento facial existem em outros sistemas da cidade, e são outra coisa, com outra base legal — não é o que este projeto faz.
+      </p>
+
+    </div>
+  </section>
+
+  <!-- SECAO 2 -->
+  <section class="section" data-open="false" id="sec-2">
+    <button class="head" type="button" aria-expanded="false">
+      <span class="num">2</span>
+      <span class="title">
+        <h2>O que a lei exige, e como cumprimos</h2>
+        <span class="tag">Seis exigências, a resposta do projeto e a prova de cada uma</span>
+      </span>
+      <span class="chev">▸</span>
+    </button>
+    <div class="body">
+
+      <div class="wrap-table">
+        <table class="legal">
+          <caption>Leitura da base legal já levantada para a parceria de dado de câmera com finalidade de trânsito.</caption>
+          <thead>
+            <tr>
+              <th>O que a lei brasileira de proteção de dados pede</th>
+              <th>Como o projeto cumpre</th>
+              <th>Como se prova</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Dado anonimizado de forma irreversível sai do alcance da lei de proteção de dados.</td>
+              <td>O quadro e o identificador temporário são descartados na origem; só sobra número agregado, sem caminho de volta até uma pessoa.</td>
+              <td class="prova">Registro técnico de cada etapa de anonimização, aberto a auditoria do município a qualquer tempo.</td>
+            </tr>
+            <tr>
+              <td>A exceção para "fins exclusivos de segurança pública" não acompanha o dado quando a finalidade muda para trânsito — precisa de base própria.</td>
+              <td>O uso para mobilidade é tratado como finalidade própria, nunca como extensão automática da finalidade de segurança da câmera.</td>
+              <td class="prova">Instrumento jurídico específico, assinado antes de qualquer acesso, citando a finalidade de mobilidade.</td>
+            </tr>
+            <tr>
+              <td>Poder público só transfere dado a entidade privada com instrumento jurídico formal — nunca por acesso informal.</td>
+              <td>Acordo de Cooperação Técnica ou contrato de operador, com o município permanecendo controlador do dado.</td>
+              <td class="prova">Cópia do instrumento arquivada e citada em todo relatório que usar o dado.</td>
+            </tr>
+            <tr>
+              <td>O compartilhamento tem que servir a uma política pública com previsão legal ou regulamento, e ter publicidade.</td>
+              <td>Uso alinhado ao Plano de Mobilidade Urbana do município, com o compartilhamento divulgado em canal oficial.</td>
+              <td class="prova">Publicação do compartilhamento em canal oficial, acessível a quem quiser conferir.</td>
+            </tr>
+            <tr>
+              <td>Incidente de segurança com o dado tem que ser comunicado em prazo certo.</td>
+              <td>Cláusula de auditoria e de comunicação de incidente prevista no instrumento jurídico, desde o início.</td>
+              <td class="prova">Registro de data e prazo de comunicação, sempre que houver incidente.</td>
+            </tr>
+            <tr>
+              <td>O controlador do dado responde pelo tratamento, mesmo quando terceiriza a operação.</td>
+              <td>O município nunca deixa de ser controlador; quem opera o sistema responde solidariamente se descumprir instrução.</td>
+              <td class="prova">Cláusula de responsabilidade solidária escrita no próprio instrumento.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="pack">
+        <summary>Checklist — 10 itens para a parceria ser lícita</summary>
+        <ol>
+          <li><b>Base legal municipal declarada</b> — Plano de Mobilidade Urbana ou regulamento que institua gestão de trânsito por dados.</li>
+          <li><b>Identificação do controlador real da câmera</b> — prefeitura, polícia, conselho de segurança ou consórcio — e concordância formal de quem não for a prefeitura.</li>
+          <li><b>Anonimização na borda</b>, tecnicamente comprovada como irreversível — nenhuma face, placa ou identificador rastreável exportado.</li>
+          <li><b>Relatório de impacto à proteção de dados elaborado</b> — e, se o risco residual for alto, submetido à autoridade de proteção de dados.</li>
+          <li><b>Instrumento jurídico formal assinado antes</b> de qualquer acesso — nunca acesso informal de demonstração.</li>
+          <li><b>Publicidade do compartilhamento</b> em canal oficial.</li>
+          <li><b>Comunicação à autoridade de proteção de dados</b> do instrumento firmado.</li>
+          <li><b>Encarregado (DPO) municipal designado</b> como ponto de contato.</li>
+          <li><b>Cláusulas de segurança, retenção, descarte, auditoria e responsabilidade solidária</b> escritas no instrumento.</li>
+          <li><b>Escopo e prazo delimitados</b> — acesso temporário, revogável, sem cessão de propriedade do dado bruto, com direito de auditoria do município.</li>
+        </ol>
+      </details>
+
+      <details class="pack">
+        <summary>Minuta — cláusula de finalidade e anonimização (8 itens)</summary>
+        <ol>
+          <li><b>Finalidade exclusiva</b> — a contraparte tratará exclusivamente dados agregados e anonimizados (contagem, classe, trajetória, velocidade), vedado qualquer tratamento voltado à identificação de pessoa natural.</li>
+          <li><b>Vedação de dado pessoal</b> — é vedada a transferência de imagem facial, placa veicular ou dado biométrico bruto; a anonimização ocorre na origem, antes de qualquer exportação de evento.</li>
+          <li><b>Padrão de irreversibilidade</b> — a anonimização observará os critérios técnicos e jurídicos de irreversibilidade já reconhecidos, considerando custo, tempo e tecnologia disponíveis, inclusive a terceiros.</li>
+          <li><b>Vedação de reidentificação</b> — é vedado à contraparte reverter a anonimização, cruzar bases ou reconstituir trajetória individualizável fora do escopo agregado pactuado.</li>
+          <li><b>Nova finalidade</b> — qualquer uso além de mobilidade e trânsito exige aditivo específico, nova base legal e comunicação à autoridade de proteção de dados.</li>
+          <li><b>Retenção e descarte</b> — dados de evento serão retidos por prazo certo, findo o qual serão eliminados; vedado o armazenamento de imagem bruta pela contraparte.</li>
+          <li><b>Auditoria e incidente</b> — o município poderá auditar a pipeline de anonimização a qualquer tempo; incidente de segurança será comunicado em prazo certo.</li>
+          <li><b>Reversão</b> — caso a anonimização se prove reversível ou reidentificável, o dado volta à categoria de dado pessoal, o tratamento cessa imediatamente e aplicam-se as regras de proteção de dados do poder público.</li>
+        </ol>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- SECAO 3 -->
+  <section class="section" data-open="false" id="sec-3">
+    <button class="head" type="button" aria-expanded="false">
+      <span class="num">3</span>
+      <span class="title">
+        <h2>Quem faz o quê — os agentes e a orquestração</h2>
+        <span class="tag">Oito papéis, o que cada um consome e entrega, e onde a pessoa decide</span>
+      </span>
+      <span class="chev">▸</span>
+    </button>
+    <div class="body">
+
+      <div class="agents-grid">
+        <div class="agent-card">
+          <span class="when when-continuo">Contínuo</span>
+          <div class="name">Leitor de vídeo</div>
+          <div class="kv"><b>Consome:</b> fluxo de vídeo</div>
+          <div class="kv"><b>Entrega:</b> contagem por 5 minutos</div>
+          <div class="click click-auto">Automático</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-evento">Por evento</span>
+          <div class="name">Detector de evento</div>
+          <div class="kv"><b>Consome:</b> contagem por 5 minutos</div>
+          <div class="kv"><b>Entrega:</b> alerta, quando foge do padrão</div>
+          <div class="click click-auto">Automático</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-evento">Por evento</span>
+          <div class="name">Classificador</div>
+          <div class="kv"><b>Consome:</b> alerta</div>
+          <div class="kv"><b>Entrega:</b> tipo do evento e confiança</div>
+          <div class="click click-auto">Automático</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-agendado">Agendado</span>
+          <div class="name">Coletor de fontes públicas</div>
+          <div class="kv"><b>Consome:</b> fonte de dado público aberto</div>
+          <div class="kv"><b>Entrega:</b> dado baixado, com data e hash de conferência</div>
+          <div class="click click-auto">Automático</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-pedido">Sob pedido</span>
+          <div class="name">Analista</div>
+          <div class="kv"><b>Consome:</b> fontes já reunidas + pergunta em linguagem comum</div>
+          <div class="kv"><b>Entrega:</b> resposta, em linguagem comum</div>
+          <div class="click click-auto">Automático a responder</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-agendado">Agendado</span>
+          <div class="name">Redator de relatório</div>
+          <div class="kv"><b>Consome:</b> dados da semana</div>
+          <div class="kv"><b>Entrega:</b> relatório semanal, pronto para imprimir</div>
+          <div class="click click-humano">Publicar exige clique humano</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-evento">Antes de publicar</span>
+          <div class="name">Guardião de privacidade</div>
+          <div class="kv"><b>Consome:</b> o que está prestes a ser publicado</div>
+          <div class="kv"><b>Entrega:</b> veredito — pode publicar, ou não</div>
+          <div class="click click-auto">Automático, e bloqueia</div>
+        </div>
+
+        <div class="agent-card">
+          <span class="when when-continuo">Contínuo</span>
+          <div class="name">Vigia do próprio sistema</div>
+          <div class="kv"><b>Consome:</b> sinal de execução de cada peça</div>
+          <div class="kv"><b>Entrega:</b> aviso, quando alguma peça para</div>
+          <div class="click click-auto">Automático</div>
+        </div>
+      </div>
+
+      <div class="center-rule">
+        <div class="k">A regra do centro</div>
+        <p>A pessoa decide. O sistema informa, alerta e prepara — não age sozinho nos passos que mudam o mundo lá fora.</p>
+        <div class="acts">
+          <span>Enviar equipe → clique humano</span>
+          <span>Publicar aviso → clique humano</span>
+          <span>Mudar a via → clique humano</span>
+        </div>
+      </div>
+
+      <p class="honesty">
+        Aviso honesto: nesta demonstração, os oito papéis acima são desenho de arquitetura; o que roda hoje é a leitura de dado público e a simulação.
+      </p>
+
+    </div>
+  </section>
+
+  <!-- SECAO 4 -->
+  <section class="section" data-open="false" id="sec-4">
+    <button class="head" type="button" aria-expanded="false">
+      <span class="num">4</span>
+      <span class="title">
+        <h2>Observabilidade — como se sabe que está funcionando</h2>
+        <span class="tag">O que se mede em cada peça, e o que dispara alarme</span>
+      </span>
+      <span class="chev">▸</span>
+    </button>
+    <div class="body">
+
+      <div class="obs-grid">
+        <div class="obs-card">
+          <h4>Por câmera</h4>
+          <ul>
+            <li>Percentual de tempo com imagem útil</li>
+            <li>Última leitura recebida</li>
+            <li>Quadros por segundo</li>
+            <li>Fila de processamento</li>
+          </ul>
+          <div class="alarm"><b>Alarme:</b> tempo útil cai, fila cresce, ou última leitura envelhece além do esperado.</div>
+        </div>
+
+        <div class="obs-card">
+          <h4>Por fonte pública</h4>
+          <ul>
+            <li>Última coleta realizada</li>
+            <li>Validade do dado coletado</li>
+            <li>Conferência do hash do arquivo</li>
+          </ul>
+          <div class="alarm"><b>Alarme:</b> coleta não roda no prazo, dado vence, ou o hash não confere.</div>
+        </div>
+
+        <div class="obs-card">
+          <h4>Por agente</h4>
+          <ul>
+            <li>Última execução</li>
+            <li>Duração da execução</li>
+            <li>Falhas seguidas</li>
+          </ul>
+          <div class="alarm"><b>Alarme:</b> duração foge do padrão, ou duas falhas seguem uma a outra.</div>
+        </div>
+
+        <div class="obs-card">
+          <h4>Por decisão</h4>
+          <ul>
+            <li>Tempo até detectar</li>
+            <li>Tempo até a pessoa decidir</li>
+            <li>Tempo até a equipe chegar</li>
+          </ul>
+          <div class="alarm"><b>Alarme:</b> qualquer um dos três tempos cresce sem explicação registrada.</div>
+        </div>
+      </div>
+
+      <p class="closing-rule">
+        O que não roda tem que fazer barulho — ausência de registro nunca é prova de que está tudo bem.
+      </p>
+
+      <div class="panel-example">
+        <div class="ph">
+          <h4>Painel de exemplo</h4>
+          <span class="badge-synth">Dado sintético</span>
+        </div>
+        <div class="gauges">
+          <div class="gauge">
+            <div class="dot dot-verde"></div>
+            <div class="label">Câmera — Centro</div>
+            <div class="val">97% tempo útil</div>
+          </div>
+          <div class="gauge">
+            <div class="dot dot-amarelo"></div>
+            <div class="label">Câmera — Rua Marabá</div>
+            <div class="val">fila em crescimento</div>
+          </div>
+          <div class="gauge">
+            <div class="dot dot-cinza"></div>
+            <div class="label">Câmera — Rua Doutor Marcolino</div>
+            <div class="val">sem leitura recente</div>
+          </div>
+          <div class="gauge">
+            <div class="dot dot-verde"></div>
+            <div class="label">Fonte pública — frota por município</div>
+            <div class="val">hash confere</div>
+          </div>
+          <div class="gauge">
+            <div class="dot dot-amarelo"></div>
+            <div class="label">Agente — redator de relatório</div>
+            <div class="val">duração acima do normal</div>
+          </div>
+          <div class="gauge">
+            <div class="dot dot-cinza"></div>
+            <div class="label">Agente — coletor de fontes</div>
+            <div class="val">sem execução registrada hoje</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="note">Documento de demonstração — Visão de Rota, hackathon de mobilidade, Patos de Minas.</footer>
+
+<script>
+(function(){
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+  sections.forEach(function(sec){
+    var head = sec.querySelector('.head');
+    head.addEventListener('click', function(){
+      var open = sec.getAttribute('data-open') === 'true';
+      sec.setAttribute('data-open', open ? 'false' : 'true');
+      head.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+  // atalho só para captura de prova visual: #abrir-2-3-4 expande as seções 2,3,4
+  if(window.location.hash === '#abrir-2-3-4'){
+    ['sec-2','sec-3','sec-4'].forEach(function(id){
+      var sec = document.getElementById(id);
+      if(sec){
+        sec.setAttribute('data-open','true');
+        sec.querySelector('.head').setAttribute('aria-expanded','true');
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
