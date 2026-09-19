@@ -227,13 +227,15 @@ function spawnVeiculo(o,dt){
     horiz,sent,pista,faixa:fx.off,p:entryP,vel:(38+r()*50)*(tipo.k==='bicicleta'?.5:1),
     lenPx:tipo.lenPx,widPx:tipo.widPx,altPx:tipo.altPx,contado:false,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[]});
 }
+function pedColuna(o){ const W=o.cv.width; return W/2 - Math.min(FX.BIC+34, W/2-20); }
 function spawnPedestre(o,r){
   const W=o.cv.width,H=o.cv.height;
   if(faseDe(o,'h')!=='vermelho') return;
-  const ocupado=o.v.some(v=>v.horiz&&!v.isPed&&!v.isObstaculo&&Math.abs(v.p-W/2)<ROAD_HALF+4);
-  if(ocupado) return;
-  const pedX=-Math.min(FX.BIC+34,W/2-20), sent=r()<.5?1:-1, y0=sent>0?H/2-ROAD_HALF-30:H/2+ROAD_HALF+30;
   const tipo=TIPOS_MAP.pedestre;
+  const colX=pedColuna(o);
+  const ocupado=o.v.some(v=>v.horiz&&!v.isPed&&!v.isObstaculo&&Math.abs(v.p-colX)<(v.lenPx/2+tipo.lenPx/2+26));
+  if(ocupado) return;
+  const pedX=colX-W/2, sent=r()<.5?1:-1, y0=sent>0?H/2-ROAD_HALF-30:H/2+ROAD_HALF+30;
   const grpPed=o.grupos['ped']||[];
   const bloqueadoEntrada=grpPed.some(v=>Math.abs(v.p-y0)<(tipo.lenPx/2+(v.lenPx||6)/2+10));
   if(bloqueadoEntrada) return;
@@ -243,10 +245,10 @@ function spawnPedestre(o,r){
     contado:false,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[]});
 }
 function pedestreBloqueadoPorVeiculo(o,v){
-  const W=o.cv.width;
   const aproximaOuDentro = Math.abs(v.p-o.cv.height/2) < ROAD_HALF+60;
   if(!aproximaOuDentro) return false;
-  return o.v.some(v2=>v2.horiz&&!v2.isPed&&!v2.isObstaculo&&Math.abs(v2.p-W/2)<ROAD_HALF+4);
+  const colX=pedColuna(o);
+  return o.v.some(v2=>v2.horiz&&!v2.isPed&&!v2.isObstaculo&&Math.abs(v2.p-colX)<(v2.lenPx/2+v.lenPx/2+26));
 }
 
 function medirFila(o){
@@ -462,9 +464,9 @@ function dispararEvento(tipoId,telaK){
 }
 function agendarProximo(evt,proximo,ms){
   if(evt._modoTeste) return; // no modo teste avançamos manualmente e de forma síncrona
-  evt.timerId=setTimeout(()=>{ passoTimeline(evt,proximo); },ms||2000);
+  evt.timerId=setTimeout(()=>{ avancarEtapa(evt,proximo); },ms||2000);
 }
-function passoTimeline(evt,fase){
+function avancarEtapa(evt,fase){
   if(evt.estado==='encerrado') return;
   if(fase==='classificado'){
     evt.passos.push({hora:horaAgora(),texto:'classificado: '+evt.meta.categoria+' · confiança '+(evt.obstaculos[0]?evt.obstaculos[0].confianca:'alta')});
@@ -480,7 +482,7 @@ function passoTimeline(evt,fase){
 }
 function avancarAteAguardando(evt){
   evt._modoTeste=true;
-  passoTimeline(evt,'classificado'); passoTimeline(evt,'alerta'); passoTimeline(evt,'aguardando');
+  avancarEtapa(evt,'classificado'); avancarEtapa(evt,'alerta'); avancarEtapa(evt,'aguardando');
 }
 function decidirEvento(evt,acao){
   if(evt.estado==='encerrado') return;
