@@ -1,0 +1,46 @@
+name: Hub de ideias — atualiza sozinho
+# Ideia enviada aparece na hora em "Chegaram agora" (lida ao vivo pela página).
+# Quando alguém do time revisa e põe o rótulo "aprovada", esta rotina cria o arquivo da ideia,
+# regenera o hub e publica. Editar ideias/*.md também regenera.
+on:
+  issues:
+    types: [labeled]
+  push:
+    branches: [main]
+    paths: ['ideias/**', 'hub/build-hub.py', 'motor/casa.css']
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+concurrency: { group: hub, cancel-in-progress: false }
+jobs:
+  hub:
+    if: github.event_name != 'issues' || github.event.label.name == 'aprovada'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Issue aprovada vira arquivo de ideia
+        id: conv
+        if: github.event_name == 'issues'
+        run: |
+          set +e
+          python3 hub/issue-para-ideia.py > /tmp/conv.txt; code=$?
+          cat /tmp/conv.txt; echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" = 1 ] && exit 1; exit 0
+      - name: Avisar na issue se foi recusada
+        if: steps.conv.outputs.code == '2'
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: gh issue comment ${{ github.event.issue.number }} --body "Não entrou no hub — $(cat /tmp/conv.txt). Edite a issue, tire o trecho e peça nova revisão."
+      - name: Regenerar o hub
+        run: TZ=America/Sao_Paulo python3 hub/build-hub.py
+      - name: Publicar
+        run: |
+          git config user.name "hub-bot"; git config user.email "hub-bot@users.noreply.github.com"
+          git add ideias hub
+          if git diff --cached --quiet; then echo "nada mudou"; exit 0; fi
+          git commit -m "hub: regenerado sozinho (${{ github.event_name }})"
+          git push
+      - name: Responder e fechar a issue aprovada
+        if: steps.conv.outputs.code == '0'
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: gh issue close ${{ github.event.issue.number }} --comment "Entrou no hub: https://enioxt.github.io/hackathon-dados-publicos/hub/ (leva cerca de 1 minuto para aparecer)."
