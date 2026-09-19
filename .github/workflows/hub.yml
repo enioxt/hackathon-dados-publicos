@@ -30,7 +30,8 @@ jobs:
       - name: Avisar na issue se foi recusada
         if: steps.conv.outputs.code == '2'
         env: { GH_TOKEN: '${{ github.token }}' }
-        run: gh issue comment ${{ github.event.issue.number }} --body "Não entrou no hub — $(cat /tmp/conv.txt). Edite a issue, tire o trecho e peça nova revisão."
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "Não entrou no hub — $(cat /tmp/conv.txt). Edite a issue, tire o trecho e peça nova revisão."
       - name: Regenerar o hub
         run: TZ=America/Sao_Paulo python3 hub/build-hub.py
       - name: Publicar
@@ -43,4 +44,5 @@ jobs:
       - name: Responder e fechar a issue aprovada
         if: steps.conv.outputs.code == '0'
         env: { GH_TOKEN: '${{ github.token }}' }
-        run: gh issue close ${{ github.event.issue.number }} --comment "Entrou no hub: https://enioxt.github.io/hackathon-dados-publicos/hub/ (leva cerca de 1 minuto para aparecer)."
+        run: |
+          gh issue close ${{ github.event.issue.number }} --comment "Entrou no hub: https://enioxt.github.io/hackathon-dados-publicos/hub/ (leva cerca de 1 minuto para aparecer)."
