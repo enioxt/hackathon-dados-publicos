@@ -1,0 +1,490 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visão de Rota — simulador de viabilidade para qualquer cidade</title>
+<style>
+:root{--n:#0B1B2B;--c:#12273B;--b:#27425c;--t:#F6F8FA;--a:#E8A33D;--v:#2E9E6B;--z:#9AA5B1;--r:#D6453D}
+*{box-sizing:border-box}
+body{margin:0;background:var(--n);color:var(--t);font:15px/1.55 system-ui,Segoe UI,Arial,sans-serif}
+header{padding:22px 5vw 10px}
+header small{letter-spacing:.14em;color:var(--z)}
+h1{margin:6px 0 8px;font-size:26px}
+h2{font-size:18px;margin:0 0 12px;color:var(--t)}
+h3{font-size:14px;margin:14px 0 6px;color:var(--a)}
+.faixa{background:var(--a);color:#111;padding:8px 5vw;font-weight:600;font-size:13.5px}
+main{padding:18px 5vw 90px;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+section{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:16px}
+.full{grid-column:1/-1}
+label{display:grid;grid-template-columns:1fr 118px;gap:8px;align-items:center;margin:7px 0;font-size:13.8px}
+label span small{display:block;color:var(--z);font-size:11.6px;line-height:1.35;margin-top:1px}
+input,select{background:var(--n);border:1px solid var(--b);color:var(--t);border-radius:8px;padding:7px;text-align:right;font:inherit;width:100%}
+select{text-align:left}
+input[type=text]{text-align:left}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+.row-origem{display:flex;align-items:center;gap:6px;justify-content:flex-end;min-width:0}
+.row-origem input{flex:1 1 auto;min-width:64px}
+.row-origem .tag{flex:0 0 auto}
+.cidfield{grid-template-columns:1fr 190px}
+.tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;color:#111;white-space:nowrap}
+.tag-MEDIDO{background:var(--v);color:#fff}
+.tag-ESTIMATIVA{background:#d9c46a}
+.tag-PROPORCAO{background:var(--z)}
+.tag-DIGITADO{background:var(--a)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.k{background:var(--n);border:1px solid var(--b);border-radius:12px;padding:14px}
+.k b{display:block;font-size:24px;color:var(--a)}
+.k small{color:var(--z)}
+.destaque{background:linear-gradient(180deg,rgba(232,163,61,.14),transparent);border:1px solid var(--a)}
+.destaque b{color:var(--a);font-size:30px}
+ul{margin:6px 0 0;padding-left:18px}
+li{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:13.6px}
+td,th{padding:6px 5px;border-bottom:1px solid var(--b);text-align:right}
+td:first-child,th:first-child{text-align:left}
+th{color:var(--z);font-weight:600;font-size:12px}
+a{color:var(--a)}
+.pv{background:none;border:1px solid var(--b);color:var(--z);border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1;margin-left:4px;padding:0}
+.pv:hover{border-color:var(--a);color:var(--a)}
+.balloon{position:absolute;background:#0e2135;border:1px solid var(--a);border-radius:10px;padding:10px 12px;max-width:280px;font-size:12.3px;color:var(--t);z-index:80;box-shadow:0 6px 22px rgba(0,0,0,.4)}
+.bar-row{display:grid;grid-template-columns:130px 1fr 110px;gap:8px;align-items:center;margin:8px 0;font-size:13px}
+.bar-track{background:var(--n);border:1px solid var(--b);border-radius:6px;height:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px 0 0 6px}
+.pill{display:inline-block;background:var(--n);border:1px solid var(--b);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--z)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.badgebox{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.ok{color:var(--v);font-weight:700}
+.no{color:var(--r);font-weight:700}
+.muted{color:var(--z);font-size:12.5px}
+footer{padding:10px 5vw 40px;color:var(--z);font-size:12px}
+svg text{font-family:system-ui,sans-serif}
+@media(max-width:560px){label{grid-template-columns:1fr 96px}.bar-row{grid-template-columns:96px 1fr 84px;font-size:11.6px}}
+</style></head>
+<body>
+<header>
+<small>VISÃO DE ROTA · SIMULADOR DE VIABILIDADE</small>
+<h1>Quanto custa fazer isto existir — em qualquer cidade</h1>
+<div class="muted">Troque a cidade modelo ou qualquer campo abaixo: tudo recalcula na hora. Nenhum número aparece sem dizer de onde veio — clique nos círculos <span class="pv" style="pointer-events:none">?</span> ao lado de cada valor.</div>
+</header>
+<div class="faixa">ESTIMATIVA — os valores em reais abaixo são premissa de trabalho do time, não cotação fechada. O que é medido, o que é estimativa e o que é proporção calculada aparece em cada campo. Troque pelo orçamento real antes de levar a qualquer prefeitura.</div>
+
+<main>
+
+<!-- ============ 1. A CIDADE ============ -->
+<section class="full">
+<h2>1 · A cidade</h2>
+<div class="badgebox">
+<label style="grid-template-columns:170px 1fr;max-width:420px"><span>Cidade modelo</span>
+<select id="cidModelo"><option value="patos">Patos de Minas (medida)</option><option value="pequena">Cidade pequena (~50 mil hab.)</option><option value="media">Cidade média (~160 mil hab.)</option><option value="grande">Cidade grande (~500 mil hab.)</option><option value="capital">Capital (~2 milhões hab.)</option></select>
+</label>
+</div>
+<div class="grid2">
+<div>
+<label><span>Nome da cidade</span><input id="cidNome" type="text" value="Patos de Minas"></label>
+<label class="cidfield"><span>População<small>habitantes</small></span><span class="row-origem"><input id="cidPop" type="number" value="160000"><span class="tag tag-MEDIDO" id="tag_pop">MEDIDO</span></span></label>
+<label class="cidfield"><span>Frota total de veículos<small>emplacados na cidade</small></span><span class="row-origem"><input id="cidFrota" type="number" value="136300"><span class="tag tag-MEDIDO" id="tag_frota">MEDIDO</span></span></label>
+<label class="cidfield"><span>Frota de motos<small>parte da frota total</small></span><span class="row-origem"><input id="cidMotos" type="number" value="43319"><span class="tag tag-MEDIDO" id="tag_motos">MEDIDO</span></span></label>
+</div>
+<div>
+<label class="cidfield"><span>Malha urbana<small>km de vias pavimentadas</small></span><span class="row-origem"><input id="cidMalha" type="number" value="900"><span class="tag tag-ESTIMATIVA" id="tag_malha">ESTIMATIVA</span></span></label>
+<label class="cidfield"><span>Câmeras existentes<small>240 câmeras em 140 pontos, em Patos</small></span><span class="row-origem"><input id="cidCam" type="number" value="240"><span class="tag tag-MEDIDO" id="tag_cam">MEDIDO</span></span></label>
+<label class="cidfield"><span>Semáforos (total)</span><span class="row-origem"><input id="cidSem" type="number" value="76"><span class="tag tag-MEDIDO" id="tag_sem">MEDIDO</span></span></label>
+<label class="cidfield"><span>Semáforos ligados a central</span><span class="row-origem"><input id="cidSemC" type="number" value="1"><span class="tag tag-MEDIDO" id="tag_semc">MEDIDO</span></span></label>
+</div>
+</div>
+<label class="cidfield" style="max-width:520px;margin-top:6px"><span>Orçamento anual da secretaria de trânsito<small>R$/ano</small></span><span class="row-origem"><input id="cidOrc" type="number" value="20000000"><span class="tag tag-MEDIDO" id="tag_orc">MEDIDO</span></span></label>
+<p class="muted">MEDIDO = número real de Patos de Minas, citado pela secretaria/prefeitura. ESTIMATIVA = premissa do time por falta de dado público. PROPORÇÃO = calculado a partir da população, ao trocar de cidade modelo. DIGITADO = você alterou o valor à mão.</p>
+</section>
+
+<!-- ============ 2. QUANTO CUSTA FAZER EXISTIR ============ -->
+<section class="full">
+<h2>2 · Quanto custa fazer isto existir <span class="pill">o item mais caro do projeto</span></h2>
+<div class="grid2">
+<div>
+<label style="grid-template-columns:1fr 90px"><span>Valor da hora de desenvolvimento (R$)<small>faixa defensável da pesquisa: R$ 120 a 185/h</small></span><input id="devVH" type="number" value="150"></label>
+<label style="grid-template-columns:1fr 90px"><span>Leitura de vídeo e contagem (h)</span><input id="devLeitura" type="number" value="480"></label>
+<label style="grid-template-columns:1fr 90px"><span>Painel do gestor (h)</span><input id="devPainel" type="number" value="320"></label>
+<label style="grid-template-columns:1fr 90px"><span>App do cidadão (h)</span><input id="devApp" type="number" value="400"></label>
+<label style="grid-template-columns:1fr 90px"><span>Integrações e APIs (h)</span><input id="devInt" type="number" value="240"></label>
+<label style="grid-template-columns:1fr 90px"><span>Testes e validação em campo (h)</span><input id="devTeste" type="number" value="200"></label>
+<label style="grid-template-columns:1fr 90px"><span>Documentação e treinamento (h)</span><input id="devDoc" type="number" value="120"></label>
+</div>
+<div>
+<div class="k destaque"><small>Total de desenvolvimento <span id="pvDev"></span></small><b id="devTot">—</b><small id="devHoras"></small></div>
+<div id="devBars" style="margin-top:12px"></div>
+<p class="muted" id="devFrase" style="margin-top:8px"></p>
+</div>
+</div>
+<h3>O caro é fazer existir uma vez</h3>
+<p>Depois de pronto, cada cidade nova custa apenas uma fração disto: equipamento + operação do primeiro ano, sem o desenvolvimento.</p>
+<div class="res"><div class="k"><small>Custo marginal da 2ª cidade <span id="pvMarg"></span></small><b id="margTot">—</b><small>equipamento + operação + licenças do ano 1, sem desenvolvimento</small></div>
+<div class="k"><small>Isso é quanto do total de desenvolvimento</small><b id="margPct">—</b><small>quanto menor, mais forte o argumento de replicar</small></div></div>
+</section>
+
+<!-- ============ 3. CÂMERAS + FROTA + CENTRAL (motor herdado da calculadora) ============ -->
+<section><h2>3 · Câmeras fixas que já existem</h2>
+<label><span>Câmeras lidas nesta simulação<small>não pode passar das câmeras existentes da cidade (item 1)</small></span><input id="cam" type="number" value="50"></label>
+<label><span>Fluxos de vídeo por máquina<small>premissa conservadora; benchmark de equipamento de borda fala em 10 a 40 câmeras a 5–15 quadros/s</small></span><input id="fpm" type="number" value="8"></label>
+<label><span>Máquina de processamento (R$)<small>computador com placa de vídeo intermediária — pesquisa de mercado, reconferir</small></span><input id="maq" type="number" value="6500"></label>
+<label><span>Instalar 1 câmera NOVA (R$)<small>valor citado em ata/imprensa de Patos, abr/2025</small></span><input id="nova" type="number" value="25000"></label>
+<label><span>Licença/software por câmera (R$/mês)<small>faixa da pesquisa: R$ 15 a 80/câmera/mês, genérico internacional</small></span><input id="licPorCam" type="number" value="60"></label>
+</section>
+
+<section><h2>4 · Veículos da frota como sensor</h2>
+<label><span>Veículos equipados<small>viaturas, fiscalização, coleta, ônibus</small></span><input id="vei" type="number" value="3"></label>
+<label><span>Kit por veículo (R$)<small>câmera veicular com GPS + suporte + cartão</small></span><input id="kit" type="number" value="1200"></label>
+<label><span>Km rodados por veículo por dia</span><input id="kmd" type="number" value="60"></label>
+<label><span>Parte do trajeto que é rua nova (%)<small>o resto é repetição da rota de sempre</small></span><input id="novo" type="number" value="35"></label>
+<label><span>Dias úteis por mês</span><input id="dias" type="number" value="22"></label>
+</section>
+
+<section><h2>5 · Central e operação</h2>
+<label><span>Rede, nobreak, disco, tela (R$)<small>uma vez</small></span><input id="infra" type="number" value="5500"></label>
+<label><span>Instalação/calibração por câmera fixa (R$)<small>definir zona de contagem, 1 vez</small></span><input id="calib" type="number" value="150"></label>
+<label><span>Pessoa que opera e interpreta (R$/mês)<small>meio período; pode ser servidor já existente = 0</small></span><input id="pes" type="number" value="4000"></label>
+<label><span>Energia e internet (R$/mês)</span><input id="ene" type="number" value="450"></label>
+</section>
+
+<div class="res full" id="res"></div>
+
+<!-- ============ 6. INFRAESTRUTURA REAL ============ -->
+<section class="full"><h2>6 · Custo de infraestrutura real</h2>
+<div class="grid2">
+<div><h3>Nuvem (servidor central)</h3>
+<label><span>Servidor na nuvem (R$/mês)<small>porte pequeno R$150-400 · médio R$400-1200 · grande R$1200-4000 — ajuste ao porte</small></span><input id="servidorMes" type="number" value="350"></label>
+<label><span>Armazenamento (R$/mês)</span><input id="armazenamentoMes" type="number" value="80"></label>
+<label><span>Banda (R$/mês)</span><input id="bandaMes" type="number" value="120"></label>
+<label><span>Backup (R$/mês)</span><input id="backupMes" type="number" value="100"></label>
+<label><span>Monitoramento (R$/mês)</span><input id="monitoramentoMes" type="number" value="50"></label>
+<label><span>Domínio (R$/ano)</span><input id="dominioAno" type="number" value="60"></label>
+<label><span>Certificado (R$/ano)<small>Let's Encrypt cobre a maioria dos casos, por isso 0</small></span><input id="certAno" type="number" value="0"></label>
+</div>
+<div><h3>Alternativa: processar onde a imagem já está</h3>
+<label><span>Equipamento de borda (R$, uma vez)<small>mini-computador com acelerador de IA, instalado junto às câmeras</small></span><input id="edgeEquip" type="number" value="8990"></label>
+<label><span>Conectividade/manutenção da borda (R$/mês)</span><input id="edgeConect" type="number" value="80"></label>
+<div class="k" style="margin-top:10px"><small>Por que muda a conta</small><div style="font-size:13px;margin-top:4px">O vídeo bruto nunca sai do equipamento — só a contagem. Isso derruba o custo de banda/nuvem por câmera e resolve privacidade por desenho, não só por política.</div></div>
+</div>
+</div>
+<h3>Nuvem × borda, lado a lado</h3>
+<table id="tblInfra"><tr><th></th><th>Ano 1</th><th>Ano 2 em diante</th></tr></table>
+</section>
+
+<!-- ============ 7. CENÁRIOS POR PORTE ============ -->
+<section class="full"><h2>7 · Cenários por porte de câmeras</h2>
+<label style="max-width:340px"><span>Margem sobre o custo (%)<small>para calcular o preço sugerido</small></span><input id="margemCen" type="number" value="30"></label>
+<table id="tblCen"><tr><th>Câmeras</th><th>Investimento inicial</th><th>Custo mensal</th><th>Por câmera/mês</th><th>Preço sugerido (ano 1)</th><th>Margem</th><th>Cabe na dispensa <span class="pv" id="pvDispensa">?</span></th></tr></table>
+<p class="muted">Teto de dispensa de licitação em 2026 (Decreto federal 12.807/2025, art. 75, II): R$ 65.492,11 — conferido no decreto.</p>
+</section>
+
+<!-- ============ 8. CORRELAÇÃO COM O DADO DA CIDADE ============ -->
+<section class="full"><h2>8 · O que a leitura cobriria nesta cidade <span class="pill">extrapolação por proporção</span></h2>
+<p class="muted">Isto NÃO é medição da cidade digitada em cima — é a taxa medida em Patos de Minas aplicada à população que você colocou no item 1. Troque a cidade e o número muda pela proporção, nunca pelo dado real de lá.</p>
+<div class="res">
+<div class="k"><small>Sinistros esperados por ano <span class="pv" id="pvSin">?</span></small><b id="sinAno">—</b><small>taxa medida: 22.708 sinistros em ~8,7 anos para ~160 mil hab. em Patos</small></div>
+<div class="k"><small>Desses, envolvendo moto <span class="pv" id="pvMoto">?</span></small><b id="sinMoto">—</b><small>moto está em 30% dos sinistros e em 49,6% dos óbitos, medido em Patos</small></div>
+<div class="k destaque"><small>Ocorrências/ano que a leitura cobriria <span class="pv" id="pvCob">?</span></small><b id="ocorCob">—</b><small id="ocorCobN">—</small></div>
+</div>
+<h3>Concentração — mesma curva da simulação de Patos, escalada pelo tamanho da cidade</h3>
+<div id="curva"></div>
+<p class="muted">Em Patos, as posições de câmera concentram ocorrência: 33 posições cobrem 25%, 94 cobrem metade, 207 cobrem 75%, 357 cobrem 90%. Aqui essas marcas foram escaladas pela proporção de câmeras existentes desta cidade sobre as 240 de Patos — é proporção, não a distribuição real de lá.</p>
+</section>
+
+<!-- ============ 9. QUANTO COBRAR (herdado) ============ -->
+<section class="full"><h2>9 · Quanto cobrar — três camadas <span class="tag" style="background:var(--a)">proposta para o time decidir</span></h2>
+<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+<div><h3 style="color:var(--a)">1 · Piloto de 90 dias (porta de entrada)</h3>
+<label><span>Horas de consultoria e implantação</span><input id="ph" type="number" value="200"></label>
+<label><span>Valor da hora (R$)</span><input id="pvh" type="number" value="150"></label>
+<label><span>Câmeras lidas no piloto</span><input id="pcam" type="number" value="10"></label>
+<label><span>Equipamento que fica com a cidade (R$)</span><input id="phw" type="number" value="8000"></label>
+<label><span>Margem sobre o custo (%)</span><input id="pmg" type="number" value="25"></label>
+<div class="k" style="margin-top:8px"><small>Preço do piloto</small><b id="oPil">—</b><small id="oPilN"></small></div></div>
+<div><h3 style="color:var(--a)">2 · Assinatura depois do piloto</h3>
+<label><span>Preço por câmera lida/mês (R$)</span><input id="apc" type="number" value="290"></label>
+<label><span>Câmeras contratadas</span><input id="acam" type="number" value="50"></label>
+<label><span>Horas de análise por mês incluídas</span><input id="ah" type="number" value="20"></label>
+<div class="k" style="margin-top:8px"><small>Receita por mês · por ano</small><b id="oAss">—</b><small id="oAssN"></small></div>
+<table style="margin-top:8px"><tr><td>Analítico de vídeo genérico (internacional)</td><td>R$ 15 a 77/câmera/mês</td></tr><tr><td>Contagem dedicada de tráfego (fabricante dos EUA)</td><td>R$ 427/cruzamento/mês</td></tr><tr><td>Videomonitoramento completo (contrato público, cálculo nosso)</td><td>≈ R$ 460/câmera/mês</td></tr></table></div>
+<div><h3 style="color:var(--a)">3 · Êxito (só onde o ganho é medido em R$)</h3>
+<label><span>Ganho anual medido (R$)</span><input id="eg" type="number" value="0"></label>
+<label><span>Percentual de êxito (%)<small>faixa usual: 10 a 25</small></span><input id="ep" type="number" value="15"></label>
+<div class="k" style="margin-top:8px"><small>Êxito no ano</small><b id="oEx">—</b><small>só com o ponto de partida assinado antes; sem isso, cobra-se hora</small></div></div>
+</div>
+<h3>Limites legais que decidem o formato</h3>
+<table><tr><td>Dispensa de licitação — compras/serviços, 2026 <a target="_blank" rel="noopener" href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/decreto/D12807.htm">decreto federal ↗ conferido</a></td><td>até R$ 65.492,11</td></tr>
+<tr><td>Contrato Público de Solução Inovadora — teste (federal)</td><td>até R$ 1,6 milhão · 24 meses</td></tr>
+<tr><td>Fornecimento pós-teste, sem nova licitação (federal)</td><td>até R$ 8 milhões · 48 meses</td></tr>
+<tr><td>Solução inovadora — regra estadual de Minas Gerais <a target="_blank" rel="noopener" href="https://www.almg.gov.br/legislacao-mineira/texto/LEI/23793/2021/">texto da lei ↗ conferido</a></td><td>reembolso até R$ 200 mil · teste de 6+6 meses</td></tr></table>
+<p id="oLegal" style="font-weight:600;margin:10px 0 0"></p>
+</section>
+
+<!-- ============ 10. REFERÊNCIA MEDIDA (Patos, fixa) ============ -->
+<section class="full"><h2>10 · Referência medida — o que Patos de Minas já investiu <span class="pill">não muda com a cidade modelo</span></h2>
+<table>
+<tr><td>Instalar 1 câmera nova <span class="tag" style="background:#d9c46a">imprensa/ata</span></td><td>R$ 25 mil</td></tr>
+<tr><td>Total já investido em videomonitoramento, só com fonte confirmada <span class="tag" style="background:#d9c46a">pesquisa — reconferir</span></td><td>≈ R$ 4,1 milhões</td></tr>
+<tr><td>Expansão anunciada (meta de 295 câmeras) <a class="tag" style="background:var(--v);text-decoration:none" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2323/patos-de-minas-tera-maior-area-videomonitorada-do-estado-com-295--cameras">site da prefeitura ↗</a></td><td>R$ 1,5 milhão</td></tr>
+<tr><td>Emenda estadual 2024–26 para videomonitoramento <span class="tag" style="background:#d9c46a">imprensa/ata</span></td><td>R$ 1,8 milhão</td></tr>
+<tr><td>Centro de controle completo, benchmark da secretaria <span class="tag" style="background:var(--z)">dito pelo diretor de mobilidade, 19/09</span></td><td>R$ 320 mil/mês</td></tr>
+<tr><td>Rede de 40 semáforos inteligentes, só a parte física <span class="tag" style="background:var(--z)">dito pelo diretor, 19/09</span></td><td>R$ 6 milhões</td></tr>
+<tr><td>1 cruzamento inteligente <span class="tag" style="background:var(--z)">dito pelo diretor, 19/09</span></td><td>R$ 150 a 200 mil</td></tr>
+</table>
+<p class="muted">A cidade já pagou pela câmera, pelo poste, pelo link e pela sala. O que falta é a leitura.</p>
+</section>
+
+<!-- ============ 11. O QUE ISTO ENXERGA / MEDE / NÃO INCLUI ============ -->
+<section><h2>O que a frota enxerga rodando</h2><ul>
+<li>Buraco e remendo solto, com coordenada e foto do chão</li>
+<li>Calçada fora do padrão, degrau, rampa ausente</li>
+<li>Árvore ou galho caído, poda invadindo a via</li>
+<li>Placa encoberta, torta ou pichada; faixa de pedestre apagada</li>
+<li>Entulho, lixo e veículo abandonado</li>
+<li>Poste apagado (rota noturna)</li>
+<li>Ponto de ônibus sem abrigo ou sem sinalização</li>
+</ul>
+<p class="muted">O vídeo é processado quando o veículo volta ao pátio, pelo wi-fi: sem plano de dados por veículo. Rosto e placa são borrados antes de qualquer imagem ser guardada.</p></section>
+
+<section><h2>O que as câmeras fixas medem</h2><ul>
+<li>Contagem por tipo: carro, moto, ônibus, caminhão, bicicleta, pedestre</li>
+<li>Fluxo e fila por bloco de 5 minutos</li>
+<li>Conversão proibida e contramão, como contagem</li>
+<li>Quase-acidente: duas trajetórias que quase se cruzam</li>
+<li>Antes e depois de cada mudança na via</li>
+</ul>
+<p class="muted">Um lugar só para tudo: cada registro entra com origem, hora, local e o que o gerou. É isso que permite comparar e provar.</p></section>
+
+<section><h2>O que este cálculo não inclui</h2><ul>
+<li>Autorização de acesso às câmeras (é decisão, não custo)</li>
+<li>Desenvolvimento até a primeira versão realmente pronta para uso diário (estimado no item 2, não fechado)</li>
+<li>Parecer jurídico e relatório de impacto de privacidade</li>
+<li>Troca de câmera antiga que não entrega vídeo pela rede</li>
+<li>Manutenção dos veículos e tempo dos motoristas (já existem)</li>
+</ul></section>
+
+</main>
+<footer>Ferramenta de modelagem — todo campo é premissa editável, nenhum é cotação fechada. Origem de cada número: clique no círculo de prova ao lado dele.</footer>
+
+<script>
+const $=i=>{const el=document.getElementById(i);if(!el)return 0;const v=parseFloat(el.value);return isNaN(v)?0:v};
+const R=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const N=v=>Math.round(v).toLocaleString('pt-BR');
+const pct1=v=>v.toFixed(1).replace('.',',')+'%';
+
+/* ---------- prova a um clique ---------- */
+function P(id,txt){
+  return `<button class="pv" data-t="${txt.replace(/"/g,'&quot;')}" id="${id||''}">?</button>`;
+}
+function setProva(id,txt){const el=document.getElementById(id);if(el)el.setAttribute('data-t',txt);}
+document.addEventListener('click',e=>{
+  document.querySelectorAll('.balloon').forEach(b=>b.remove());
+  const btn=e.target.closest('.pv');
+  if(!btn||!btn.dataset.t)return;
+  const bal=document.createElement('div');bal.className='balloon';bal.textContent=btn.dataset.t;
+  document.body.appendChild(bal);
+  const r=btn.getBoundingClientRect();
+  let left=r.left+window.scrollX;
+  if(left+280>window.innerWidth) left=window.innerWidth-290;
+  bal.style.left=Math.max(8,left)+'px';
+  bal.style.top=(r.bottom+window.scrollY+6)+'px';
+  e.stopPropagation();
+});
+
+/* ---------- origem da cidade (item 1) ---------- */
+const cidKeys=['pop','frota','motos','malha','cam','sem','semc','orc'];
+const cidInputId={pop:'cidPop',frota:'cidFrota',motos:'cidMotos',malha:'cidMalha',cam:'cidCam',sem:'cidSem',semc:'cidSemC',orc:'cidOrc'};
+function setTag(key,val){
+  const el=document.getElementById('tag_'+key);
+  if(!el)return;
+  const cls={MEDIDO:'tag-MEDIDO',ESTIMATIVA:'tag-ESTIMATIVA','PROPORÇÃO':'tag-PROPORCAO',DIGITADO:'tag-DIGITADO'}[val]||'tag-PROPORCAO';
+  el.className='tag '+cls;el.textContent=val;
+}
+cidKeys.forEach(k=>{
+  document.getElementById(cidInputId[k]).addEventListener('input',()=>{setTag(k,'DIGITADO');calc();});
+});
+document.getElementById('cidNome').addEventListener('input',calc);
+
+const PATOS={pop:160000,frota:136300,motos:43319,malha:900,cam:240,sem:76,semc:1,orc:20000000};
+function aplicarModelo(){
+  const modelo=document.getElementById('cidModelo').value;
+  let pop, tagPop, tagResto;
+  if(modelo==='patos'){pop=PATOS.pop;tagPop='MEDIDO';tagResto='MEDIDO';document.getElementById('cidNome').value='Patos de Minas';}
+  else if(modelo==='pequena'){pop=50000;tagPop='ESTIMATIVA';tagResto='PROPORÇÃO';document.getElementById('cidNome').value='Cidade pequena (modelo)';}
+  else if(modelo==='media'){pop=160000;tagPop='ESTIMATIVA';tagResto='PROPORÇÃO';document.getElementById('cidNome').value='Cidade média (modelo)';}
+  else if(modelo==='grande'){pop=500000;tagPop='ESTIMATIVA';tagResto='PROPORÇÃO';document.getElementById('cidNome').value='Cidade grande (modelo)';}
+  else {pop=2000000;tagPop='ESTIMATIVA';tagResto='PROPORÇÃO';document.getElementById('cidNome').value='Capital (modelo)';}
+  const ratio=pop/PATOS.pop;
+  document.getElementById('cidPop').value=Math.round(pop);
+  document.getElementById('cidFrota').value=Math.round(PATOS.frota*ratio);
+  document.getElementById('cidMotos').value=Math.round(PATOS.motos*ratio);
+  document.getElementById('cidMalha').value=Math.round(PATOS.malha*ratio);
+  document.getElementById('cidCam').value=Math.max(1,Math.round(PATOS.cam*ratio));
+  document.getElementById('cidSem').value=Math.max(1,Math.round(PATOS.sem*ratio));
+  document.getElementById('cidSemC').value=Math.max(1,Math.round(PATOS.semc*ratio));
+  document.getElementById('cidOrc').value=Math.round(PATOS.orc*ratio);
+  setTag('pop',tagPop);
+  setTag('frota',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  setTag('motos',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  setTag('malha',modelo==='patos'?'ESTIMATIVA':'PROPORÇÃO');
+  setTag('cam',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  setTag('sem',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  setTag('semc',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  setTag('orc',modelo==='patos'?'MEDIDO':'PROPORÇÃO');
+  document.getElementById('cam').value=Math.min(50,Math.round(document.getElementById('cidCam').value));
+  calc();
+}
+document.getElementById('cidModelo').addEventListener('change',aplicarModelo);
+
+/* ---------- 2. desenvolvimento ---------- */
+const DEVMODS=[['devLeitura','Leitura de vídeo e contagem'],['devPainel','Painel do gestor'],['devApp','App do cidadão'],['devInt','Integrações e APIs'],['devTeste','Testes e validação em campo'],['devDoc','Documentação e treinamento']];
+function devTotal(){const vh=$('devVH');let t=0;DEVMODS.forEach(m=>t+=$(m[0])*vh);return t;}
+function renderBars(containerId,data){
+  const max=Math.max(1,...data.map(d=>d.v));
+  document.getElementById(containerId).innerHTML=data.map(d=>`
+    <div class="bar-row"><span>${d.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(2,d.v/max*100)}%;background:${d.c}"></div></div><span style="text-align:right">${R(d.v)}</span></div>`).join('');
+}
+
+/* ---------- 3+4+5. motor herdado da calculadora (câmeras/frota/central) ---------- */
+function scenario(cam){
+  const maqs=Math.ceil(cam/Math.max(1,$('fpm')));
+  const inicial=maqs*$('maq')+$('infra')+cam*$('calib')+$('vei')*$('kit');
+  const mensalBase=$('pes')+$('ene')*Math.max(1,maqs/2);
+  const licMensal=cam*$('licPorCam');
+  const mensal=mensalBase+licMensal;
+  return {maqs,inicial,mensalBase,licMensal,mensal};
+}
+
+/* ---------- 6. infraestrutura ---------- */
+function calcInfra(){
+  const cloudMensal=$('servidorMes')+$('armazenamentoMes')+$('bandaMes')+$('backupMes')+$('monitoramentoMes')+($('dominioAno')+$('certAno'))/12;
+  const cloudAno1=cloudMensal*12;
+  const edgeAno1=$('edgeEquip')+$('edgeConect')*12;
+  const edgeAno2=$('edgeConect')*12;
+  document.getElementById('tblInfra').innerHTML=`<tr><th></th><th>Ano 1</th><th>Ano 2 em diante</th></tr>
+  <tr><td>Nuvem (servidor + armazenamento + banda + backup + monitoramento)</td><td>${R(cloudAno1)}</td><td>${R(cloudAno1)}</td></tr>
+  <tr><td>Processar onde a imagem já está (equipamento de borda + conectividade)</td><td>${R(edgeAno1)}</td><td>${R(edgeAno2)}</td></tr>
+  <tr><td><b>Diferença</b></td><td><b>${R(cloudAno1-edgeAno1)}</b></td><td><b>${R(cloudAno1-edgeAno2)}</b></td></tr>`;
+  return {cloudMensal,cloudAno1,edgeAno1,edgeAno2};
+}
+
+/* ---------- 7. cenários por porte ---------- */
+const TETO=65492.11;
+function calcCenario(cam){
+  const s=scenario(cam);
+  const porCam=cam?s.mensal/cam:0;
+  const margem=$('margemCen');
+  const preco=(s.inicial+s.mensal*12)*(1+margem/100);
+  return {cam,inicial:s.inicial,mensal:s.mensal,porCam,preco,margem,cabe:preco<=TETO};
+}
+function renderCenarios(){
+  const linhas=[10,50,100,400].map(calcCenario);
+  document.getElementById('tblCen').innerHTML=`<tr><th>Câmeras</th><th>Investimento inicial</th><th>Custo mensal</th><th>Por câmera/mês</th><th>Preço sugerido (ano 1)</th><th>Margem</th><th>Cabe na dispensa?</th></tr>`+
+  linhas.map(l=>`<tr><td>${l.cam}</td><td>${R(l.inicial)}</td><td>${R(l.mensal)}</td><td>${R(l.porCam)}</td><td>${R(l.preco)}</td><td>${l.margem}%</td><td>${l.cabe?'<span class="ok">cabe</span>':'<span class="no">passa do teto</span>'}</td></tr>`).join('');
+  setProva('pvDispensa','Preço sugerido = (investimento inicial + 12 meses de custo) × (1 + margem). Teto: R$ 65.492,11, Decreto federal 12.807/2025 art.75,II, conferido.');
+}
+
+/* ---------- 8. correlação com o dado da cidade ---------- */
+const TAXA_SINISTRO_HAB_ANO=22708/(8.7*160000);
+const PONTOS_BASE=[[0,0],[33,25],[94,50],[207,75],[357,90],[487,100]];
+function coberturaPct(camLido,camExistentes){
+  const escala=Math.max(1,camExistentes)/240;
+  const pts=PONTOS_BASE.map(([x,y])=>[x*escala,y]);
+  if(camLido<=pts[0][0])return 0;
+  for(let i=1;i<pts.length;i++){
+    if(camLido<=pts[i][0]){
+      const [x0,y0]=pts[i-1],[x1,y1]=pts[i];
+      return y0+(y1-y0)*(camLido-x0)/Math.max(1e-9,(x1-x0));
+    }
+  }
+  return 100;
+}
+function renderCurva(camExistentes,camLido){
+  const escala=Math.max(1,camExistentes)/240;
+  const pts=PONTOS_BASE.map(([x,y])=>[Math.round(x*escala),y]);
+  const w=620,h=140,pad=30;
+  const maxX=Math.max(1,pts[pts.length-1][0]);
+  const X=x=>pad+(x/maxX)*(w-2*pad);
+  const Y=y=>h-pad-(y/100)*(h-2*pad-10);
+  const poly=pts.map(([x,y])=>`${X(x)},${Y(y)}`).join(' ');
+  const marks=pts.map(([x,y])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="#E8A33D"/><text x="${X(x)+6}" y="${Y(y)-6}" fill="#F6F8FA" font-size="11">${x} → ${pct1(y)}</text>`).join('');
+  const cx=X(Math.min(maxX,camLido)),cy=Y(coberturaPct(camLido,camExistentes));
+  document.getElementById('curva').innerHTML=`<svg viewBox="0 0 ${w} ${h+20}" style="width:100%;max-width:${w}px">
+  <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#27425c"/>
+  <polyline points="${poly}" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+  ${marks}
+  <circle cx="${cx}" cy="${cy}" r="6" fill="#2E9E6B" stroke="#F6F8FA" stroke-width="1.5"/>
+  <text x="10" y="14" fill="#9AA5B1" font-size="11">% de ocorrências cobertas</text>
+  <text x="10" y="${h+16}" fill="#9AA5B1" font-size="11">câmeras lidas (escalado pelo tamanho desta cidade)</text>
+  </svg>`;
+}
+
+/* ---------- 9. quanto cobrar (herdado) ---------- */
+function calcCobrar(){
+  const custoPil=$('ph')*$('pvh')+$('phw')+$('pcam')*$('calib');
+  const precoPil=custoPil*(1+$('pmg')/100);
+  document.getElementById('oPil').textContent=R(precoPil);
+  document.getElementById('oPilN').textContent=$('ph')+' h × '+R($('pvh'))+' + equipamento + calibração de '+$('pcam')+' câmeras, com margem';
+  const recM=$('apc')*$('acam');
+  document.getElementById('oAss').textContent=R(recM)+' · '+R(recM*12);
+  const s=scenario($('acam'));
+  document.getElementById('oAssN').textContent='custo mensal estimado (item 3-5, com '+$('acam')+' câmeras): '+R(s.mensal)+' → sobra '+R(recM-s.mensal)+' por mês antes de imposto e de desenvolvimento';
+  document.getElementById('oEx').textContent=$('eg')?R($('eg')*$('ep')/100):'—';
+  document.getElementById('oLegal').innerHTML=(precoPil<=TETO?'O piloto de '+R(precoPil)+' cabe na dispensa de licitação (sobra '+R(TETO-precoPil)+').':'O piloto de '+R(precoPil)+' passa do teto da dispensa em '+R(precoPil-TETO)+': ou reduz, ou vai por contrato de solução inovadora.')+' '+(recM*12<=TETO?'A assinatura anual também cabe.':'A assinatura de '+R(recM*12)+' por ano não cabe na dispensa: precisa de contrato de solução inovadora ou licitação.');
+}
+
+/* ---------- master calc ---------- */
+function calc(){
+  const cidCam=$('cidCam');
+  if($('cam')>cidCam){document.getElementById('cam').value=cidCam;}
+  const cam=$('cam');
+  const s=scenario(cam);
+
+  document.getElementById('res').innerHTML=[
+    ['Investimento inicial',R(s.inicial),s.maqs+' máquina(s) · '+cam+' câmeras calibradas · '+$('vei')+' veículo(s)'],
+    ['Custo por mês',R(s.mensal),'pessoa + energia/internet + licenças de '+cam+' câmeras'],
+    ['Primeiro ano',R(s.inicial+12*s.mensal),'inicial + 12 meses'],
+    ['Por câmera lida, por mês',cam?R(s.mensal/cam):'—','com o inicial diluído em 24 meses: '+(cam?R((s.mensal+s.inicial/24)/cam):'—')],
+    ['Instalar as mesmas '+cam+' câmeras novas',R(cam*$('nova')),'só o equipamento, pelo valor dito em ata'],
+  ].map(k=>`<div class="k"><small>${k[0]}</small><b>${k[1]}</b><small>${k[2]}</small></div>`).join('');
+
+  /* bloco 2: desenvolvimento */
+  const dev=devTotal();
+  const horasTot=DEVMODS.reduce((a,m)=>a+$(m[0]),0);
+  document.getElementById('devTot').textContent=R(dev);
+  document.getElementById('devHoras').textContent=N(horasTot)+' horas × '+R($('devVH'))+'/hora';
+  const infra=calcInfra();
+  const opAno=s.mensalBase*12;
+  const licAno=s.licMensal*12;
+  renderBars('devBars',[
+    {l:'Desenvolvimento',v:dev,c:'var(--a)'},
+    {l:'Equipamento',v:s.inicial,c:'var(--v)'},
+    {l:'Operação/ano',v:opAno,c:'var(--z)'},
+    {l:'Licenças/ano',v:licAno,c:'var(--r)'}
+  ]);
+  const marginal=s.inicial+opAno+licAno;
+  document.getElementById('margTot').textContent=R(marginal);
+  document.getElementById('margPct').textContent=dev?pct1(marginal/dev*100):'—';
+  document.getElementById('devFrase').textContent='O caro é fazer existir uma vez ('+R(dev)+' de desenvolvimento); depois, cada cidade nova custa '+R(marginal)+' — equipamento, operação e licenças do primeiro ano, sem desenvolver de novo.';
+  setProva('pvDev','Soma de horas × valor-hora dos 6 módulos abaixo: leitura de vídeo, painel, app do cidadão, integrações, testes de campo, documentação.');
+  setProva('pvMarg','Equipamento (item 3-5, cenário atual) + operação anual (pessoa+energia) + licenças anuais (câmeras × licença/mês × 12) — sem o custo de desenvolvimento, que só existe uma vez.');
+
+  renderCenarios();
+
+  /* bloco 8: correlação */
+  const pop=$('cidPop');
+  const sinAno=TAXA_SINISTRO_HAB_ANO*pop;
+  const sinMoto=sinAno*0.30;
+  const cob=coberturaPct(cam,cidCam);
+  const ocor=sinAno*cob/100;
+  document.getElementById('sinAno').textContent=N(sinAno);
+  document.getElementById('sinMoto').textContent=N(sinMoto);
+  document.getElementById('ocorCob').textContent=N(ocor);
+  document.getElementById('ocorCobN').textContent=pct1(cob)+' das ocorrências esperadas, lendo '+cam+' de '+cidCam+' câmeras existentes';
+  setProva('pvSin','Taxa medida em Patos de Minas: 22.708 sinistros do RENAEST em ~8,7 anos, para ~160 mil habitantes = '+ (TAXA_SINISTRO_HAB_ANO*100000).toFixed(2) +' sinistros por 100 mil hab./ano. Aplicada à população digitada no item 1 — extrapolação, não medição da cidade escolhida.');
+  setProva('pvMoto','RENAEST Patos de Minas: motocicleta presente em 6.818 de 22.708 sinistros (30,0%) e em 65 de 131 sinistros com óbito (49,6%) — medido, aplicado por proporção.');
+  setProva('pvCob','Percentual interpolado na curva de concentração de Patos (33→25%, 94→50%, 207→75%, 357→90%), escalada pela razão entre as câmeras existentes desta cidade e as 240 de Patos. Multiplicado pelos sinistros esperados por ano.');
+  renderCurva(cidCam,cam);
+
+  calcCobrar();
+}
+document.querySelectorAll('input:not(#cidPop):not(#cidFrota):not(#cidMotos):not(#cidMalha):not(#cidCam):not(#cidSem):not(#cidSemC):not(#cidOrc)').forEach(i=>i.addEventListener('input',calc));
+calc();
+</script>
+</body></html>
