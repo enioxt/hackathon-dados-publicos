@@ -43,7 +43,7 @@ jobs:
           git commit -m "hub: regenerado sozinho (${{ github.event_name }})"
           git push
       - name: Responder e fechar a issue aprovada
-        if: steps.conv.outputs.code == '0'
+        if: github.event_name == 'issues' && steps.conv.outputs.code == '0'
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           gh issue close ${{ github.event.issue.number }} --comment "Entrou no hub: https://enioxt.github.io/hackathon-dados-publicos/hub/ (leva cerca de 1 minuto para aparecer)."
