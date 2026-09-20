@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visão de Rota — início</title>
+<style>
+  :root{
+    --bg:#0B1B2B; --panel:#12273B; --panel-2:#0F2032;
+    --ink:#F6F8FA; --ink-dim:#B9C4D0; --amber:#E8A33D;
+    --green:#2E9E6B; --red:#D6453D; --gray:#9AA5B1;
+    --line: rgba(246,248,250,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:17px; line-height:1.5;
+    padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));
+  }
+  [hidden]{display:none!important;}
+
+  .faixa-sintetico{
+    background:rgba(232,163,61,0.16); border-bottom:1px solid rgba(232,163,61,0.5);
+    color:var(--amber); font-size:13px; font-weight:800; text-align:center;
+    padding:8px 10px; letter-spacing:.02em;
+  }
+
+  header.top{
+    max-width:1100px; margin:0 auto; padding:34px 20px 10px; text-align:center;
+  }
+  header.top .eyebrow{
+    color:var(--amber); text-transform:uppercase; letter-spacing:.14em;
+    font-size:14px; font-weight:800; margin:0 0 8px;
+  }
+  header.top h1{ margin:0 0 10px; font-size:clamp(28px,5vw,42px); font-weight:800; letter-spacing:-0.01em; }
+  header.top p.sub{ margin:0 auto; color:var(--ink-dim); font-size:clamp(15px,1.8vw,19px); max-width:640px; }
+
+  main{ max-width:1100px; margin:0 auto; padding:26px 20px 10px; display:flex; flex-direction:column; gap:34px; }
+
+  /* ---- conversa ---- */
+  .conversa{
+    background:var(--panel); border:1px solid var(--line); border-radius:20px;
+    padding:22px clamp(16px,3vw,32px) 26px;
+  }
+  .conversa h2{ margin:0 0 4px; font-size:15px; font-weight:800; color:var(--amber); text-transform:uppercase; letter-spacing:.06em; }
+  .conversa p.dica{ margin:0 0 16px; color:var(--ink-dim); font-size:14px; }
+  .perguntas-prontas{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+  .btn-pergunta{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:999px; padding:12px 18px; font-size:15px; font-weight:600;
+    cursor:pointer; text-align:left; min-height:44px;
+  }
+  .btn-pergunta:hover{ border-color:var(--amber); color:var(--amber); }
+  form.form-conversa{ display:flex; gap:10px; flex-wrap:wrap; }
+  form.form-conversa input{
+    flex:1 1 260px; min-width:0; background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:14px; padding:16px 18px; font-size:18px; font-family:inherit;
+  }
+  form.form-conversa input:focus{ outline:2px solid var(--amber); outline-offset:1px; }
+  .btn-perguntar{
+    background:var(--amber); color:#111; border:0; border-radius:14px; padding:16px 26px;
+    font-size:18px; font-weight:800; cursor:pointer; min-height:56px;
+  }
+  .btn-perguntar:hover{ opacity:.92; }
+  .btn-perguntar:disabled{ opacity:.6; cursor:default; }
+  #resposta-conversa{ margin-top:18px; }
+  .bolha{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-size:15.5px; white-space:pre-wrap; color:var(--ink);
+  }
+  .bolha.pensando{ color:var(--ink-dim); font-style:italic; }
+  .bolha .selo-preparada{
+    display:inline-block; margin-bottom:8px; background:rgba(154,165,177,0.18); color:var(--gray);
+    border:1px solid rgba(154,165,177,0.4); font-size:11px; font-weight:800; letter-spacing:.03em;
+    text-transform:uppercase; padding:3px 9px; border-radius:999px;
+  }
+
+  /* ---- 3 botões enormes ---- */
+  .botoes-grandes{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:700px){ .botoes-grandes{ grid-template-columns:1fr; } }
+  .btn-enorme{
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    min-height:96px; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    color:var(--ink); text-decoration:none; font-size:20px; font-weight:800;
+    cursor:pointer; padding:14px 18px; text-align:center;
+  }
+  .btn-enorme svg{ width:34px; height:34px; flex:none; stroke:var(--amber); }
+  .btn-enorme:hover{ border-color:var(--amber); }
+
+  /* ---- seções gerais ---- */
+  section.bloco{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px clamp(16px,3vw,30px); }
+  section.bloco h2{ margin:0 0 4px; font-size:15px; font-weight:800; color:var(--amber); text-transform:uppercase; letter-spacing:.06em; }
+  .selo-proposta{
+    display:inline-block; margin-left:8px; background:rgba(154,165,177,0.18); color:var(--gray);
+    border:1px solid rgba(154,165,177,0.4); font-size:11px; font-weight:800; letter-spacing:.03em;
+    text-transform:uppercase; padding:3px 9px; border-radius:999px; vertical-align:middle;
+  }
+  section.bloco p.explica{ margin:6px 0 18px; color:var(--ink-dim); font-size:14.5px; max-width:820px; }
+
+  /* ---- avisos ---- */
+  .grade-avisos{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+  .cartao-aviso{ background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .cartao-aviso .evento{ font-weight:800; font-size:15px; }
+  .cartao-aviso .linha{ font-size:13.5px; color:var(--ink-dim); }
+  .cartao-aviso .linha b{ color:var(--ink); font-weight:700; }
+  .cartao-aviso .btn-avisar{
+    margin-top:6px; background:var(--amber); color:#111; border:0; border-radius:10px;
+    padding:12px 14px; font-weight:800; font-size:15px; cursor:pointer; min-height:44px;
+  }
+  .cartao-aviso .btn-avisar:disabled{ background:var(--green); color:#062; opacity:1; cursor:default; }
+  .nota-avisos{ margin-top:14px; font-size:12.5px; color:var(--ink-dim); }
+
+  /* ---- câmera que anda ---- */
+  .camera-anda-wrap{ display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start; }
+  .mapa-esquema{ flex:1 1 340px; min-width:280px; background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:10px; }
+  .mapa-esquema svg{ width:100%; height:auto; display:block; }
+  .lista-vistos{ flex:1 1 280px; min-width:240px; }
+  .seletor-rota{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .seletor-rota button{
+    flex:1 1 auto; min-height:52px; background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:12px; padding:10px 14px; font-size:15px; font-weight:700; cursor:pointer;
+  }
+  .seletor-rota button.ativa{ background:var(--amber); color:#111; border-color:var(--amber); }
+  ul.vistos{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  ul.vistos li{ background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; }
+  ul.vistos li b{ color:var(--amber); }
+  .limite-camera{ margin-top:16px; font-size:13.5px; color:var(--ink-dim); border-top:1px dashed var(--line); padding-top:12px; }
+
+  footer.rodape{
+    max-width:1100px; margin:36px auto 0; padding:0 20px; color:var(--ink-dim); font-size:12px;
+    display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+  }
+  footer.rodape a{ color:var(--ink-dim); text-decoration:none; }
+  footer.rodape a:hover{ color:var(--amber); }
+</style>
+</head>
+<body>
+
+<div class="faixa-sintetico">DADO SINTÉTICO — demonstração; nenhuma câmera real alimenta esta tela.</div>
+
+<header class="top">
+  <h1>Visão de Rota</h1>
+  <p class="sub">A mesma câmera. Outra pergunta.</p>
+</header>
+
+<main>
+
+  <section class="conversa">
+    <h2>Pergunte ao assistente</h2>
+    <p class="dica">Escreva o que quiser saber sobre o trânsito da cidade, ou escolha uma pergunta pronta.</p>
+    <div class="perguntas-prontas" id="perguntas-prontas"></div>
+    <form class="form-conversa" id="form-conversa">
+      <input type="text" id="campo-pergunta" maxlength="600" placeholder="Digite sua pergunta…" aria-label="Sua pergunta">
+      <button type="submit" class="btn-perguntar" id="btn-perguntar">Perguntar</button>
+    </form>
+    <div id="resposta-conversa"></div>
+  </section>
+
+  <div class="botoes-grandes">
+    <a class="btn-enorme" id="btn-cameras" href="/parede" data-estatico="parede.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>
+      Ver as câmeras
+    </a>
+    <a class="btn-enorme" id="btn-painel" href="/" data-estatico="painel-gestor.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Painel do gestor
+    </a>
+    <button class="btn-enorme" id="btn-avisos" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      Avisos
+    </button>
+  </div>
+
+  <section class="bloco" id="avisos">
+    <h2>Avisos entre órgãos <span class="selo-proposta">PROPOSTA — ainda não ligado</span></h2>
+    <p class="explica">Quando a contagem mostra algo fora do padrão, o sistema poderia avisar o órgão certo direto. Nenhum aviso abaixo sai de verdade — é a ideia, para discutir com quem decide.</p>
+    <div class="grade-avisos" id="grade-avisos"></div>
+    <p class="nota-avisos">cada ligação entra quando o órgão aceitar; nada é enviado de verdade nesta demonstração.</p>
+  </section>
+
+  <section class="bloco" id="camera-que-anda">
+    <h2>Câmera que anda <span class="selo-proposta">PROPOSTA</span></h2>
+    <p class="explica">A viatura da guarda ou da fiscalização levaria uma câmera voltada para a frente, percorrendo rotas sugeridas pelo sistema — trazendo imagem de onde a câmera fixa não alcança: calçada obstruída, buraco, sinalização apagada, ponto de ônibus.</p>
+    <div class="seletor-rota">
+      <button type="button" class="ativa" data-rota="manha">Rota da manhã</button>
+      <button type="button" data-rota="tarde">Rota da tarde</button>
+    </div>
+    <div class="camera-anda-wrap">
+      <div class="mapa-esquema">
+        <svg id="svg-mapa" viewBox="0 0 360 260" role="img" aria-label="Mapa esquemático das rotas sugeridas"></svg>
+      </div>
+      <div class="lista-vistos">
+        <ul class="vistos" id="lista-vistos"></ul>
+      </div>
+    </div>
+    <p class="limite-camera">mesma regra da câmera fixa — conta e descreve a via; não identifica pessoa, não lê placa, não multa.</p>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <a href="/?tour=1" data-estatico="painel-gestor.html?tour=1">tour</a>
+  <a href="/participacao" data-estatico="participacao.html">participação</a>
+  <a href="/observabilidade" data-estatico="observabilidade.html">agentes agora</a>
+  <a href="/arquitetura" data-estatico="arquitetura.html">código</a>
+</footer>
+
+<script>
+(function(){
+  // troca destino para a cópia estática quando aberto como arquivo local ou publicado no github.io
+  document.querySelectorAll('[data-estatico]').forEach(function(el){
+    if (location.protocol === 'file:' || location.hostname.endsWith('github.io')) el.href = el.getAttribute('data-estatico');
+  });
+})();
+
+// ---------- conversa ----------
+var PERGUNTAS = [
+  "Onde está travado agora?",
+  "O que mudou depois da última obra?",
+  "Quem precisa ser avisado?",
+  "Como vocês garantem que não filmam rosto?",
+  "Quanto custa?"
+];
+
+var RESPOSTAS_PREPARADAS = {
+  "Onde está travado agora?": "No Corredor A, a contagem sobe acima do normal para este horário — mais fila do que a média dos últimos dias. É o tipo de leitura que a câmera já daria hoje, sem identificar ninguém.",
+  "O que mudou depois da última obra?": "A ideia é comparar a contagem de antes e depois de cada mudança na via — mesma câmera, duas janelas de tempo. Aqui é uma demonstração; a comparação real depende de câmera ligada de verdade.",
+  "Quem precisa ser avisado?": "Depende do tipo de evento: fila acima do normal chama trânsito, uma obra nova chama a equipe de obras, um alagamento chama defesa civil. Veja a seção 'Avisos entre órgãos' abaixo — é proposta, ainda não ligada.",
+  "Como vocês garantem que não filmam rosto?": "A câmera conta veículos e descreve a via — não identifica pessoa, não lê placa, não multa. Essa é a régua do projeto inteiro, inclusive da ideia da câmera que anda.",
+  "Quanto custa?": "Custo depende de quantas câmeras a cidade já tem, de servidor e do tempo de operação. Este protótipo tem uma tela própria para essa conta — pergunte à equipe do centro de controle para ver o detalhe."
+};
+
+var elPerguntasProntas = document.getElementById('perguntas-prontas');
+PERGUNTAS.forEach(function(p){
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'btn-pergunta'; b.textContent = p;
+  b.addEventListener('click', function(){
+    document.getElementById('campo-pergunta').value = p;
+    document.getElementById('form-conversa').requestSubmit();
+  });
+  elPerguntasProntas.appendChild(b);
+});
+
+function escreverResposta(texto, opts){
+  opts = opts || {};
+  var div = document.getElementById('resposta-conversa');
+  div.innerHTML = '';
+  var bolha = document.createElement('div');
+  bolha.className = 'bolha' + (opts.pensando ? ' pensando' : '');
+  if (opts.preparada){
+    var selo = document.createElement('span');
+    selo.className = 'selo-preparada';
+    selo.textContent = 'resposta preparada (assistente desligado nesta cópia)';
+    bolha.appendChild(selo);
+    bolha.appendChild(document.createElement('br'));
+  }
+  var span = document.createElement('span');
+  span.textContent = texto; // dado do visitante/resposta nunca via innerHTML
+  bolha.appendChild(span);
+  div.appendChild(bolha);
+}
+
+document.getElementById('form-conversa').addEventListener('submit', async function(ev){
+  ev.preventDefault();
+  var campo = document.getElementById('campo-pergunta');
+  var msg = campo.value.trim();
+  if (!msg) return;
+  var btn = document.getElementById('btn-perguntar');
+  btn.disabled = true;
+  escreverResposta('pensando…', { pensando: true });
+  try {
+    var r = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ msg: msg })
+    });
+    if (!r.ok || !r.body) throw new Error('sem servidor');
+    var reader = r.body.getReader(), dec = new TextDecoder(), buf = '', textoFinal = '', erro = false, recebeuAlgo = false;
+    for (;;) {
+      var res = await reader.read();
+      if (res.done) break;
+      buf += dec.decode(res.value, { stream: true });
+      var partes = buf.split('\n\n'); buf = partes.pop();
+      for (var i = 0; i < partes.length; i++) {
+        var p = partes[i];
+        if (!p.indexOf('data: ') === 0 && p.slice(0,6) !== 'data: ') continue;
+        if (p.slice(0,6) !== 'data: ') continue;
+        var ev2; try { ev2 = JSON.parse(p.slice(6)); } catch(e){ continue; }
+        if (ev2.tipo === 'resposta') { textoFinal = ev2.texto || ''; erro = !!ev2.erro; recebeuAlgo = true; }
+      }
+    }
+    if (!recebeuAlgo) throw new Error('sem resposta');
+    escreverResposta(textoFinal, { preparada: false });
+  } catch (e) {
+    var preparada = RESPOSTAS_PREPARADAS[msg];
+    if (preparada) escreverResposta(preparada, { preparada: true });
+    else escreverResposta('Não consegui falar com o assistente agora (' + e.message + '). Tente uma das perguntas prontas acima.', { preparada: true });
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('btn-avisos').addEventListener('click', function(){
+  document.getElementById('avisos').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ---------- avisos entre órgãos ----------
+var AVISOS = [
+  { evento: 'fila acima do normal no Corredor A', orgao: 'trânsito', canal: 'painel' },
+  { evento: 'obra nova detectada perto do Ponto 3', orgao: 'obras', canal: 'e-mail' },
+  { evento: 'via bloqueada no Corredor B', orgao: 'guarda municipal', canal: 'mensagem no celular' },
+  { evento: 'parada de ônibus com fluxo acima do normal', orgao: 'transporte coletivo', canal: 'painel' }
+];
+
+var grade = document.getElementById('grade-avisos');
+AVISOS.forEach(function(a, idx){
+  var cartao = document.createElement('div');
+  cartao.className = 'cartao-aviso';
+  var elEvento = document.createElement('div'); elEvento.className = 'evento'; elEvento.textContent = a.evento;
+  var elOrgao = document.createElement('div'); elOrgao.className = 'linha';
+  elOrgao.innerHTML = 'quem seria avisado: <b></b>'; elOrgao.querySelector('b').textContent = a.orgao;
+  var elCanal = document.createElement('div'); elCanal.className = 'linha';
+  elCanal.innerHTML = 'canal: <b></b>'; elCanal.querySelector('b').textContent = a.canal;
+  var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-avisar'; btn.textContent = 'Avisar';
+  btn.addEventListener('click', function(){
+    var hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    btn.textContent = 'aviso simulado às ' + hora;
+    btn.disabled = true;
+  });
+  cartao.appendChild(elEvento); cartao.appendChild(elOrgao); cartao.appendChild(elCanal); cartao.appendChild(btn);
+  grade.appendChild(cartao);
+});
+
+// ---------- câmera que anda ----------
+var ROTAS = {
+  manha: {
+    pontos: [[40,210],[110,150],[180,170],[250,110],[320,60]],
+    vistos: [
+      { hora: '07:12', texto: 'Calçada obstruída perto do Ponto 1' },
+      { hora: '07:24', texto: 'Sinalização apagada no Corredor A' },
+      { hora: '07:41', texto: 'Ponto de ônibus com fila longa no Ponto 3' }
+    ]
+  },
+  tarde: {
+    pontos: [[40,60],[120,90],[190,60],[250,130],[320,180]],
+    vistos: [
+      { hora: '17:05', texto: 'Buraco na via perto do Ponto 2' },
+      { hora: '17:22', texto: 'Faixa de pedestre apagada no Corredor B' },
+      { hora: '17:38', texto: 'Calçada obstruída perto do Ponto 4' },
+      { hora: '17:50', texto: 'Sinalização apagada no Ponto 5' }
+    ]
+  }
+};
+
+function pontosParaPath(pontos){
+  return pontos.map(function(p, i){ return (i === 0 ? 'M' : 'L') + p[0] + ',' + p[1]; }).join(' ');
+}
+
+function desenharMapa(chave){
+  var svg = document.getElementById('svg-mapa');
+  var rota = ROTAS[chave];
+  var outraChave = chave === 'manha' ? 'tarde' : 'manha';
+  var outraRota = ROTAS[outraChave];
+  var partes = [];
+  partes.push('<rect x="0" y="0" width="360" height="260" fill="none"/>');
+  partes.push('<path d="' + pontosParaPath(outraRota.pontos) + '" stroke="#27425c" stroke-width="3" fill="none" stroke-dasharray="6 6"/>');
+  partes.push('<path d="' + pontosParaPath(rota.pontos) + '" stroke="#E8A33D" stroke-width="4" fill="none"/>');
+  rota.pontos.forEach(function(p, i){
+    partes.push('<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7" fill="#12273B" stroke="#E8A33D" stroke-width="2"/>');
+    partes.push('<text x="' + p[0] + '" y="' + (p[1] - 12) + '" fill="#F6F8FA" font-size="11" text-anchor="middle" font-family="system-ui">Ponto ' + (i+1) + '</text>');
+  });
+  svg.innerHTML = partes.join('');
+}
+
+function desenharVistos(chave){
+  var lista = document.getElementById('lista-vistos');
+  lista.innerHTML = '';
+  ROTAS[chave].vistos.forEach(function(v){
+    var li = document.createElement('li');
+    var b = document.createElement('b'); b.textContent = v.hora;
+    li.appendChild(b); li.appendChild(document.createTextNode(' — ' + v.texto));
+    lista.appendChild(li);
+  });
+}
+
+function selecionarRota(chave){
+  document.querySelectorAll('.seletor-rota button').forEach(function(b){
+    b.classList.toggle('ativa', b.getAttribute('data-rota') === chave);
+  });
+  desenharMapa(chave);
+  desenharVistos(chave);
+}
+
+document.querySelectorAll('.seletor-rota button').forEach(function(b){
+  b.addEventListener('click', function(){ selecionarRota(b.getAttribute('data-rota')); });
+});
+
+selecionarRota('manha');
+</script>
+<script src="melhorias.js"></script>
+</body>
+</html>
