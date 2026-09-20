@@ -16,7 +16,7 @@ concurrency: { group: hub, cancel-in-progress: true }
 jobs:
   hub:
     # O commit do hub-bot já é o resultado desta rotina; não o processe de novo.
-    if: (github.event_name != 'issues' || github.event.label.name == 'aprovada') && (github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'hub: regenerado sozinho'))
+    if: "(github.event_name != 'issues' || github.event.label.name == 'aprovada') && (github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'hub: regenerado sozinho'))"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
