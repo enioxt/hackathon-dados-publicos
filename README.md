@@ -5,6 +5,45 @@ Este repositório é **aberto a todos os times** do hackathon (e a quem mais qui
 
 
 
+
+## O que usamos e o que medimos (20/09/2026)
+
+Os números abaixo vêm de `demo/ficha-tecnica.html` e podem ser refeitos. 
+
+**Do que é feito**
+
+| Parte | Tecnologia | Por quê |
+|---|---|---|
+| Leitura de vídeo | Python · YOLO11n (detecção) · ByteTrack (rastreio) · OpenCV | modelo pequeno, roda em CPU comum |
+| Porta de entrada e dados | Bun + TypeScript · SQLite · validação de esquema · verificador de dado pessoal | recusa o que tiver placa, nome ou documento |
+| Decisão | regra escrita para número · classificador de texto (Jev) só para relato livre · dúvida vai para pessoa | número decide por regra, não por modelo |
+| Tela e publicação | HTML/CSS/JS sem framework · SVG · GitHub Pages · GitHub Actions | abre em qualquer navegador, sem instalar |
+| Construção | assistentes de IA (Claude Fable 5.1, Sonnet 5, Opus 5) sob revisão humana · transcrição por Whisper large-v3 | o registro da construção faz parte da entrega |
+
+**O que medimos**
+
+| O quê | Número |
+|---|---|
+| Fontes públicas verificadas | 83 |
+| Arquivos baixados com hash | 54 |
+| Ocorrências de trânsito com coordenada (dado aberto estadual) | 1.100 |
+| Sinistros em Patos de Minas na base nacional, 2018 a ago/2026 | 22.708 |
+| Números públicos recalculados por `codigo/` (script de prova no repositório do time) | 14 de 14 |
+| Testes automáticos passando | 35 (porta de entrada, telemetria, acesso) + 10 (decisão) + 7 (leitor) |
+| Eventos registrados pela telemetria | 21.351 (7.095 reais · 14.305 simulados — marcados) |
+| Leituras recebidas pela porta de entrada | 79.616 — **3 medidas de vídeo, o resto é dado de demonstração** |
+| Envios recusados pela porta (dado pessoal ou formato) | 32 |
+| Chamadas ao classificador de texto nos experimentos | 1.851, 0 erro |
+| Respostas dos assistentes de IA na construção | 6.605, em 60 agentes |
+| Sala gravada e transcrita | 200 min · 18.510 palavras |
+| Velocidade do leitor nesta máquina (só CPU) | 1,6 quadro/s em 1920 px com rastreio · 5,8 em 1280 px só detecção |
+
+**O que temos**: leitor que conta por tipo · porta de entrada que recusa dado pessoal · antes e depois por ponto · origem marcada em todo número · provas recalculáveis · código aberto.
+
+**O que ainda não temos**: acesso às câmeras da cidade · contagem conferida à mão num vídeo de Patos · ligação com semáforo, ônibus e estacionamento · medição de erro por tipo de veículo · operação contínua fora de um notebook · acordo com os donos das imagens.
+
+O sistema analisa vídeo **já gravado**, com atraso, de propósito: contar trânsito e medir antes e depois pede a mesma hora de muitos dias, não o instante. Não transmite imagem e não guarda rosto nem placa.
+
 ## Entre e teste tudo
 
 | O quê | Link |
