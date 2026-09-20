@@ -979,14 +979,15 @@ function montarAntesDepois(){
   wrap.innerHTML = "";
   if (!avaliadas.length){ wrap.innerHTML = '<p style="color:var(--muted);font-size:13px;grid-column:1/-1">Nenhuma intervenção avaliada neste período' + (todasNoPeriodo.length ? " (há " + todasNoPeriodo.length + " registrada(s) aguardando avaliação)" : "") + '.</p>'; return; }
   var ult = avaliadas[0];
+  var seloSint = seloHTML({texto:"DADO SINTÉTICO",classe:"sintetico"});
   var antesCard = el("div","ad-card");
   antesCard.innerHTML = '<div class="rot">Antes da intervenção</div>' +
-    '<div class="ad-metrica"><span>Espera média</span><b>'+ult.antes.espera+' s</b></div>' +
-    '<div class="ad-metrica"><span>Fila média</span><b>'+ult.antes.fila+' veíc.</b></div>' + seloHTML({texto:"DADO SINTÉTICO",classe:"sintetico"});
+    '<div class="ad-metrica"><span>Espera média</span><b>'+ult.antes.espera+' s'+seloSint+'</b></div>' +
+    '<div class="ad-metrica"><span>Fila média</span><b>'+ult.antes.fila+' veíc.'+seloSint+'</b></div>';
   var depoisCard = el("div","ad-card");
   depoisCard.innerHTML = '<div class="rot">Depois da intervenção</div>' +
-    '<div class="ad-metrica"><span>Espera média</span><b>'+ult.depois.espera+' s</b></div>' +
-    '<div class="ad-metrica"><span>Fila média</span><b>'+ult.depois.fila+' veíc.</b></div>' + seloHTML({texto:"DADO SINTÉTICO",classe:"sintetico"});
+    '<div class="ad-metrica"><span>Espera média</span><b>'+ult.depois.espera+' s'+seloSint+'</b></div>' +
+    '<div class="ad-metrica"><span>Fila média</span><b>'+ult.depois.fila+' veíc.'+seloSint+'</b></div>';
   var resCard = el("div","ad-card");
   resCard.style.display = "flex"; resCard.style.flexDirection = "column"; resCard.style.justifyContent = "center"; resCard.style.alignItems = "flex-start"; resCard.style.gap="8px";
   resCard.innerHTML = '<div class="rot">'+ult.local+' · '+ult.evento+'</div>' +
@@ -1027,7 +1028,7 @@ function montarPontosRecorrentes(){
   chaves.forEach(function(k){
     var row = el("div","tipo-row");
     row.appendChild(el("span",null,k));
-    row.appendChild(el("b",null,String(contagem[k])));
+    row.appendChild(el("b",null,String(contagem[k])+seloHTML({texto:"DADO SINTÉTICO",classe:"sintetico"})));
     wrap.appendChild(row);
   });
 }
