@@ -55,21 +55,32 @@ footer{padding:6px 16px;background:var(--n);border-top:1px solid var(--b);color:
 .controles3d{position:absolute;left:8px;bottom:8px;display:flex;gap:6px}
 .controles3d button{background:rgba(18,39,59,.9);border:1px solid var(--b);color:var(--t);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:12px}
 .avisoSint{position:absolute;left:8px;top:8px;background:var(--a);color:#111;font:700 11px monospace;padding:2px 8px;border-radius:5px}
-.painelDireita{width:340px;flex:none;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
-.ficha{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:10px;font-size:12px}
-.ficha h4{margin:0 0 6px;color:var(--a);font-size:13px}
-.ficha .l{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #223349}
-.ficha .l span:first-child{color:var(--z)}
-.spark{width:100%;height:36px;display:block;margin-top:6px}
-.tabelaWrap{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:6px;overflow:auto;flex:1}
-table.entidades{width:100%;border-collapse:collapse;font-size:11px}
-table.entidades th{position:sticky;top:0;background:var(--c);text-align:left;color:var(--a);cursor:pointer;padding:4px 5px;border-bottom:1px solid var(--b)}
-table.entidades td{padding:3px 5px;border-bottom:1px solid #16283b;white-space:nowrap}
+.painelDireita{width:400px;flex:none;display:flex;flex-direction:column;gap:8px;min-height:0}
+.painelBloco{background:var(--c);border:1px solid var(--b);border-radius:8px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.painelBloco.blocoFlex{flex:1;min-height:0}
+.painelBloco.blocoTimeline{flex:1.5}
+.tituloBloco{flex:none;padding:6px 10px;font:700 11px ui-monospace,monospace;letter-spacing:.03em;color:var(--a);border-bottom:1px solid var(--b);background:rgba(0,0,0,.15)}
+.ficha{padding:10px;font-size:12px;overflow-y:auto;overflow-wrap:anywhere;min-height:0;max-height:190px}
+.ficha h4{margin:0 0 6px;color:var(--t);font-size:13px;overflow-wrap:anywhere}
+.ficha .l{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dotted #223349}
+.ficha .l span{overflow-wrap:anywhere}
+.ficha .l span:first-child{color:var(--z);flex:none}
+.spark{width:100%;height:36px;display:block;margin-top:6px;background:transparent}
+.tabelaWrap{padding:6px;overflow:auto;flex:1;min-height:0}
+table.entidades{width:100%;border-collapse:collapse;font-size:10.5px;table-layout:fixed}
+table.entidades th{position:sticky;top:0;background:var(--c);text-align:left;color:var(--a);cursor:pointer;padding:4px 4px;border-bottom:1px solid var(--b);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.entidades td{padding:3px 4px;border-bottom:1px solid #16283b;overflow-wrap:anywhere;white-space:normal}
 table.entidades tr:hover{background:#16283b}
 table.entidades tr.sel{background:#2a2110}
 .aviso-privacidade{font-size:10px;color:var(--z);padding:4px 2px}
 .rodapeModal{padding:8px 12px;border-top:1px solid var(--b);font-size:11px;color:var(--z);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-.linhaModalWrap{padding:6px 12px;border-top:1px solid var(--b);max-height:150px;overflow-y:auto}
+.linhaModalWrap{padding:8px 10px;overflow-y:auto;flex:1;min-height:0}
+@media (max-width:1200px){
+  .modalTopo{flex-direction:column;overflow-y:auto}
+  .cena3d{min-height:260px;flex:none}
+  .painelDireita{width:100%;max-height:none}
+  .painelBloco.blocoFlex{flex:none;max-height:260px}
+}
 .resumoCard{position:absolute;inset:0;background:rgba(5,13,22,.94);display:flex;align-items:center;justify-content:center;z-index:6}
 .resumoCard .caixa{background:var(--n);border:1px solid var(--a);border-radius:10px;padding:18px 22px;min-width:320px}
 .resumoCard h3{color:var(--a);margin:0 0 10px}
@@ -77,7 +88,7 @@ table.entidades tr.sel{background:#2a2110}
 .resumoCard button{margin-top:12px;background:var(--a);color:#111;border:none;border-radius:6px;padding:7px 14px;font-weight:700;cursor:pointer}
 </style></head><body>
 <header><b>VISÃO DE ROTA · PAREDE DE MONITORES</b><span class=tag>SIMULAÇÃO — nenhuma câmera real está ligada</span>
-<a href="painel-gestor.html">← painel do gestor</a>
+<a href="/">← central de controle</a>
 <div class=ctl><span style="color:var(--z)">telas:</span><span id=botoes></span></div></header>
 <div class=evrow><span class=lbl>eventos simuláveis:</span><span id=eventoBotoes></span></div>
 <div id=layout>
@@ -114,16 +125,28 @@ table.entidades tr.sel{background:#2a2110}
         <div id=resumoCard class=resumoCard hidden></div>
       </div>
       <div class=painelDireita>
-        <div class=ficha id=ficha><h4>Nenhuma seleção</h4><div class="aviso-privacidade">o sistema classifica o objeto; não identifica a pessoa nem o veículo.</div></div>
-        <div class=tabelaWrap>
-          <table class=entidades id=tabela><thead><tr>
-            <th data-c=id>ID</th><th data-c=classe>classe</th><th data-c=categoria>categoria</th><th data-c=velKmh>km/h</th><th data-c=estado>estado</th>
-          </tr></thead><tbody id=tabelaBody></tbody></table>
+        <div class=painelBloco>
+          <div class=tituloBloco>Ficha da entidade selecionada</div>
+          <div class=ficha id=ficha><h4>Nenhuma seleção</h4><div class="aviso-privacidade">o sistema classifica o objeto; não identifica a pessoa nem o veículo.</div></div>
+        </div>
+        <div class="painelBloco blocoFlex">
+          <div class=tituloBloco>Entidades em cena</div>
+          <div class=tabelaWrap>
+            <table class=entidades id=tabela>
+              <colgroup><col style="width:20%"><col style="width:20%"><col style="width:24%"><col style="width:14%"><col style="width:22%"></colgroup>
+              <thead><tr>
+                <th data-c=id>ID</th><th data-c=classe>classe</th><th data-c=categoria>categoria</th><th data-c=velKmh>km/h</th><th data-c=estado>estado</th>
+              </tr></thead><tbody id=tabelaBody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="painelBloco blocoFlex blocoTimeline">
+          <div class=tituloBloco>Linha do tempo do evento</div>
+          <div class=linhaModalWrap id=linhaModal><div class="aviso-privacidade">nenhum evento ativo nesta câmera</div></div>
         </div>
       </div>
     </div>
     <div class=evrow id=eventoBotoesModal><span class=lbl>eventos nesta câmera:</span></div>
-    <div class=linhaModalWrap id=linhaModal><div class="aviso-privacidade">nenhum evento ativo nesta câmera</div></div>
     <div class=rodapeModal id=rodapeModal></div>
   </div>
 </div>
@@ -289,12 +312,19 @@ function fisica(o,dt){
     let stopGap=Infinity;
     if(v.isPed){
       if(pedestreBloqueadoPorVeiculo(o,v)) stopGap=0;
-    } else {
+    } else if(!v.prioridade){
       const eixo=v.horiz?'h':'v', fase=faseDe(o,eixo);
       const passouLinha = v.sent>0? v.p>=centerC-STOP_DIST : v.p<=centerC+STOP_DIST;
-      if(fase!=='verde' && !passouLinha && !v.prioridade){
+      if(!passouLinha){
         const linha=v.sent>0?centerC-STOP_DIST:centerC+STOP_DIST;
-        stopGap=(linha-v.p)*v.sent-v.lenPx/2;
+        const distAteLinha=(linha-v.p)*v.sent;
+        // só entra no cruzamento quem tem espaço do outro lado para sair — senão trava a via cruzada
+        const cabeAtravessar = gapEdge >= distAteLinha + 2*ROAD_HALF + 15;
+        // e só entra se o cruzamento não estiver fisicamente ocupado pelo eixo perpendicular agora
+        // (cobre o veículo que já passou a linha mas ficou detido dentro da caixa por congestionamento)
+        const cruzamentoLivre = !o.v.some(v2=>v2!==v && !v2.isPed && !v2.isObstaculo && v2.horiz!==v.horiz &&
+          Math.abs(v2.p-(v2.horiz?o.cv.width/2:o.cv.height/2)) < ROAD_HALF + v2.lenPx/2 + 6);
+        if(fase!=='verde' || !cabeAtravessar || !cruzamentoLivre) stopGap=distAteLinha-v.lenPx/2;
       }
     }
     const gapDisp=Math.min(gapEdge,stopGap);
@@ -402,10 +432,17 @@ window.vrSobreposicoes=function(){
 };
 
 // ===================== EVENTOS: FLUXO DE AÇÃO =====================
+// obstáculo fica fora do corredor da via cruzada: ROAD_HALF+80 garante que o retângulo do objeto
+// nunca alcança as faixas do outro eixo (a maior meia-largura de faixa é BIC=47 + meia-largura veículo ~8)
+function pontoSeguroObstaculo(o,horiz,sent){
+  const centerC=horiz?o.cv.width/2:o.cv.height/2;
+  const dist=Math.max(75, Math.min(ROAD_HALF+80, (horiz?o.cv.width:o.cv.height)/2-15));
+  return centerC+sent*dist;
+}
 function criarObstaculo(o,tipoKey,horiz,sent,tf,categoriaTxt,extra){
   const tipo=TIPOS_EVENTO[tipoKey], W=o.cv.width,H=o.cv.height;
   const faixa=sent*FX[tf], pista=pistaId(horiz,sent,tf);
-  const p = horiz? W/2 : H/2;
+  const p = pontoSeguroObstaculo(o,horiz,sent);
   o.seq++;
   const v=Object.assign({id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:tipo,classe:'evento',categoria:categoriaTxt,confianca:'alta',
     horiz,sent,pista,faixa,p,isObstaculo:true,contado:true,para:true,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
@@ -430,13 +467,17 @@ function dispararEvento(tipoId,telaK){
     const ob=criarObstaculo(o,'atropelamento',true,sent,'L1',meta.rotulo,{eventoRef:evt});
     evt.obstaculos.push(ob);
   } else if(tipoId==='acidente'){
-    const a=criarObstaculo(o,'parado',true,r()<.5?1:-1,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
-    const b=criarObstaculo(o,'parado',false,r()<.5?1:-1,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
-    a.x=o.cv.width/2; a.y=o.cv.height/2; b.x=o.cv.width/2; b.y=o.cv.height/2;
+    // os dois veículos da colisão ficam exatamente no mesmo ponto seguro (fora do corredor cruzado) —
+    // a sobreposição entre ELES é o próprio evento e é a única excluída de vrSobreposicoes()
+    const sentA=r()<.5?1:-1;
+    const a=criarObstaculo(o,'parado',horiz,sentA,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
+    const b=criarObstaculo(o,'parado',horiz,sentA,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true,pista:'evento-colisao-'+evt.id});
+    b.x=a.x; b.y=a.y; b.p=a.p;
     evt.obstaculos.push(a,b);
   } else if(tipoId==='apagado'){
     o.semaforoApagado=true;
     const ob=criarObstaculo(o,'apagado',true,1,'L1','falha de equipamento semafórico',{eventoRef:evt,pista:'evento-marca-apagado'});
+    ob.x=-9999; ob.y=-9999; // marcador simbólico (falha do semáforo, sem ponto físico na via) — nunca colide
     evt.obstaculos.push(ob);
   } else if(tipoId==='ambulancia'){
     o.prioridadeEixo=horiz?'h':'v';
@@ -606,17 +647,54 @@ function iso(x,y,z,cx0,cy0,zoom){
 }
 function desenharModal(){
   const o=telas.find(t=>t.k===modalAberto); if(!o) return;
-  const cv=document.getElementById('cv3d'), cx=cv.getContext('2d'), W=cv.width,H=cv.height;
+  const cv=document.getElementById('cv3d');
+  // a área do modalTopo muda de altura quando a linha do tempo do evento ganha passos/botões —
+  // recalcula sempre para o buffer do canvas nunca ficar desalinhado com a caixa exibida (distorceria o isométrico)
+  const bcv=cv.parentElement.getBoundingClientRect(), needW=Math.max(200,Math.round(bcv.width)), needH=Math.max(200,Math.round(bcv.height));
+  if(cv.width!==needW) cv.width=needW;
+  if(cv.height!==needH) cv.height=needH;
+  const cx=cv.getContext('2d'), W=cv.width,H=cv.height;
   cx.fillStyle='#050d16'; cx.fillRect(0,0,W,H);
   const cx0=W/2, cy0=H*.62, zoom=zoomIso;
+  function pIso(x,y,z){const[rx,ry]=rot(x,y,anguloIso);return iso(rx,ry,z==null?0:z,cx0,cy0,zoom)}
   // chão: vias
   function poligonoChao(pontos,cor){
-    cx.beginPath(); pontos.forEach((p,i)=>{const[rx,ry]=rot(p[0],p[1],anguloIso);const[sx,sy]=iso(rx,ry,0,cx0,cy0,zoom); i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});
+    cx.beginPath(); pontos.forEach((p,i)=>{const[sx,sy]=pIso(p[0],p[1],0); i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});
     cx.closePath(); cx.fillStyle=cor; cx.fill();
   }
-  poligonoChao([[-260,-ROAD_HALF],[260,-ROAD_HALF],[260,ROAD_HALF],[-260,ROAD_HALF]],'#17293c');
-  poligonoChao([[-ROAD_HALF,-260],[ROAD_HALF,-260],[ROAD_HALF,260],[-ROAD_HALF,260]],'#17293c');
-  poligonoChao([[-ROAD_HALF,-ROAD_HALF],[ROAD_HALF,-ROAD_HALF],[ROAD_HALF,ROAD_HALF],[-ROAD_HALF,ROAD_HALF]],'#1f374e');
+  function linhaChao(pares,cor,largura,dash,alpha){
+    cx.save(); cx.strokeStyle=cor; cx.lineWidth=largura; cx.globalAlpha=alpha==null?1:alpha;
+    if(dash) cx.setLineDash(dash); else cx.setLineDash([]);
+    cx.beginPath();
+    pares.forEach(([p0,p1])=>{const[sx0,sy0]=pIso(p0[0],p0[1],.2),[sx1,sy1]=pIso(p1[0],p1[1],.2);cx.moveTo(sx0,sy0);cx.lineTo(sx1,sy1)});
+    cx.stroke(); cx.restore();
+  }
+  // terreno fora da via — mais escuro para o asfalto se destacar
+  poligonoChao([[-500,-500],[500,-500],[500,500],[-500,500]],'#0a141f');
+  // asfalto das duas vias — tom claro o bastante para as caixas se destacarem
+  poligonoChao([[-260,-ROAD_HALF],[260,-ROAD_HALF],[260,ROAD_HALF],[-260,ROAD_HALF]],'#233c52');
+  poligonoChao([[-ROAD_HALF,-260],[ROAD_HALF,-260],[ROAD_HALF,260],[-ROAD_HALF,260]],'#233c52');
+  poligonoChao([[-ROAD_HALF,-ROAD_HALF],[ROAD_HALF,-ROAD_HALF],[ROAD_HALF,ROAD_HALF],[-ROAD_HALF,ROAD_HALF]],'#2b4d6e');
+  // faixas de rolamento (traço central tracejado) — mesmo vocabulário da vista 2D
+  linhaChao([[[-260,0],[260,0]]],'#5c748c',1.6,[9,8],.8);
+  linhaChao([[[0,-260],[0,260]]],'#5c748c',1.6,[9,8],.8);
+  // faixa de pedestre (zebra) nas quatro bordas do cruzamento — cinza claro
+  [-1,1].forEach(sx=>{
+    for(let i=-30;i<=30;i+=12){
+      poligonoChao([[sx*STOP_DIST-4,i-3],[sx*STOP_DIST+4,i-3],[sx*STOP_DIST+4,i+3],[sx*STOP_DIST-4,i+3]],'rgba(220,226,232,.65)');
+    }
+  });
+  [-1,1].forEach(sy=>{
+    for(let i=-30;i<=30;i+=12){
+      poligonoChao([[i-3,sy*STOP_DIST-4],[i+3,sy*STOP_DIST-4],[i+3,sy*STOP_DIST+4],[i-3,sy*STOP_DIST+4]],'rgba(220,226,232,.65)');
+    }
+  });
+  // linha de retenção (parada) — âmbar, nas quatro bordas do cruzamento
+  linhaChao([[[-STOP_DIST,-ROAD_HALF],[-STOP_DIST,ROAD_HALF]],[[STOP_DIST,-ROAD_HALF],[STOP_DIST,ROAD_HALF]],
+             [[-ROAD_HALF,-STOP_DIST],[ROAD_HALF,-STOP_DIST]],[[-ROAD_HALF,STOP_DIST],[ROAD_HALF,STOP_DIST]]],'#E8A33D',2.2,null,.85);
+  // linha de contagem — âmbar mais fraca, mais longe do cruzamento
+  linhaChao([[[-190,-ROAD_HALF],[-190,ROAD_HALF]],[[190,-ROAD_HALF],[190,ROAD_HALF]],
+             [[-ROAD_HALF,-190],[ROAD_HALF,-190]],[[-ROAD_HALF,190],[ROAD_HALF,190]]],'#E8A33D',1.4,[3,5],.35);
   // entidades ordenadas por profundidade
   const lista=o.v.filter(v=>v.x!==undefined).map(v=>{
     const lx=v.x-o.cv.width/2, ly=v.y-o.cv.height/2; // recentra em torno do cruzamento
@@ -625,18 +703,29 @@ function desenharModal(){
   }).sort((a,b)=>a.depth-b.depth);
   lista.forEach(({v,rx,ry})=>{
     const w=(v.horiz?v.lenPx:v.widPx)/2, d=(v.horiz?v.widPx:v.lenPx)/2, alt=v.altPx||10;
+    const cor = v.contramaoAtiva? '#D6453D' : v.t.cor;
+    const sel = selecionado && selecionado.id===v.id;
+    // anel de seleção no chão — bem visível, desenhado antes da sombra/veículo
+    if(sel){
+      cx.save();
+      const raio=Math.max(w,d)*1.9;
+      cx.beginPath();
+      for(let a=0;a<=32;a++){const ang=a/32*Math.PI*2,px=rx+Math.cos(ang)*raio,py=ry+Math.sin(ang)*raio*.55;const[sx,sy]=iso(px,py,.05,cx0,cy0,zoom);a?cx.lineTo(sx,sy):cx.moveTo(sx,sy)}
+      cx.closePath();
+      cx.fillStyle='rgba(232,163,61,.22)'; cx.fill();
+      cx.strokeStyle='#E8A33D'; cx.lineWidth=2.4; cx.shadowColor='#E8A33D'; cx.shadowBlur=14; cx.stroke();
+      cx.restore();
+    }
     // sombra
     const[sx0,sy0]=iso(rx-w,ry-d,0,cx0,cy0,zoom),[sx1]=iso(rx+w,ry-d,0,cx0,cy0,zoom),[sx2,sy2]=iso(rx+w,ry+d,0,cx0,cy0,zoom),[sx3,sy3]=iso(rx-w,ry+d,0,cx0,cy0,zoom);
     cx.beginPath();cx.moveTo(sx0,sy0);cx.lineTo(sx1,sy0);cx.lineTo(sx2,sy2);cx.lineTo(sx3,sy3);cx.closePath();
-    cx.fillStyle='rgba(0,0,0,.35)';cx.fill();
+    cx.fillStyle='rgba(0,0,0,.4)';cx.fill();
     // rastro
     if(v.rastro && v.rastro.length>2){
       cx.beginPath();
       v.rastro.forEach((p,i)=>{const lx2=p.x-o.cv.width/2, ly2=p.y-o.cv.height/2;const[rx2,ry2]=rot(lx2,ly2,anguloIso);const[sx,sy]=iso(rx2,ry2,1,cx0,cy0,zoom); i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});
       cx.strokeStyle='rgba(232,163,61,.35)';cx.lineWidth=1.4;cx.stroke();
     }
-    const cor = v.contramaoAtiva? '#D6453D' : v.t.cor;
-    const sel = selecionado && selecionado.id===v.id;
     if(v.t.k==='atropelamento'){
       const[fx,fy]=iso(rx,ry,1,cx0,cy0,zoom);
       cx.fillStyle='rgba(124,133,145,.9)';cx.beginPath();cx.ellipse(fx,fy,w*zoom,d*.5*zoom,0,0,7);cx.fill();
@@ -645,10 +734,13 @@ function desenharModal(){
     const P=(x,y,z)=>iso(x,y,z,cx0,cy0,zoom);
     const b0=P(rx-w,ry-d,0),b1=P(rx+w,ry-d,0),b2=P(rx+w,ry+d,0),b3=P(rx-w,ry+d,0);
     const t0=P(rx-w,ry-d,alt),t1=P(rx+w,ry-d,alt),t2=P(rx+w,ry+d,alt),t3=P(rx-w,ry+d,alt);
-    function face(p1,p2,p3,p4,shade){cx.beginPath();cx.moveTo(...p1);cx.lineTo(...p2);cx.lineTo(...p3);cx.lineTo(...p4);cx.closePath();cx.fillStyle=shade;cx.fill();cx.strokeStyle=sel?'#E8A33D':'rgba(0,0,0,.35)';cx.lineWidth=sel?2.4:1;cx.stroke();}
-    face(b1,b2,t2,t1, sombrear(cor,-18)); // lado direito
-    face(b2,b3,t3,t2, sombrear(cor,-38)); // lado frente
-    face(t0,t1,t2,t3, sombrear(cor,14));  // topo
+    if(sel){ cx.save(); cx.shadowColor='#E8A33D'; cx.shadowBlur=16; }
+    function face(p1,p2,p3,p4,shade){cx.beginPath();cx.moveTo(...p1);cx.lineTo(...p2);cx.lineTo(...p3);cx.lineTo(...p4);cx.closePath();cx.fillStyle=shade;cx.fill();cx.strokeStyle=sel?'#E8A33D':'rgba(5,10,16,.75)';cx.lineWidth=sel?2.2:1;cx.stroke();}
+    // laterais mais escuras que o topo, mas ainda reconhecíveis (dá volume sem apagar a cor da classe)
+    face(b1,b2,t2,t1, sombrear(cor,-32)); // lado direito (mais sombra)
+    face(b2,b3,t3,t2, sombrear(cor,-14)); // lado frente
+    face(t0,t1,t2,t3, sombrear(cor,32));  // topo — bem mais claro, dá volume e identifica a cor da classe
+    if(sel) cx.restore();
     v._pts3d={t0,t1,t2,t3,b0,b1,b2,b3,cx0:(t0[0]+t2[0])/2,cy0:(t0[1]+t2[1])/2};
   });
   const legenda=document.querySelector('.avisoSint');
@@ -774,7 +866,7 @@ if(params.get('evento')){
   }
 }
 if(params.get('teste')==='1'){
-  avancarSimulado(90);
+  avancarSimulado(+(params.get('dur')||90));
   telas.forEach(o=>desenhar2D(o));
   const n=window.vrSobreposicoes();
   const ent=telas.reduce((a,o)=>a+o.v.length,0);

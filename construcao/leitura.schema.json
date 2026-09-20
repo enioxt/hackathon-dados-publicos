@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Contrato de dados — Visão de Rota",
+  "definicoes": {
+    "leitura": {
+      "type": "object",
+      "required": ["fonte_id", "camera_id", "ts", "janela_s", "contagens", "origem"],
+      "additionalProperties": false,
+      "properties": {
+        "fonte_id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "camera_id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "ts": { "type": "string", "format": "date-time", "description": "ISO 8601, ex: 2026-09-19T20:00:00Z" },
+        "janela_s": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "duração da janela de contagem, em segundos" },
+        "contagens": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "automovel": { "type": "integer", "minimum": 0 },
+            "moto": { "type": "integer", "minimum": 0 },
+            "onibus": { "type": "integer", "minimum": 0 },
+            "caminhao": { "type": "integer", "minimum": 0 },
+            "bicicleta": { "type": "integer", "minimum": 0 },
+            "pedestre": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "fila_m": { "type": "number", "minimum": 0, "description": "opcional — comprimento estimado da fila, em metros" },
+        "velocidade_media_kmh": { "type": "number", "minimum": 0, "maximum": 200, "description": "opcional" },
+        "origem": { "type": "string", "enum": ["medido", "sintetico"] }
+      }
+    },
+    "evento": {
+      "type": "object",
+      "required": ["fonte_id", "camera_id", "ts", "tipo", "confianca", "origem"],
+      "additionalProperties": false,
+      "properties": {
+        "fonte_id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "camera_id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "ts": { "type": "string", "format": "date-time" },
+        "tipo": { "type": "string", "enum": ["parada_longa", "contrafluxo", "fila_acima_limite", "camera_fora_do_ar", "outro"] },
+        "confianca": { "type": "number", "minimum": 0, "maximum": 1 },
+        "origem": { "type": "string", "enum": ["medido", "sintetico"] }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "required": ["camera_id", "nome", "lat", "lon", "fonte_id"],
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "nome": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+        "fonte_id": { "type": "string", "minLength": 1, "maxLength": 80 }
+      }
+    }
+  }
+}
