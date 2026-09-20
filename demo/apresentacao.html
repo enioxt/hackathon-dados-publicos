@@ -262,6 +262,8 @@
 .vr-trilha button{width:13px;height:13px;border-radius:50%;border:0;background:#3a5470;cursor:pointer;padding:0}.vr-trilha button.on{background:#E8A33D;width:34px;border-radius:999px}
 .vr-prox{position:fixed;right:100px;top:50%;transform:translateY(-50%);color:#9AA5B1;font:600 14px system-ui,sans-serif;z-index:50;letter-spacing:.04em}
 body.page-mode .vr-seta,body.page-mode .vr-trilha,body.page-mode .vr-prox{display:none}
+/* pedir-melhoria só no modo página ou no último slide — não cobre conteúdo durante a apresentação */
+body:not(.page-mode):not(.s-final) #vrm-b,body:not(.page-mode):not(.s-final) #vrm-p{display:none}
 @media print{.vr-seta,.vr-trilha,.vr-prox{display:none!important}}
 </style><style>.preco-hero{font-size:clamp(34px,4.4vw,64px);font-weight:800;color:#9AA5B1;margin:10px 0 14px;line-height:1}.preco-hero.win{color:#E8A33D}</style></head>
 <body>
@@ -561,8 +563,27 @@ body.page-mode .vr-seta,body.page-mode .vr-trilha,body.page-mode .vr-prox{displa
   for(var k=1;k<=TOTAL;k++){(function(n){var d=document.createElement('button');d.title='slide '+n;d.addEventListener('click',function(e){e.stopPropagation();show(n);});trilha.appendChild(d);})(k);}
   bEsq.addEventListener('click',function(e){e.stopPropagation();prev();});bDir.addEventListener('click',function(e){e.stopPropagation();bDir.classList.remove('pulso');next();});
   document.body.appendChild(bEsq);document.body.appendChild(bDir);document.body.appendChild(trilha);document.body.appendChild(prox);
-  var _show=show;show=function(n,u){_show(n,u);bEsq.disabled=current<=1;bDir.disabled=current>=TOTAL;prox.style.display=current===1?'':'none';var bs=trilha.children;for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',i+1===current);};
+  var _show=show;show=function(n,u){_show(n,u);bEsq.disabled=current<=1;bDir.disabled=current>=TOTAL;prox.style.display=current===1?'':'none';var bs=trilha.children;for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',i+1===current);document.body.classList.toggle('s-final',current===TOTAL);};
   buildDots();
+
+  // deslizar (toque) troca de slide — não fica preso ao teclado/clique
+  (function(){
+    var x0=null,y0=null,t0=0;
+    document.getElementById('deck').addEventListener('touchstart',function(e){
+      if(document.body.classList.contains('page-mode'))return;
+      var tt=e.touches[0]; x0=tt.clientX; y0=tt.clientY; t0=Date.now();
+    },{passive:true});
+    document.getElementById('deck').addEventListener('touchend',function(e){
+      if(x0===null||document.body.classList.contains('page-mode'))return;
+      var tt=e.changedTouches[0];
+      var dx=tt.clientX-x0, dy=tt.clientY-y0, dt=Date.now()-t0;
+      x0=null;
+      if(dt>600)return;
+      if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)*1.5){
+        if(dx<0) next(); else prev();
+      }
+    },{passive:true});
+  })();
 
   var initial = 1;
   var m = /^#s(\d+)$/.exec(location.hash);
@@ -571,5 +592,6 @@ body.page-mode .vr-seta,body.page-mode .vr-trilha,body.page-mode .vr-prox{displa
 })();
 </script>
 
+<script src="melhorias.js"></script>
 </body>
 </html>
