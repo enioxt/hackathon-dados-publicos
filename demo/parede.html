@@ -16,18 +16,31 @@ header b{font-size:16px;letter-spacing:.04em}header a{color:var(--a);text-decora
 #grade{flex:1;display:grid;gap:4px;padding:4px;min-height:0}
 .tela{position:relative;background:#0a141f;border:1px solid #1b2c3d;overflow:hidden;cursor:pointer;min-height:0}
 .tela:hover{border-color:var(--a)}.tela.alerta{border-color:var(--r);box-shadow:inset 0 0 0 2px var(--r)}
-.tela.evento-ativo{border-color:var(--r);box-shadow:inset 0 0 0 3px var(--r)}
+.tela.evento-ativo{border-color:var(--corEvt,var(--r));animation:pulsaBordaEvento 1.1s ease-in-out infinite}
+@keyframes pulsaBordaEvento{0%,100%{box-shadow:inset 0 0 0 3px var(--corEvt,var(--r))}50%{box-shadow:inset 0 0 0 6px var(--corEvt,var(--r))}}
+.tela.realceCartao{outline:3px solid var(--a);outline-offset:-3px}
+.linhaEvento.realce{border-color:var(--a);box-shadow:0 0 0 1px var(--a)}
 .tela canvas{width:100%;height:100%;display:block}
-.hud{position:absolute;left:8px;top:6px;font:600 12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none}
-.hud small{display:block;font-weight:400;color:#cdd6df}
-.cont{position:absolute;right:8px;top:6px;text-align:right;font:12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none;color:#cdd6df}
+.hud{position:absolute;left:8px;top:6px;max-width:calc(100% - 16px);overflow:hidden;font:600 12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none}
+.hud small{display:block;font-weight:400;color:#cdd6df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cont{position:absolute;right:8px;top:6px;max-width:calc(50% - 12px);overflow:hidden;text-align:right;font:12px ui-monospace,monospace;text-shadow:0 1px 2px #000;pointer-events:none;color:#cdd6df}
 .cont b{color:var(--a)}
-.rod{position:absolute;left:8px;bottom:6px;right:8px;display:flex;justify-content:space-between;font:11px ui-monospace,monospace;color:#9AA5B1;text-shadow:0 1px 2px #000;pointer-events:none}
+.rod{position:absolute;left:8px;bottom:6px;right:8px;display:flex;justify-content:space-between;gap:6px;font:11px ui-monospace,monospace;color:#9AA5B1;text-shadow:0 1px 2px #000;pointer-events:none}
+.rod span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.rod span:last-child{flex:none}
+/* tela muito baixa (grades densas em telas curtas): some com o que não cabe em vez de empilhar por cima */
+.tela.compacta .hud small{display:none}
+.tela.compacta .cont{font-size:10px;line-height:1.15}
+.tela.compacta .rod span:last-child{display:none}
 .rec{color:var(--r)}
-.rotulo-evento{position:absolute;left:8px;top:26px;background:var(--r);color:#111;font:700 11px ui-monospace,monospace;padding:2px 7px;border-radius:5px;pointer-events:none}
+/* top:40 limpa as DUAS linhas do .hud (CAM NN + nome do ponto · DADO SINTÉTICO) — top:26 (valor antigo)
+   cobria a 2ª linha e deixava o nome do ponto ilegível atrás do selo (achado em revisão de screenshot) */
+.rotulo-evento{position:absolute;left:8px;top:40px;background:var(--corEvt,var(--r));color:#111;font:700 11px ui-monospace,monospace;padding:2px 7px;border-radius:5px;pointer-events:none;max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tela.compacta .rotulo-evento{top:24px} /* no compacta o .hud small é escondido (1 linha só) — selo pode subir */
 aside#painel{width:290px;flex:none;background:var(--n);border-left:1px solid var(--b);padding:10px 12px;overflow-y:auto;font-size:12px}
 aside#painel h3{margin:2px 0 8px;font-size:13px;letter-spacing:.03em;color:var(--a)}
 .linhaEvento{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:8px;margin-bottom:8px}
+.linhaEvento.resolvido{padding:4px 8px;font-size:11px;color:#9aa5b1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .linhaEvento h4{margin:0 0 4px;font-size:12px;color:var(--t)}
 .linhaEvento .passo{color:#cdd6df;font-size:11px;padding:1px 0;border-left:2px solid var(--b);padding-left:6px;margin:2px 0}
 .linhaEvento .passo.espera{color:var(--a);font-weight:700;border-left-color:var(--a)}
@@ -88,12 +101,12 @@ table.entidades tr.sel{background:#2a2110}
 .resumoCard button{margin-top:12px;background:var(--a);color:#111;border:none;border-radius:6px;padding:7px 14px;font-weight:700;cursor:pointer}
 </style></head><body>
 <header><b>VISÃO DE ROTA · PAREDE DE MONITORES</b><span class=tag>SIMULAÇÃO — nenhuma câmera real está ligada</span>
-<a href="/">← central de controle</a>
+<a href="painel-gestor.html">← central de controle</a>
 <div class=ctl><span style="color:var(--z)">telas:</span><span id=botoes></span></div></header>
 <div class=evrow><span class=lbl>eventos simuláveis:</span><span id=eventoBotoes></span></div>
 <div id=layout>
 <div id=grade></div>
-<aside id=painel><h3>Linha do tempo · fluxo de ação</h3><div class=mantra>A análise detecta. A pessoa decide.</div><div id=linhas><div class="aviso-privacidade">nenhum evento ativo</div></div>
+<aside id=painel><h3>Linha do tempo · fluxo de ação</h3><div class=mantra>A análise detecta. A pessoa decide.</div><div id=contadorEventos class="aviso-privacidade" style="margin:-4px 0 8px">0 em andamento · 0 resolvidos</div><div id=linhas><div class="aviso-privacidade">nenhum evento ativo</div></div>
 <details id=comoSeria><summary>Como seria de verdade</summary>
 <ul>
 <li><b>detecção e classificação de objeto</b> — um modelo aberto da família YOLO lê cada quadro e diz o que é: carro, moto, ônibus, pessoa.</li>
@@ -199,6 +212,8 @@ const EVENTOS={
  alagamento:{rotulo:'Alagamento na via',categoria:'obstrução por água',equipe:'defesa civil',dur:[75,110]}
 };
 
+const EVENTO_COR={arvore:'#6b4f2a',ambulancia:'#7fb2e5',acidente:'#D6453D',atropelamento:'#9AA5B1',parado:'#E8A33D',contramao:'#E8A33D',apagado:'#8891a0',alagamento:'#3d7fae'};
+let eventosResolvidos=[]; // últimos 5 encerrados, para os cartões encolhidos no fim da coluna (R-EVENTOS-CARTAO)
 const NOMES=['Av. principal × rua do mercado','Rotatória do terminal','Acesso à universidade','Centro — via comercial','Saída para a rodovia','Av. do canal × ponte','Escola — travessia','Hospital — acesso','Bairro norte — entrada','Distrito industrial','Praça central','Av. sul × anel'];
 let N=+(new URLSearchParams(location.search).get('n'))||4, telas=[];
 let rngEventos=rng(4242), seqEvento=0;
@@ -220,12 +235,19 @@ function faseDe(o,eixo){
 }
 
 // ===== criação de tela =====
+const CLIMAS=['dia','dia','dia','noite','chuva']; // determinístico por índice de câmera — nunca Math.random
 function criar(k){
   const r=rng(1000+k*97),el=document.createElement('div');el.className='tela';
-  el.innerHTML='<canvas></canvas><div class=hud>CAM '+pad(k)+'<small>'+NOMES[(k-1)%NOMES.length]+'</small></div><div class=cont></div><div class=rod><span class=rec>● lendo</span><span class=fl></span><span>sem rosto · sem placa</span></div>';
+  el.innerHTML='<canvas></canvas><div class=hud>CAM '+pad(k)+'<small>'+NOMES[(k-1)%NOMES.length]+' · DADO SINTÉTICO</small></div><div class=cont></div><div class=rod><span class=rec>● lendo</span><span class=fl></span><span>sem rosto · sem placa</span></div>';
   el.onclick=()=>abrirModal(k);
   const cv=el.querySelector('canvas'),cx=cv.getContext('2d');
-  const o={k,el,cv,cx,r,v:[],cont:{},fila:0,densidade:.35+r()*.9,tick:0,seq:0,grupos:{},eventosAtivos:[],semaforoApagado:false,prioridadeEixo:null};
+  const o={k,el,cv,cx,r,v:[],cont:{},fila:0,filaHist:[],densidade:.35+r()*.9,tick:0,seq:0,grupos:{},eventosAtivos:[],semaforoApagado:false,prioridadeEixo:null,
+    clima:CLIMAS[k%CLIMAS.length],flashes:[],mouseX:null,mouseY:null,vinheta:null};
+  cv.addEventListener('mousemove',e=>{const b=cv.getBoundingClientRect();o.mouseX=e.clientX-b.left;o.mouseY=e.clientY-b.top});
+  cv.addEventListener('mouseleave',()=>{o.mouseX=null;o.mouseY=null});
+  // realce bidirecional (tela -> cartão): passar o mouse na câmera acende o(s) cartão(ões) dela na coluna
+  el.addEventListener('mouseenter',()=>{o.eventosAtivos.forEach(evt=>{const bl=document.getElementById('btE'+evt.id); if(bl) bl.classList.add('realce')})});
+  el.addEventListener('mouseleave',()=>{o.eventosAtivos.forEach(evt=>{const bl=document.getElementById('btE'+evt.id); if(bl) bl.classList.remove('realce')})});
   return o;
 }
 
@@ -337,7 +359,7 @@ function fisica(o,dt){
     v.hist.push(v.velKmh); if(v.hist.length>40)v.hist.shift();
     v.x = v.horiz? v.p : W/2+v.faixa; v.y = v.horiz? H/2+v.faixa : v.p;
     v.rastro.push({x:v.x,y:v.y}); if(v.rastro.length>50)v.rastro.shift();
-    if(!v.isPed && !v.contado){ const cline=v.horiz?W*.72:H*.74; if((v.sent>0&&v.p>cline)||(v.sent<0&&v.p<cline)){v.contado=true;o.cont[v.t.k]=(o.cont[v.t.k]||0)+1} }
+    if(!v.isPed && !v.contado){ const cline=v.horiz?W*.72:H*.74; if((v.sent>0&&v.p>cline)||(v.sent<0&&v.p<cline)){v.contado=true;o.cont[v.t.k]=(o.cont[v.t.k]||0)+1;o.flashes.push({horiz:v.horiz,t:0})} }
     if(v.isPed){
       const destino=v.sent>0?H/2+ROAD_HALF+30:H/2-ROAD_HALF-30;
       v._remove = ((v.sent>0&&v.p>=destino)||(v.sent<0&&v.p<=destino)) || v.p<-90 || v.p>H+90;
@@ -349,34 +371,136 @@ function fisica(o,dt){
   o.fila=medirFila(o);
   o.el.classList.toggle('alerta',o.fila>=39);
   o.eventosAtivos.forEach(evt=>{ if(o.fila>evt.filaMax) evt.filaMax=o.fila; });
+  // histórico dos últimos 60s da fila, para o mini-gráfico do HUD (1 amostra por passo de física)
+  o.filaHist.push(o.fila); if(o.filaHist.length>Math.round(60/dt)) o.filaHist.shift();
+  o.flashes.forEach(f=>f.t+=dt); o.flashes=o.flashes.filter(f=>f.t<0.5);
 }
 
-function ajustar(){telas.forEach(o=>{const b=o.el.getBoundingClientRect();o.cv.width=Math.max(200,Math.round(b.width));o.cv.height=Math.max(120,Math.round(b.height))})}
+function ajustar(){telas.forEach(o=>{const b=o.el.getBoundingClientRect();o.cv.width=Math.max(200,Math.round(b.width));o.cv.height=Math.max(120,Math.round(b.height));
+  o.el.classList.toggle('compacta', b.height<170 || b.width<230);
+  const W=o.cv.width,H=o.cv.height,g=o.cx.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.72);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.55)');o.vinheta=g;
+})}
 
 function desenhar2D(o){
   const W=o.cv.width,H=o.cv.height,cx=o.cx;
-  cx.fillStyle='#0f1a26';cx.fillRect(0,0,W,H);
-  cx.fillStyle='#1d2a38';cx.fillRect(0,H/2-ROAD_HALF,W,ROAD_HALF*2);cx.fillRect(W/2-ROAD_HALF,0,ROAD_HALF*2,H);
-  cx.strokeStyle='#3a4c5f';cx.setLineDash([14,12]);cx.lineWidth=2;cx.beginPath();cx.moveTo(0,H/2);cx.lineTo(W,H/2);cx.moveTo(W/2,0);cx.lineTo(W/2,H);cx.stroke();cx.setLineDash([]);
-  cx.fillStyle='#51657a';for(let i=-30;i<=30;i+=10){cx.fillRect(W/2-STOP_DIST-6,H/2+i-3,12,6);cx.fillRect(W/2+STOP_DIST-6,H/2+i-3,12,6)}
+  const pequena=W<260||H<180; // telas pequenas: some com textura/rótulo/sparkline, nunca sobrepõe (pedido explícito)
+  const noite=o.clima==='noite', chuva=o.clima==='chuva';
+  cx.fillStyle=noite?'#070d15':'#0f1a26';cx.fillRect(0,0,W,H);
+  cx.fillStyle=noite?'#101c29':'#1d2a38';cx.fillRect(0,H/2-ROAD_HALF,W,ROAD_HALF*2);cx.fillRect(W/2-ROAD_HALF,0,ROAD_HALF*2,H);
+  cx.fillStyle=noite?'#16273a':'#26445f';cx.fillRect(W/2-ROAD_HALF,H/2-ROAD_HALF,ROAD_HALF*2,ROAD_HALF*2);
+  // textura sutil do asfalto (grão determinístico pelo índice da câmera — não consome o rng de spawn)
+  if(!pequena){
+    cx.fillStyle='rgba(255,255,255,.03)';
+    for(let i=0;i<26;i++){const gx=(i*53+o.k*17)%W, gy=(i*97+o.k*31)%H; cx.fillRect(gx,gy,1.4,1.4)}
+  }
+  // canteiro/calçada nas bordas externas da via
+  cx.fillStyle=noite?'#0a1420':'#152233';
+  cx.fillRect(0,H/2-ROAD_HALF-6,W,6);cx.fillRect(0,H/2+ROAD_HALF,W,6);
+  cx.fillRect(W/2-ROAD_HALF-6,0,6,H);cx.fillRect(W/2+ROAD_HALF,0,6,H);
+  // faixas de rolamento nas posições reais (FX), além do eixo central
+  cx.strokeStyle=noite?'#25384a':'#33475a';cx.setLineDash([9,10]);cx.lineWidth=1;
+  [-FX.L2,-FX.L1,FX.L1,FX.L2].forEach(off=>{cx.beginPath();cx.moveTo(0,H/2+off);cx.lineTo(W,H/2+off);cx.moveTo(W/2+off,0);cx.lineTo(W/2+off,H);cx.stroke()});
+  cx.strokeStyle=noite?'#3a5164':'#5c748c';cx.setLineDash([14,12]);cx.lineWidth=2;
+  cx.beginPath();cx.moveTo(0,H/2);cx.lineTo(W,H/2);cx.moveTo(W/2,0);cx.lineTo(W/2,H);cx.stroke();cx.setLineDash([]);
+  // faixa de pedestre (zebra) nas 4 aproximações
+  cx.fillStyle='rgba(220,226,232,.55)';
+  for(let i=-30;i<=30;i+=10){cx.fillRect(W/2-STOP_DIST-6,H/2+i-3,12,6);cx.fillRect(W/2+STOP_DIST-6,H/2+i-3,12,6);cx.fillRect(W/2+i-3,H/2-STOP_DIST-6,6,12);cx.fillRect(W/2+i-3,H/2+STOP_DIST-6,6,12)}
+  // linha de retenção
   cx.strokeStyle='rgba(232,163,61,.75)';cx.lineWidth=2;cx.beginPath();
   cx.moveTo(W/2-STOP_DIST,H/2-ROAD_HALF);cx.lineTo(W/2-STOP_DIST,H/2+ROAD_HALF);
   cx.moveTo(W/2+STOP_DIST,H/2-ROAD_HALF);cx.lineTo(W/2+STOP_DIST,H/2+ROAD_HALF);
   cx.moveTo(W/2-ROAD_HALF,H/2-STOP_DIST);cx.lineTo(W/2+ROAD_HALF,H/2-STOP_DIST);
   cx.moveTo(W/2-ROAD_HALF,H/2+STOP_DIST);cx.lineTo(W/2+ROAD_HALF,H/2+STOP_DIST);
   cx.stroke();
+  // linha de contagem — acende (flash) quando alguém acaba de cruzar
+  const flashH=o.flashes.some(f=>f.horiz&&f.t<0.28), flashV=o.flashes.some(f=>!f.horiz&&f.t<0.28);
+  function linhaContagem(x1,y1,x2,y2,aceso){cx.strokeStyle=aceso?'rgba(232,163,61,.95)':'rgba(232,163,61,.28)';cx.lineWidth=aceso?3:1.2;cx.setLineDash(aceso?[]:[3,6]);cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.stroke();cx.setLineDash([])}
+  linhaContagem(W*.72,H/2-ROAD_HALF,W*.72,H/2+ROAD_HALF,flashH); linhaContagem(W*.28,H/2-ROAD_HALF,W*.28,H/2+ROAD_HALF,flashH);
+  linhaContagem(W/2-ROAD_HALF,H*.74,W/2+ROAD_HALF,H*.74,flashV); linhaContagem(W/2-ROAD_HALF,H*.26,W/2+ROAD_HALF,H*.26,flashV);
+  // semáforo desenhado, com a fase visível (some em telas pequenas)
+  if(!pequena){
+    // semáforo apagado: efeito PRÓPRIO — cinza piscando junto nas duas bulbas, nunca a fase normal
+    const apagadoPisca = o.semaforoApagado && Math.floor(o.tick*4)%2===0;
+    const faseH=apagadoPisca?'__apagado__':faseDe(o,'h'), faseV=apagadoPisca?'__apagado__':faseDe(o,'v'), cores={verde:'#2E9E6B',amarelo:'#E8A33D',vermelho:'#D6453D'};
+    function semaforo(x,y,fase){cx.fillStyle='#0b1420';cx.fillRect(x-5,y-13,10,26);cx.strokeStyle='#000';cx.strokeRect(x-5,y-13,10,26);
+      if(fase==='__apagado__'){cx.beginPath();cx.arc(x,y,4,0,7);cx.fillStyle='#8891a0';cx.fill();return}
+      ['vermelho','amarelo','verde'].forEach((c,i)=>{cx.beginPath();cx.arc(x,y-8+i*8,3,0,7);cx.fillStyle=fase===c?cores[c]:'#233042';cx.fill()});}
+    semaforo(W/2-STOP_DIST-12,H/2-ROAD_HALF-16,faseH); semaforo(W/2+STOP_DIST+12,H/2+ROAD_HALF+16,faseH);
+    semaforo(W/2-ROAD_HALF-16,H/2+STOP_DIST+12,faseV); semaforo(W/2+ROAD_HALF+16,H/2-STOP_DIST-12,faseV);
+  }
+  // hover: só a entidade sob o mouse (e os envolvidos em evento) ganham rótulo cheio — os demais, só um ponto
+  let hoverV=null;
+  if(o.mouseX!=null){let melhorD=26;o.v.forEach(v=>{if(v.x===undefined)return;const d=Math.hypot(v.x-o.mouseX,v.y-o.mouseY);if(d<melhorD){melhorD=d;hoverV=v}})}
   o.v.forEach(v=>{
     if(v.x===undefined) return;
     const w=v.horiz?v.lenPx:v.widPx, h=v.horiz?v.widPx:v.lenPx;
-    const cor = v.contramaoAtiva ? '#D6453D' : v.t.cor;
+    const emColisao=v._colisaoTick!=null && (o.tick-v._colisaoTick)<1.2;
+    const piscaTijolo=emColisao && Math.floor(o.tick*6)%2===0;
+    const cor = piscaTijolo ? '#8a2620' : (v.contramaoAtiva ? '#D6453D' : v.t.cor);
     if(v.t.k==='atropelamento'){
       cx.fillStyle='rgba(124,133,145,.85)';cx.beginPath();cx.ellipse(v.x,v.y,w/2,h/2,v.horiz?0:Math.PI/2,0,7);cx.fill();return;
     }
-    cx.fillStyle=cor;cx.globalAlpha=v.isObstaculo?1:.85;cx.fillRect(v.x-w/2,v.y-h/2,w,h);cx.globalAlpha=1;
-    cx.strokeStyle=cor;cx.lineWidth=1;cx.strokeRect(v.x-w/2-4,v.y-h/2-4,w+8,h+8);
-    cx.fillStyle=cor;cx.font='10px ui-monospace,monospace';cx.fillText(v.t.k,v.x-w/2-4,v.y-h/2-7);
+    // sombra suave sob o veículo
+    cx.fillStyle='rgba(0,0,0,.32)';cx.beginPath();cx.ellipse(v.x+2,v.y+3,w/2*.95,h/2*.8,0,0,7);cx.fill();
+    // rastro curto (últimos ~2s), discreto — amostrado para custar pouco com 16 telas
+    if(!pequena && v.rastro && v.rastro.length>4){
+      cx.beginPath();
+      for(let i=0;i<v.rastro.length;i+=3){const p=v.rastro[i];i?cx.lineTo(p.x,p.y):cx.moveTo(p.x,p.y)}
+      cx.strokeStyle=(cor.length===7?cor:'#7fb2e5')+'4A';cx.lineWidth=1.2;cx.stroke();
+    }
+    // alagamento: mancha d'água piscando (não é caixa parada — é uma condição da via, alpha pulsa)
+    const alphaBase = v.t.k==='alagamento' ? (0.45+0.3*Math.sin(o.tick*2)) : (v.isObstaculo?1:.88);
+    cx.fillStyle=cor;cx.globalAlpha=alphaBase;cx.fillRect(v.x-w/2,v.y-h/2,w,h);cx.globalAlpha=1;
+    cx.strokeStyle=cor;cx.lineWidth=v.eventoRef?2.2:1;cx.strokeRect(v.x-w/2-4,v.y-h/2-4,w+8,h+8);
+    // "veículo parado na faixa" (não reaproveitado por outro evento): pisca-alerta âmbar, efeito próprio
+    if(v.eventoRef && v.eventoRef.tipo==='parado' && Math.floor(o.tick*5)%2===0){
+      cx.strokeStyle='#E8A33D';cx.lineWidth=2.4;cx.beginPath();cx.arc(v.x-w/2-2,v.y-h/2-2,3,0,7);cx.arc(v.x+w/2+2,v.y+h/2+2,3,0,7);cx.stroke();
+    }
+    // ambulância: luz pulsando (alterna vermelho/azul) acima do veículo
+    if(v.t.k==='ambulancia'){
+      const corLuz = Math.floor(o.tick*6)%2===0 ? '#D6453D' : '#3d7fae';
+      cx.fillStyle=corLuz; cx.beginPath(); cx.arc(v.x,v.y-h/2-6,3,0,7); cx.fill();
+    }
+    const ehEnvolvido=!!v.eventoRef;
+    if(hoverV===v || ehEnvolvido){
+      cx.fillStyle=cor;cx.font='10px ui-monospace,monospace';
+      cx.fillText(v.t.k+' #'+String(v.id).slice(-4)+' · '+(v.confianca||'—'),v.x-w/2-4,v.y-h/2-7);
+    } else if(!pequena){
+      cx.fillStyle=cor;cx.beginPath();cx.arc(v.x+w/2+2,v.y-h/2-2,2,0,7);cx.fill();
+    }
   });
-  cx.fillStyle='rgba(255,255,255,.025)';for(let i=0;i<40;i++)cx.fillRect(o.r()*W,o.r()*H,2,1);
+  // anel de impacto — expande a partir do ponto de contato real, só enquanto o evento estiver fresco
+  o.eventosAtivos.forEach(evt=>{
+    if(!evt.impacto || evt.impacto.telaK!==o.k) return;
+    const idade=o.tick-evt.impacto.tick;
+    if(idade<0 || idade>1) return;
+    cx.beginPath();cx.arc(evt.impacto.x,evt.impacto.y,idade*70,0,7);
+    cx.strokeStyle='rgba(214,69,61,'+(1-idade).toFixed(2)+')';cx.lineWidth=3;cx.stroke();
+  });
+  // chuva: traços finos determinísticos por câmera (não Math.random)
+  if(chuva && !pequena){
+    cx.strokeStyle='rgba(180,200,220,.14)';cx.lineWidth=1;
+    for(let i=0;i<16;i++){const rx=(i*61+o.k*23)%W, ry=(i*89+Math.floor(o.tick*40)*7)%H; cx.beginPath();cx.moveTo(rx,ry);cx.lineTo(rx-3,ry+9);cx.stroke()}
+  }
+  // vinheta leve (aparência de câmera)
+  if(o.vinheta){cx.fillStyle=o.vinheta;cx.fillRect(0,0,W,H)}
+  if(!pequena){
+    // cantos de enquadramento (viewfinder)
+    cx.strokeStyle='rgba(255,255,255,.22)';cx.lineWidth=1.4;const m=10,L=14;
+    [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]].forEach(([x,y,sx,sy])=>{cx.beginPath();cx.moveTo(x,y+L*sy);cx.lineTo(x,y);cx.lineTo(x+L*sx,y);cx.stroke()});
+    // ponto "lendo" pulsando
+    const pulso=.5+.5*Math.sin(o.tick*3);
+    cx.fillStyle='rgba(214,69,61,'+(0.35+0.5*pulso).toFixed(2)+')';cx.beginPath();cx.arc(W-14,14,3.2,0,7);cx.fill();
+    // mini-gráfico da fila (últimos 60s), canto inferior direito, acima do rodapé HTML
+    if(o.filaHist.length>1){
+      const hx=W-64,hy=H-32,hw=56,hh=16,hist=o.filaHist,maxF=Math.max(20,...hist),passo=Math.max(1,Math.floor(hist.length/40));
+      cx.strokeStyle='rgba(232,163,61,.85)';cx.lineWidth=1.2;cx.beginPath();
+      let primeiro=true;
+      for(let i=0;i<hist.length;i+=passo){const x=hx+(i/hist.length)*hw,y=hy+hh-(hist[i]/maxF)*hh; primeiro?cx.moveTo(x,y):cx.lineTo(x,y);primeiro=false}
+      cx.stroke();
+    }
+  }
   const tot=Object.values(o.cont).reduce((a,b)=>a+b,0);
   o.el.querySelector('.cont').innerHTML=TIPOS.slice(0,4).map(t=>t.k+' <b>'+(o.cont[t.k]||0)+'</b>').join('<br>');
   o.el.querySelector('.fl').textContent='fila '+o.fila+' m · total '+tot;
@@ -402,7 +526,7 @@ function montar(n){
 }
 function avancarSimulado(segundos){
   const passos=Math.round(segundos/0.05);
-  for(let i=0;i<passos;i++) telas.forEach(o=>fisica(o,0.05));
+  for(let i=0;i<passos;i++){ telas.forEach(o=>fisica(o,0.05)); calcularContatos(); }
 }
 const bt=document.getElementById('botoes');[2,4,6,8,12,16].forEach(n=>{const b=document.createElement('button');b.textContent=n;b.dataset.n=n;b.onclick=()=>montar(n);bt.append(b)});
 const mais=document.createElement('button');mais.textContent='+2';mais.title='acrescentar duas telas';mais.onclick=()=>montar(Math.min(N+2,36));bt.append(mais);
@@ -411,6 +535,7 @@ let ant=performance.now();
 function laco(t){
   const dt=Math.min(.05,(t-ant)/1000);ant=t;
   telas.forEach(o=>{fisica(o,dt);desenhar2D(o)});
+  calcularContatos();
   const s=telas.reduce((a,o)=>a+Object.values(o.cont).reduce((x,y)=>x+y,0),0),al=telas.filter(o=>o.el.classList.contains('alerta')).length;
   document.getElementById('soma').textContent=N+' telas · '+s+' contagens simuladas · '+al+' com fila acima de 39 m';
   if(modalAberto) desenharModal();
@@ -418,18 +543,42 @@ function laco(t){
 }
 
 // ===== overlap check (prova) =====
-window.vrSobreposicoes=function(){
-  let n=0;
+// contatosEstado: contador persistente entre frames — total_na_sessao só cresce quando
+// um par de entidades PASSA a se tocar (não conta o mesmo toque de novo a cada frame em que ele persiste).
+// provocados_por_evento marca contato onde pelo menos um dos dois lados carrega eventoRef (é consequência
+// de um evento simulado — acidente/contramão/atropelamento), nunca um número escolhido à mão.
+const contatosEstado={atual:new Set(),total:0,porEvento:0,agora:0};
+function calcularContatos(){
+  const novoAtual=new Set();let agora=0;
   telas.forEach(o=>{
     const arr=o.v.filter(v=>v.x!==undefined);
     for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){
       const a=arr[i],b=arr[j];
-      if(a.colisaoIgnorar && b.colisaoIgnorar && a.eventoRef===b.eventoRef) continue;
-      if(intersecta(retanguloDe(a),retanguloDe(b))) n++;
+      if(intersecta(retanguloDe(a),retanguloDe(b))){
+        agora++;
+        const key=o.k+':'+(a.id<b.id?a.id+'|'+b.id:b.id+'|'+a.id);
+        novoAtual.add(key);
+        if(!contatosEstado.atual.has(key)){
+          contatosEstado.total++;
+          const evtRef=a.eventoRef||b.eventoRef;
+          if(evtRef){
+            contatosEstado.porEvento++;
+            // marca as duas caixas para piscar vermelho-tijolo e abre o anel de impacto no ponto de contato —
+            // a REAÇÃO visual é consequência do contato real, nunca disparada por decoração isolada
+            a._colisaoTick=o.tick; b._colisaoTick=o.tick;
+            evtRef.impacto={x:(a.x+b.x)/2,y:(a.y+b.y)/2,tick:o.tick,telaK:o.k};
+          }
+        }
+      }
     }
   });
-  return n;
+  contatosEstado.atual=novoAtual;
+  contatosEstado.agora=agora;
+}
+window.vrContatos=function(){
+  return {agora:contatosEstado.agora,total_na_sessao:contatosEstado.total,provocados_por_evento:contatosEstado.porEvento};
 };
+window.vrSobreposicoes=function(){ return contatosEstado.agora; };
 
 // ===================== EVENTOS: FLUXO DE AÇÃO =====================
 // obstáculo fica fora do corredor da via cruzada: ROAD_HALF+80 garante que o retângulo do objeto
@@ -451,12 +600,22 @@ function criarObstaculo(o,tipoKey,horiz,sent,tf,categoriaTxt,extra){
   return v;
 }
 function horaAgora(){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())}
+let avisoTimer=null;
+function mostrarAviso(msg){
+  let el=document.getElementById('avisoToast');
+  if(!el){el=document.createElement('div');el.id='avisoToast';el.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1a3145;border:1px solid var(--a);color:var(--t);padding:7px 14px;border-radius:8px;font:12px ui-monospace,monospace;z-index:80;box-shadow:0 4px 14px rgba(0,0,0,.4);pointer-events:none';document.body.appendChild(el)}
+  el.textContent=msg; el.hidden=false;
+  if(avisoTimer) clearTimeout(avisoTimer);
+  avisoTimer=setTimeout(()=>{el.hidden=true},2600);
+}
 
 function dispararEvento(tipoId,telaK){
   const meta=EVENTOS[tipoId]; if(!meta) return null;
   let o=telas.find(t=>t.k===telaK);
   if(!o) o=telas[0];
-  if(o.eventosAtivos.length){ const livre=telas.find(t=>!t.eventosAtivos.length); if(livre) o=livre; else return null; }
+  // já era assim antes desta passada: nunca cria por cima de uma câmera ocupada — só avisa em vez de
+  // devolver silenciosamente null (pedido de reforço 2026-09-20)
+  if(o.eventosAtivos.length){ const livre=telas.find(t=>!t.eventosAtivos.length); if(livre) o=livre; else { mostrarAviso('todas as telas têm evento em andamento'); return null; } }
   const r=rngEventos;
   const evt={id:++seqEvento,tipo:tipoId,meta,o,inicio:horaAgora(),tickInicio:o.tick,passos:[],estado:'rodando',obstaculos:[],filaMax:0,decidido:null,timerId:null};
   const horiz=r()<.5, sent=r()<.5?1:-1;
@@ -464,11 +623,17 @@ function dispararEvento(tipoId,telaK){
     const ob=criarObstaculo(o,tipoId,horiz,sent,'L1',meta.rotulo,{eventoRef:evt});
     ob.colisaoIgnorar=false; evt.obstaculos.push(ob);
   } else if(tipoId==='atropelamento'){
-    const ob=criarObstaculo(o,'atropelamento',true,sent,'L1',meta.rotulo,{eventoRef:evt});
-    evt.obstaculos.push(ob);
+    // a marca no chão (o pedestre atingido) e o veículo envolvido ficam no MESMO ponto — a caixa
+    // coincidente É o contato do atropelamento, contado em vrContatos().provocados_por_evento,
+    // igual à técnica do acidente logo abaixo
+    const ob=criarObstaculo(o,'atropelamento',true,sent,'L1',meta.rotulo,{eventoRef:evt,colisaoIgnorar:true});
+    const veic=criarObstaculo(o,'parado',horiz,sent,'L1','veículo envolvido no atropelamento',{eventoRef:evt,colisaoIgnorar:true,pista:'evento-atropelamento-'+evt.id});
+    veic.x=ob.x; veic.y=ob.y; veic.p=ob.p;
+    evt.obstaculos.push(ob,veic);
   } else if(tipoId==='acidente'){
     // os dois veículos da colisão ficam exatamente no mesmo ponto seguro (fora do corredor cruzado) —
-    // a sobreposição entre ELES é o próprio evento e é a única excluída de vrSobreposicoes()
+    // a caixa coincidente É o próprio evento: registrada em vrContatos() como contato provocado por evento,
+    // nunca tratada como sobreposição de fundo (aquela tem que ficar zero fora de evento)
     const sentA=r()<.5?1:-1;
     const a=criarObstaculo(o,'parado',horiz,sentA,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true});
     const b=criarObstaculo(o,'parado',horiz,sentA,'L1','veículo envolvido em colisão',{eventoRef:evt,colisaoIgnorar:true,pista:'evento-colisao-'+evt.id});
@@ -490,28 +655,49 @@ function dispararEvento(tipoId,telaK){
     o.v.push(amb); evt.obstaculos.push(amb); evt.veiculoRef=amb;
     evt.passos.push({hora:horaAgora(),texto:'prioridade semafórica aplicada',tag:'PRÉ-AUTORIZADA'});
   } else if(tipoId==='contramao'){
+    // a moto entra na pista compartilhando o MESMO seguir-o-líder do sentido correto — por desenho,
+    // a física sempre evita contato (é o "endureça até zero contato" pedido para o trânsito normal).
+    // o encontro com quem vem no sentido certo é o próprio risco da contramão: registrado como uma
+    // caixa coincidente no ponto de entrada, igual à técnica do acidente/atropelamento acima
     const canonSent=sent, W=o.cv.width,H=o.cv.height, pista=pistaId(horiz,canonSent,'FIL');
+    const motoP=-canonSent>0?-60:(horiz?W:H)+60;
     o.seq++;
     const moto={id:'C'+pad(o.k)+'-V'+pad(o.seq,4),k:o.k,t:TIPOS_EVENTO.contramao,classe:'evento',categoria:'motocicleta na contramão',confianca:'média',
-      horiz,sent:-canonSent,pista,faixa:canonSent*FX.FIL,p:-canonSent>0?-60:(horiz?W:H)+60,contramaoAtiva:true,contado:true,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
-      lenPx:TIPOS_EVENTO.contramao.lenPx,widPx:TIPOS_EVENTO.contramao.widPx,altPx:TIPOS_EVENTO.contramao.altPx,eventoRef:evt,vel:34};
+      horiz,sent:-canonSent,pista,faixa:canonSent*FX.FIL,p:motoP,contramaoAtiva:true,contado:true,para:false,distM:0,tempo:0,velKmh:0,hist:[],rastro:[],
+      lenPx:TIPOS_EVENTO.contramao.lenPx,widPx:TIPOS_EVENTO.contramao.widPx,altPx:TIPOS_EVENTO.contramao.altPx,eventoRef:evt,colisaoIgnorar:true,vel:34};
     o.v.push(moto); evt.obstaculos.push(moto);
+    const veicOncoming=criarObstaculo(o,'parado',horiz,canonSent,'FIL','veículo no sentido correto',{eventoRef:evt,colisaoIgnorar:true,pista:'evento-contramao-'+evt.id});
+    veicOncoming.p=motoP; veicOncoming.x=horiz?motoP:W/2+veicOncoming.faixa; veicOncoming.y=horiz?H/2+veicOncoming.faixa:motoP;
+    evt.obstaculos.push(veicOncoming);
   }
   o.eventosAtivos.push(evt);
+  o.el.style.setProperty('--corEvt', EVENTO_COR[tipoId]||'#D6453D'); // borda pulsa na cor do TIPO do evento, não sempre vermelho
   evt.passos.push({hora:horaAgora(),texto:'detectado pela leitura da câmera'});
   agendarProximo(evt,'classificado');
   renderPainelLateral(); if(modalAberto===o.k) renderLinhaModal(evt);
   return evt;
 }
 function agendarProximo(evt,proximo,ms){
+  // cancela qualquer timer pendente antes de agendar outro — sem isso, um avanço manual
+  // (avancarAteAguardando, usado no modo teste via URL) corre em paralelo com o timer real
+  // já agendado por uma chamada anterior, e o passo seguinte (ex.: 'classificado') é
+  // empurrado DUAS VEZES: uma pelo avanço manual, outra 2s depois pelo timer esquecido.
+  if(evt.timerId){ clearTimeout(evt.timerId); evt.timerId=null; }
   if(evt._modoTeste) return; // no modo teste avançamos manualmente e de forma síncrona
   evt.timerId=setTimeout(()=>{ avancarEtapa(evt,proximo); },ms||2000);
 }
 function avancarEtapa(evt,fase){
   if(evt.estado==='encerrado') return;
   if(fase==='classificado'){
-    evt.passos.push({hora:horaAgora(),texto:'classificado: '+evt.meta.categoria+' · confiança '+(evt.obstaculos[0]?evt.obstaculos[0].confianca:'alta')});
-    agendarProximo(evt,'alerta');
+    // 1 em cada 5 eventos (determinístico pelo id sequencial, nunca sorteio real) não fecha classificação
+    // com confiança — pula direto para decisão humana, sem o passo intermediário de alerta
+    if(evt.id%5===0){
+      evt.passos.push({hora:horaAgora(),texto:'não sei — precisa de gente (confiança insuficiente para classificar sozinho)'});
+      agendarProximo(evt,'aguardando');
+    } else {
+      evt.passos.push({hora:horaAgora(),texto:'classificado: '+evt.meta.categoria+' · confiança '+(evt.obstaculos[0]?evt.obstaculos[0].confianca:'alta')});
+      agendarProximo(evt,'alerta');
+    }
   } else if(fase==='alerta'){
     evt.passos.push({hora:horaAgora(),texto:'alerta na fila de decisão da central'});
     agendarProximo(evt,'aguardando');
@@ -522,11 +708,13 @@ function avancarEtapa(evt,fase){
   renderPainelLateral(); if(modalAberto===evt.o.k) renderLinhaModal(evt);
 }
 function avancarAteAguardando(evt){
+  if(evt.timerId){ clearTimeout(evt.timerId); evt.timerId=null; } // mata o timer real agendado por dispararEvento
   evt._modoTeste=true;
   avancarEtapa(evt,'classificado'); avancarEtapa(evt,'alerta'); avancarEtapa(evt,'aguardando');
 }
 function decidirEvento(evt,acao){
   if(evt.estado==='encerrado') return;
+  if(evt.timerId){ clearTimeout(evt.timerId); evt.timerId=null; } // decisão humana cancela qualquer avanço automático pendente
   evt.decidido=acao;
   evt.horaDecisao=horaAgora(); evt.tickDecisao=evt.o.tick;
   if(acao==='descartar'){
@@ -554,6 +742,7 @@ function decidirEvento(evt,acao){
 }
 function finalizarEvento(evt){
   if(evt.estado==='encerrado') return;
+  if(evt.timerId){ clearTimeout(evt.timerId); evt.timerId=null; }
   evt.estado='encerrado';
   const o=evt.o;
   const duracaoS=Math.round((o.tick-evt.tickInicio)*10)/10;
@@ -564,20 +753,33 @@ function finalizarEvento(evt){
   if(evt.tipo==='ambulancia') o.prioridadeEixo=null;
   o.v=o.v.filter(v=>!evt.obstaculos.includes(v));
   o.eventosAtivos=o.eventosAtivos.filter(e=>e!==evt);
+  if(!o.eventosAtivos.length) o.el.style.removeProperty('--corEvt'); // libera a cor só quando a câmera não tem MAIS nenhum evento
+  // arquiva encolhido — a coluna nunca esquece o que resolveu, só encolhe (teto de 5, o mais antigo sai)
+  eventosResolvidos.unshift({id:evt.id,cam:evt.o.k,rotulo:evt.meta.rotulo,cor:EVENTO_COR[evt.tipo]||'#9AA5B1',duracaoS:evt.duracaoS,filaMax:evt.filaMax,decidido:evt.decidido,hora:evt.horaDecisao||horaAgora()});
+  if(eventosResolvidos.length>5) eventosResolvidos.length=5;
   renderPainelLateral(); if(modalAberto===o.k) { renderLinhaModal(null); mostrarResumo(evt); }
 }
 
 // ===== painel lateral (parede) =====
 function renderPainelLateral(){
   const div=document.getElementById('linhas');
+  const cont=document.getElementById('contadorEventos');
   const ativos=[]; telas.forEach(o=>o.eventosAtivos.forEach(e=>ativos.push(e)));
-  if(!ativos.length){ div.innerHTML='<div class="aviso-privacidade">nenhum evento ativo</div>'; return; }
-  div.innerHTML=ativos.map(evt=>blocoEvento(evt,false)).join('');
+  ativos.sort((a,b)=>b.id-a.id); // mais novo em cima — cartões nunca se sobrepõem, a coluna rola
+  if(cont) cont.textContent=ativos.length+' em andamento · '+eventosResolvidos.length+' resolvidos';
+  const resolvidosHtml=eventosResolvidos.map(r=>
+    '<div class="linhaEvento resolvido" style="border-left:3px solid '+r.cor+'"><span class=hora>'+r.hora+'</span> CAM '+pad(r.cam)+' · '+r.rotulo+
+    ' — resolvido ('+(r.decidido||'—')+') · '+(r.duracaoS||0)+'s · fila máx '+(r.filaMax||0)+' m</div>').join('');
+  if(!ativos.length && !eventosResolvidos.length){ div.innerHTML='<div class="aviso-privacidade">nenhum evento ativo</div>'; return; }
+  div.innerHTML=(ativos.length?ativos.map(evt=>blocoEvento(evt,false)).join(''):'<div class="aviso-privacidade">nenhum evento ativo</div>')+resolvidosHtml;
   ativos.forEach(evt=>{
     const elId='btE'+evt.id;
     const bl=document.getElementById(elId); if(!bl) return;
     bl.querySelectorAll('[data-acao]').forEach(b=>b.onclick=()=>decidirEvento(evt,b.dataset.acao));
     const enc=bl.querySelector('.encerrarBtn'); if(enc) enc.onclick=()=>finalizarEvento(evt);
+    // realce bidirecional: passar o mouse no cartão acende a borda da câmera correspondente, e vice-versa
+    bl.addEventListener('mouseenter',()=>evt.o.el.classList.add('realceCartao'));
+    bl.addEventListener('mouseleave',()=>evt.o.el.classList.remove('realceCartao'));
   });
 }
 function blocoEvento(evt,noModal){
@@ -589,7 +791,8 @@ function blocoEvento(evt,noModal){
       '<button data-acao=publicar>Confirmar e publicar no app</button>'+
       '<button data-acao=descartar class=descarte>Descartar — falso alarme</button></div>';
   }
-  return '<div class=linhaEvento id="btE'+evt.id+'"><h4>CAM '+pad(evt.o.k)+' · '+evt.meta.rotulo+'</h4>'+passosHtml+decisao+
+  const cor=EVENTO_COR[evt.tipo]||'#9AA5B1';
+  return '<div class=linhaEvento id="btE'+evt.id+'" style="border-left:3px solid '+cor+'"><h4>CAM '+pad(evt.o.k)+' · '+evt.meta.rotulo+' <span style="color:#7f8fa0;font-weight:400">#'+evt.id+'</span></h4>'+passosHtml+decisao+
     (evt.estado!=='encerrado'?'<button class=encerrarBtn>encerrar evento</button>':'')+'</div>';
 }
 document.addEventListener('click',e=>{
@@ -891,4 +1094,5 @@ if(params.get('teste')==='1'){
   }
 }
 </script><script src="melhorias.js"></script>
+<script src="tour.js"></script>
 </body></html>
