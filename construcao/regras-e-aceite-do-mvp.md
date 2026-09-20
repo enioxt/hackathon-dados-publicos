@@ -28,7 +28,7 @@ Pedido de hoje: as regras de negócio, e o que falta para o MVP ficar pronto —
 
 | # | Critério | Prova em 30s | Estado | Evidência |
 |---|---|---|---|---|
-| CA-01 | Vídeo entra → contagem sai | Abrir uma câmera gravada e mostrar a contagem por tipo aparecendo | ⬜ falta | `5-motor/leitor-video/` está vazio — nenhum leitor de vídeo escrito ainda |
+| CA-01 | Vídeo entra → contagem sai | Abrir uma câmera gravada e mostrar a contagem por tipo aparecendo | ✅ feito (1 vídeo de prova) | Leitor escrito em `motor/leitor-video/` (7 testes); percurso vídeo → leitor → porta de entrada rodado com vídeo aberto. Falta: contagem manual × automática num vídeo de Patos. |
 | CA-02 | Dado entra pela API → aparece no painel com etiqueta de origem | Rodar `curl -X POST /api/leituras` com uma leitura sintética e atualizar o painel | 🟡 em obra | API aceita e etiqueta funciona (testado abaixo); falta o painel puxar direto da API em vez de dado pré-gerado |
 | CA-03 | Payload com placa é recusado | Enviar um `camera_id` com placa e mostrar a recusa | ✅ pronto | testado agora: `curl -X POST http://127.0.0.1:8787/api/leituras` com `"camera_id":"ABC1D23"` devolveu `{"erro":"Placa Veicular encontrado no dado"}`; o mesmo payload trocando por `"cam-mvp-doc-teste"` foi aceito (`{"aceitas":1,"total":1,"recusadas":[]}`) |
 | CA-04 | Antes×depois de um ponto | Abrir a aba "Antes × Depois" e mostrar uma zona com barras de antes e depois | ✅ pronto | `2-prototipo/gestor.html:2080-2100` — 5 intervenções de exemplo já vêm com antes/depois preenchidos e tag DADO SINTÉTICO; nova intervenção criada pelo usuário nasce sem número, mostrando "sem antes/depois ainda" (correto, RN-05) |
@@ -54,7 +54,7 @@ Pedido de hoje: as regras de negócio, e o que falta para o MVP ficar pronto —
 6. Confirmar com a organização o formato de entrega das 16h (link, PDF ou formulário).
 
 **Falta para um piloto de verdade (depois do hackathon):**
-7. Escrever o leitor de vídeo que conta veículos de fato (`5-motor/leitor-video/` está vazio hoje).
+7. ~~Escrever o leitor de vídeo~~ — feito em 19/09 (`motor/leitor-video/`). O que falta agora é medir o erro: uma pessoa conta 5 minutos à mão, o leitor conta o mesmo vídeo, e a diferença é publicada como está.
 8. Medir o erro de contagem contra uma contagem manual e publicar essa margem (RN-06, hoje sem gate).
 9. Ligar o painel direto na API em vez de dado pré-gerado (fechar CA-02).
 10. Assinar o instrumento jurídico (Acordo de Cooperação Técnica) antes de qualquer acesso real a câmera da cidade.

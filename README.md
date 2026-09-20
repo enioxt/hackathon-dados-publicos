@@ -56,7 +56,7 @@ Dado real: ocorrências de trânsito do Estado e base nacional de sinistros. Câ
 
 ## Números que qualquer time pode usar (com fonte)
 - Frota de Patos: 136.300 veículos, 43.319 motos (31,8%) — SENATRAN jul/2026
-- Sinistros 2018–2026: 22.709, 140 óbitos — RENAEST
+- Sinistros 2018–2026: 22.708, 140 óbitos — RENAEST
 - 1.100 ocorrências com coordenada (2025 + início de 2026), 18 ocorrências fatais (19 vítimas) — SEJUSP-MG
 - Tarifa R$ 3,00 × tarifa técnica R$ 4,76 (jan/2024), subsídio R$ 1,76/passageiro — Decreto 5.668
 - Olho Vivo: 49 câmeras no edital de 2024; "240 em 140 pontos" na notícia de mai/2026; R$ 25 mil por câmera; contradição de inventário declarada em `juridico/olho-vivo-patos-fatos-publicos.md`
