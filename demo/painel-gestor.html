@@ -46,6 +46,17 @@
   .nav a.active{background:var(--card);color:var(--ice);font-weight:600;box-shadow:inset 2px 0 0 var(--amber);}
   .nav a.active .nav-desc{color:#C7D1DE;}
   .sidebar-foot{font-size:10.5px;color:var(--gray);padding:10px 6px 2px;border-top:1px solid var(--border);margin-top:10px;}
+  /* a barra lateral fixa em 220px nunca encolhia em tela estreita — sobrava só ~170px pro conteúdo
+     principal num celular comum (medido: #fontes-diagrama virava uma fresta de 84px). Vira trilho
+     de ícones abaixo de 640px, sem tirar nenhuma tela/navegação, só o texto explicativo. */
+  @media (max-width:640px){
+    .sidebar{width:64px;flex:0 0 64px;padding:14px 6px;}
+    .brand{justify-content:center;gap:0;padding:2px 0 12px;}
+    .brand-text,.brand-sub{display:none;}
+    .nav a{align-items:center;padding:10px 2px;}
+    .nav a .nav-desc{display:none;}
+    .sidebar-foot{display:none;}
+  }
 
   /* Main */
   .main{flex:1;min-width:0;padding:22px 26px 40px;}
@@ -161,16 +172,44 @@
     border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;pointer-events:auto;z-index:1261;
   }
   .historia-x:hover{border-color:var(--amber);color:var(--amber);}
+  /* Base = mesmo visual da faixa inferior (evita FOUC no 1º frame antes do JS decidir o lado).
+     historiaPosicionarCard() troca a classe a cada passo/resize: -dir/-esq (telas altas e largas,
+     card ao lado OPOSTO do elemento destacado) ou -baixo (fallback: tela baixa/estreita, ou quando
+     o destaque ocupa largura demais para caber um lado livre). Dimensiona por ALTURA (clamp+dvh)
+     para nunca cortar título nem abrir rolagem interna em telas >=560px de altura. */
   .historia-card{
-    position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:1260;pointer-events:auto;
-    width:min(680px, calc(100vw - 32px));max-height:min(52vh, 480px);overflow-y:auto;
+    position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));top:auto;right:auto;
+    transform:translateX(-50%);z-index:1260;pointer-events:auto;
+    width:min(880px, calc(100vw - 32px));max-height:34vh;overflow-y:auto;
     background:var(--card);border:1px solid var(--border);border-radius:18px;
-    padding:22px 26px 24px;box-shadow:0 24px 60px rgba(0,0,0,0.55);
+    padding:clamp(14px,2.6vh,22px) clamp(16px,3vw,26px) clamp(16px,2.6vh,22px);
+    box-shadow:0 24px 60px rgba(0,0,0,0.55);
+    display:flex;flex-wrap:wrap;align-items:center;gap:2px 18px;
   }
-  .historia-titulo{font-size:clamp(34px, 3.4vw, 46px);font-weight:800;line-height:1.15;color:var(--ice);margin:0 0 12px;}
-  .historia-num{font-size:clamp(120px, 13vw, 190px);font-weight:800;line-height:0.95;color:var(--amber);margin:6px 0;}
-  .historia-num-sub{font-size:15px;color:var(--gray);margin-bottom:10px;}
-  .historia-corpo{font-size:14.5px;line-height:1.6;color:var(--ice);}
+  .historia-card.historia-card-dir,
+  .historia-card.historia-card-esq{
+    display:block;top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;left:auto;right:24px;transform:none;
+    width:min(400px, calc(100vw - 240px));max-height:calc(100dvh - 64px - 110px);
+  }
+  .historia-card.historia-card-esq{ right:auto;left:24px; }
+  /* faixa no TOPO em vez de no fundo (quando é o fundo do viewport que o destaque ocupa) */
+  .historia-card.historia-card-baixo-topo{
+    top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;
+  }
+  .historia-card-dir .historia-titulo, .historia-card-esq .historia-titulo,
+  .historia-card-dir .historia-num, .historia-card-esq .historia-num{ flex:none; }
+  /* faixa inferior: número e título lado a lado; corpo/lista/opções quebram para a linha de baixo */
+  .historia-card-baixo .historia-titulo{ flex:1 1 auto;order:1;margin:0; }
+  .historia-card-baixo .historia-num{ flex:0 0 auto;order:2;margin:0; }
+  .historia-card-baixo .historia-num-sub,
+  .historia-card-baixo .historia-corpo,
+  .historia-card-baixo .historia-lista,
+  .historia-card-baixo .historia-opcoes,
+  .historia-card-baixo .historia-efeito{ flex:1 1 100%;order:3; }
+  .historia-titulo{font-size:clamp(22px, 4.2vh, 44px);font-weight:800;line-height:1.15;color:var(--ice);margin:0 0 12px;}
+  .historia-num{font-size:clamp(56px, 16vh, 260px);font-weight:800;line-height:0.95;color:var(--amber);margin:6px 0;}
+  .historia-num-sub{font-size:clamp(11.5px,2.2vh,15px);color:var(--gray);margin-bottom:10px;}
+  .historia-corpo{font-size:clamp(12.5px,2.6vh,14.5px);line-height:1.5;color:var(--ice);}
   .historia-corpo .tag{margin-right:6px;}
   .historia-lista{margin:10px 0 0;padding-left:18px;}
   .historia-lista li{margin-bottom:4px;}
@@ -189,10 +228,14 @@
   .historia-nav-btn-principal{background:var(--amber);color:#1a1204;border-color:transparent;}
   .historia-final-btn{width:100%;text-align:center;font-size:16px;padding:14px;margin-top:16px;}
   @media (max-width:760px){
-    .historia-titulo{font-size:clamp(26px,7vw,34px);}
-    .historia-num{font-size:clamp(72px,20vw,120px);}
-    .historia-card{padding:18px 18px 20px;bottom:82px;}
+    .historia-card-baixo{flex-direction:column;align-items:flex-start;max-height:44vh;}
+    .historia-card-baixo .historia-titulo,.historia-card-baixo .historia-num{flex:1 1 100%;}
+    .historia-card{padding:14px 16px 16px;}
     .historia-cta:not(.historia-cta-intro){display:none;}
+    /* nunca cobre os cantos fixos: o botão "Pedir melhoria" (melhorias.js, esquerda ~16-120px) e o
+       ícone de chat recolhido (direita, ~48px). Reserva os dois cantos e aperta os botões no meio. */
+    .historia-nav{padding-left:130px;padding-right:78px;justify-content:space-between;gap:8px;}
+    .historia-nav-btn{padding:12px 14px;font-size:14.5px;}
   }
 
   /* Layout grid */
@@ -691,6 +734,10 @@
   body.layout-foco #foco-view{
     display:flex;position:fixed;inset:0;z-index:600;background:var(--navy);
     flex-direction:column;align-items:center;justify-content:center;padding:24px;
+    overflow-y:auto;
+    /* sem isto, em telas baixas o conteúdo centralizado (nome+número+mapa) fica mais alto que o
+       viewport e a parte de baixo (ex.: a atribuição do Leaflet) fica cortada em silêncio, sem
+       rolagem nenhuma pra alcançar — medido: ~12-26px sempre invisíveis em 390×844 e 360×740. */
   }
   .foco-sair{position:absolute;top:18px;right:18px;}
   .foco-pos{position:absolute;top:20px;left:20px;font-size:12.5px;color:var(--gray);}
@@ -769,6 +816,15 @@
   body.tema-claro .nav a.active{background:rgba(246,248,250,0.08);}
   body.tema-claro .nav a.active .nav-desc{color:#C7D1DE;}
 
+  /* ---------- Modo Historia ativo: encolhe o painel/mapa destacados para sempre sobrar faixa livre
+     para o cartão do passo, mesmo quando a tela é baixa/estreita e o painel normalmente cresceria
+     para ocupar quase toda a altura (ex.: #central-detail-root em telas <900px de largura). Vem no
+     fim da folha de estilo de propósito: precisa vencer as regras de layout por ordem de origem
+     (mesma especificidade da regra móvel em @media max-width:900px). */
+  body.historia-ativo #screen-agora #map,
+  body.historia-ativo #screen-agora #central-detail-root{
+    max-height:42vh!important;height:min(320px, 42vh)!important;overflow-y:auto!important;
+  }
   @page{ size: A4 landscape; margin: 10mm; }
   @media print{
     .layout-switch, #layout-select, .tema-switch, #vrChat, a[href="simulador.html"],
@@ -3915,7 +3971,7 @@
     { k:'estacionamento', label:'tirar estacionamento de um lado' },
     { k:'inverter', label:'inverter sentido de uma via lateral' }
   ];
-  state.historia = { ativo:false, passo:1, ponto:null, tipo:null, layoutAntes:null, hashAntes:null, telaAntes:null };
+  state.historia = { ativo:false, passo:1, ponto:null, tipo:null, layoutAntes:null, hashAntes:null, telaAntes:null, spotEl:null };
 
   function historiaZonaCritica(){
     var zonas = computarZonas();
@@ -3962,10 +4018,74 @@
   function historiaSpot(el){
     var atual = document.querySelector('.historia-spot');
     if(atual && atual !== el) atual.classList.remove('historia-spot');
+    if(el) el.classList.add('historia-spot');
+    state.historia.spotEl = el || null;
+    // decide ANTES de rolar: se o cartão vai ficar como faixa (topo ou fundo), o destaque rola para
+    // o lado OPOSTO da faixa (block:'end' quando a faixa é no topo, 'start' quando é no fundo) —
+    // assim a faixa inteira sobra livre. Se vai para o lado (separado horizontalmente do destaque),
+    // a posição vertical não importa, então centraliza (block:'center') só por conforto de leitura.
+    var decisao = historiaDecidirPosicao(el);
     if(el){
-      el.classList.add('historia-spot');
-      try{ el.scrollIntoView({ block:'center', behavior:'auto' }); }catch(e){ /* scroll é conforto, não crítico */ }
+      var faixa = decisao.indexOf('historia-card-baixo-topo') !== -1 ? 'topo'
+        : (decisao.indexOf('historia-card-baixo') !== -1 ? 'fundo' : 'centro');
+      try{ historiaRolarComFolga(el, faixa); }catch(e){ /* scroll é conforto, não crítico */ }
     }
+    historiaAplicarPosicaoCard(decisao);
+  }
+  /* Rola a página deixando uma folga fixa e conhecida (reservada para o chrome/nav fixos do Modo
+     História, e para os widgets fixos de melhoria/chat) no lado onde a faixa do cartão vai ficar —
+     scrollIntoView({block:'start'|'end'}) alinha na BORDA do viewport, exatamente onde vivem esses
+     elementos fixos; aqui a borda é deslocada pela folga antes de rolar. */
+  function historiaRolarComFolga(el, ondeFicaAFaixa){
+    var vh = document.documentElement.clientHeight;
+    var folgaTopo = 64, folgaFundo = 100; // chrome/progresso no topo; nav+melhoria+chat no fundo
+    var r = el.getBoundingClientRect();
+    var alturaEl = r.height;
+    var alvoTopo;
+    if(ondeFicaAFaixa === 'fundo') alvoTopo = folgaTopo; // destaque sobe: fundo do viewport sobra livre
+    else if(ondeFicaAFaixa === 'topo') alvoTopo = Math.max(folgaTopo, vh - folgaFundo - alturaEl); // destaque desce, mas nunca sob o nav
+    else alvoTopo = Math.max(folgaTopo, (vh - alturaEl) / 2);
+    var delta = r.top - alvoTopo;
+    if(Math.abs(delta) < 1) return;
+    var atual = window.pageYOffset || document.documentElement.scrollTop || 0;
+    window.scrollTo({ top: Math.max(0, atual + delta), behavior:'auto' });
+  }
+  /* Nunca cobre o elemento destacado (historia-spot): tenta o lado OPOSTO a ele; se o destaque for
+     largo demais para caber um lado livre (ex.: o mapa quase full-width), cai para uma FAIXA — no
+     fundo por padrão, ou no TOPO quando é o fundo do viewport que o destaque ocupa (ex.: bloco
+     injetado perto do fim do painel, que não precisa de rolagem porque já cabe na tela). Em telas
+     baixas/estreitas (curto) sempre falha para faixa — decide só topo×fundo pela posição atual. */
+  function historiaDecidirPosicao(el){
+    var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    var curto = vh < 720 || vw < 760;
+    var margem = 24, largura = Math.min(400, vw - 240);
+    var rect = null;
+    try{ rect = el ? el.getBoundingClientRect() : null; }catch(e){ rect = null; }
+    if(!curto && rect && rect.width > 0){
+      var direitaLivreDesde = vw - margem - largura;
+      var esquerdaLivreAte = margem + largura;
+      var cabeDireita = rect.right <= direitaLivreDesde || rect.left >= vw - margem;
+      var cabeEsquerda = rect.left >= esquerdaLivreAte || rect.right <= margem;
+      if(cabeDireita) return 'historia-card-dir';
+      if(cabeEsquerda) return 'historia-card-esq';
+    }
+    if(rect && rect.width > 0 && rect.height > 0){
+      var faixaAltura = vh * 0.4;
+      var ocupaFundo = rect.bottom > vh - faixaAltura;
+      var ocupaTopo = rect.top < faixaAltura;
+      if(ocupaFundo && !ocupaTopo) return 'historia-card-baixo historia-card-baixo-topo';
+    }
+    return 'historia-card-baixo';
+  }
+  function historiaAplicarPosicaoCard(decisaoClasses){
+    var card = document.getElementById('historia-card');
+    if(!card) return;
+    card.classList.remove('historia-card-dir','historia-card-esq','historia-card-baixo','historia-card-baixo-topo');
+    decisaoClasses.split(' ').forEach(function(c){ if(c) card.classList.add(c); });
+  }
+  // usado só pelo listener de resize (não re-rola a página, só reposiciona o cartão)
+  function historiaPosicionarCard(el){
+    historiaAplicarPosicaoCard(historiaDecidirPosicao(el));
   }
   function historiaInjetar(containerSel, html){
     var wrap = document.querySelector(containerSel);
@@ -4172,6 +4292,7 @@
     var scrim = document.getElementById('historia-scrim');
     if(overlay) overlay.hidden = true;
     if(scrim) scrim.hidden = true;
+    document.body.classList.remove('historia-ativo');
     document.removeEventListener('keydown', historiaTeclado);
     if(state.historia.layoutAntes) aplicarLayout(state.historia.layoutAntes);
     location.hash = state.historia.hashAntes || 'controle';
@@ -4188,6 +4309,7 @@
     var scrim = document.getElementById('historia-scrim');
     if(overlay) overlay.hidden = false;
     if(scrim) scrim.hidden = false;
+    document.body.classList.add('historia-ativo');
     document.addEventListener('keydown', historiaTeclado);
     historiaRenderPasso();
   }
@@ -4200,6 +4322,12 @@
     if(next) next.addEventListener('click', historiaProximo);
     if(prev) prev.addEventListener('click', historiaVoltar);
     if(sair) sair.addEventListener('click', historiaSair);
+    var reposTimer = null;
+    window.addEventListener('resize', function(){
+      if(!state.historia.ativo) return;
+      clearTimeout(reposTimer);
+      reposTimer = setTimeout(function(){ historiaPosicionarCard(state.historia.spotEl); }, 120);
+    });
   }
   function talvezAbrirHistoriaPorUrl(){
     if((new URLSearchParams(location.search)).get('historia') === '1') historiaAbrir();
