@@ -54,11 +54,11 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offs
 
 /* ---------- conteúdo ---------- */
 .content{flex:1;min-width:0;padding:18px 22px 40px}
-header.topo{margin-bottom:16px}
-.topo h1{margin:0 0 4px;font-size:22px;font-weight:800;color:#0f2544}
-.topo .sub{margin:0;color:var(--muted);font-size:13px}
-.fila-fontes{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.fonte-badge{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text)}
+header.topo{margin-bottom:6px}
+.topo h1{margin:0 0 3px;font-size:20px;font-weight:800;color:#0f2544}
+.topo .sub{margin:0;color:var(--muted);font-size:12.5px}
+.fila-fontes{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fonte-badge{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--text)}
 .fonte-badge .dot{width:8px;height:8px;border-radius:50%}
 .fonte-badge.ativa .dot{background:var(--green)}
 .fonte-badge.inativa{color:#8a97ab;background:#eef1f6}
@@ -204,6 +204,37 @@ table.memoria tr:last-child td{border-bottom:0}
 
 .voltar-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--navy2);text-decoration:none;margin-bottom:10px}
 
+/* ---------- KPIs compactos (visão geral) ---------- */
+.kpis-compact{margin:4px 0}
+.kpis-compact .kpi{padding:6px 10px 5px}
+.kpis-compact .kpi-ico{width:28px;height:28px}
+.kpis-compact .kpi-num{font-size:17px}
+.kpis-compact .kpi-titulo{margin:0}
+
+/* ---------- parede de câmeras embutida ---------- */
+.grade-cameras{display:grid;grid-template-columns:3fr 2fr;gap:12px;align-items:start}
+.painel-cameras{padding:8px}
+.painel-cameras .painel-head{margin-bottom:2px}
+.painel-cameras h2{font-size:13px}
+.painel-cameras .h-sub{margin:0 0 2px}
+.cam-controles{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grade-seletor{display:flex;gap:4px;background:#eef2f8;border-radius:10px;padding:3px}
+.grade-seletor button{border:0;background:transparent;border-radius:8px;min-width:44px;min-height:44px;font-weight:800;font-size:14px;cursor:pointer;color:var(--muted)}
+.grade-seletor button.ativo{background:var(--navy2);color:#fff}
+.cameras-wrap{margin-top:4px;border-radius:10px;overflow:hidden;background:#050d16;height:158px}
+.cameras-wrap iframe{width:100%;height:100%;border:0;display:block}
+.agora-linha{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.agora-linha:last-child{border-bottom:0}
+.agora-linha b{font-weight:700;color:#0f2544;text-align:right}
+.overlay-cameras{position:fixed;inset:0;background:#050d16;z-index:250;display:flex;flex-direction:column}
+.cameras-expandido-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;background:#0b1b2b;flex:none}
+.cameras-expandido-head .grade-seletor{background:#12273b}
+.cameras-expandido-head .grade-seletor button{color:#9db3d6}
+.cameras-expandido-head .grade-seletor button.ativo{background:#e2a129;color:#111}
+.cameras-expandido-head .btn{min-height:44px}
+#iframe-parede-overlay{flex:1;border:0;width:100%}
+@media (max-width:1180px){.grade-cameras{grid-template-columns:1fr}}
+
 /* ---------- responsivo ---------- */
 @media (max-width:1180px){
   .kpis{grid-template-columns:repeat(2,1fr)}
@@ -288,9 +319,46 @@ table.memoria tr:last-child td{border-bottom:0}
 
     <!-- ===================== VISÃO GERAL ===================== -->
     <section id="view-geral">
-      <div class="kpis" id="kpis-geral"></div>
+      <div class="kpis kpis-compact" id="kpis-geral"></div>
 
-      <div class="grade">
+      <div class="grade-cameras">
+        <div class="painel painel-cameras">
+          <div class="painel-head">
+            <div>
+              <h2>Câmeras</h2>
+              <p class="h-sub"><span id="cam-atualizado">atualizado há 0 s</span><span class="selo sintetico" style="margin-left:6px">DADO SINTÉTICO — telas de demonstração</span></p>
+            </div>
+            <div class="cam-controles">
+              <div class="grade-seletor" id="grade-seletor" role="group" aria-label="Quantidade de câmeras">
+                <button type="button" data-grade="2">2</button>
+                <button type="button" data-grade="4">4</button>
+                <button type="button" data-grade="6">6</button>
+                <button type="button" data-grade="8">8</button>
+                <button type="button" data-grade="32">32</button>
+              </div>
+              <button type="button" class="btn secundario" id="btn-expandir-cameras">Expandir</button>
+            </div>
+          </div>
+          <div class="cameras-wrap">
+            <iframe id="iframe-parede" title="Parede de câmeras" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <div class="coluna-direita">
+          <div class="painel">
+            <h2>Agora</h2>
+            <p class="h-sub">3 números que resumem o momento</p>
+            <div id="agora-card"></div>
+          </div>
+          <div class="painel">
+            <h2>Linha do tempo e alertas</h2>
+            <p class="h-sub">Últimos eventos</p>
+            <div id="lista-alertas"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grade" style="margin-top:12px">
         <div class="painel">
           <div class="painel-head">
             <div>
@@ -310,12 +378,6 @@ table.memoria tr:last-child td{border-bottom:0}
         </div>
 
         <div class="coluna-direita">
-          <div class="painel">
-            <h2>Linha do tempo e alertas</h2>
-            <p class="h-sub">Últimos eventos</p>
-            <div id="lista-alertas"></div>
-          </div>
-
           <div class="acao-card">
             <div class="rot">Ação recomendada</div>
             <h3 id="acao-titulo">Simular ajuste no Ponto 7</h3>
@@ -531,10 +593,12 @@ function aplicarAPISePossivel(){
   estadoAPI.cameras.forEach(function(cam, i){
     var idAlvo = (i % 12) + 1;
     var d = dadosPonto(idAlvo);
-    if (cam.veiculos_na_hora_atual != null && cam.veiculos_na_hora_atual > 0){
-      d.fluxoAtual = cam.veiculos_na_hora_atual;
+    var ul = cam.ultima_leitura;
+    if (ul && ul.janela_s > 0){
+      /* taxa da última leitura: a soma da hora conta janelas sobrepostas do gerador de demonstração */
+      d.fluxoAtual = Math.round(((ul.automovel||0)+(ul.moto||0)+(ul.onibus||0)+(ul.caminhao||0)) * 3600 / ul.janela_s / 4);
       d.origem = (cam.ultima_leitura && cam.ultima_leitura.origem) ? cam.ultima_leitura.origem : "sintetico";
-      if (cam.media_mesma_hora_dias_anteriores){
+      if (false && cam.media_mesma_hora_dias_anteriores){
         d.padrao = Math.round(cam.media_mesma_hora_dias_anteriores);
         d.variacaoPct = d.padrao>0 ? Math.round((d.fluxoAtual-d.padrao)/d.padrao*100) : 0;
       }
@@ -724,12 +788,103 @@ function montarAlertas(){
   });
 }
 
+/* =================== câmeras embutidas (parede) =================== */
+function estaticoAtivo(){ return location.protocol === "file:" || /github\.io$/.test(location.hostname); }
+function baseParede(){ return estaticoAtivo() ? "parede.html" : "/parede"; }
+var GRADES_VALIDAS = [2,4,6,8,32];
+function lerGradeSalva(){
+  try{
+    var v = Number(localStorage.getItem("vr_grade_cameras"));
+    return GRADES_VALIDAS.indexOf(v) >= 0 ? v : 4;
+  }catch(e){ return 4; }
+}
+function salvarGradeCameras(v){ try{ localStorage.setItem("vr_grade_cameras", String(v)); }catch(e){ /* localStorage indisponível */ } }
+var gradeAtualCameras = lerGradeSalva();
+function srcParede(grade){ return baseParede() + "?embutido=1&grade=" + grade; }
+function aplicarGrade(v){
+  gradeAtualCameras = v;
+  salvarGradeCameras(v);
+  var ifr = document.getElementById("iframe-parede");
+  if (ifr) ifr.src = srcParede(v);
+  var ifrOv = document.getElementById("iframe-parede-overlay");
+  if (ifrOv) ifrOv.src = srcParede(v);
+  Array.prototype.forEach.call(document.querySelectorAll(".grade-seletor button"), function(b){
+    b.classList.toggle("ativo", Number(b.getAttribute("data-grade")) === v);
+  });
+}
+function abrirCamerasExpandido(){
+  var ov = el("div","overlay-cameras");
+  ov.innerHTML =
+    '<div class="cameras-expandido-head">' +
+      '<div class="grade-seletor" id="grade-seletor-overlay" role="group" aria-label="Quantidade de câmeras">' +
+        GRADES_VALIDAS.map(function(n){ return '<button type="button" data-grade="'+n+'" class="'+(n===gradeAtualCameras?"ativo":"")+'">'+n+'</button>'; }).join("") +
+      '</div>' +
+      '<button type="button" class="btn secundario" id="btn-fechar-cameras">Fechar ✕</button>' +
+    '</div>' +
+    '<iframe id="iframe-parede-overlay" title="Parede de câmeras — expandida" src="'+srcParede(gradeAtualCameras)+'"></iframe>';
+  document.getElementById("camada-flutuante").appendChild(ov);
+  ov.querySelector("#grade-seletor-overlay").addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest("button") : null;
+    if (!b) return;
+    aplicarGrade(Number(b.getAttribute("data-grade")));
+  });
+  document.getElementById("btn-fechar-cameras").addEventListener("click", fecharCamerasExpandido);
+  if (ov.requestFullscreen){ try{ var p = ov.requestFullscreen(); if (p && p.catch) p.catch(function(){}); }catch(e){} }
+}
+function fecharCamerasExpandido(){
+  if (document.fullscreenElement && document.exitFullscreen){ try{ var p = document.exitFullscreen(); if (p && p.catch) p.catch(function(){}); }catch(e){} }
+  var ov = document.querySelector(".overlay-cameras");
+  if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+}
+document.addEventListener("keydown", function(ev){
+  if (ev.key === "Escape") fecharCamerasExpandido();
+});
+window.addEventListener("message", function(ev){
+  var d = ev.data;
+  if (!d || d.tipo !== "vr-ponto") return;
+  if (!Number.isInteger(d.ponto) || d.ponto < 1 || d.ponto > 32) return;
+  var ifr1 = document.getElementById("iframe-parede");
+  var ifr2 = document.getElementById("iframe-parede-overlay");
+  var origemValida = (ifr1 && ev.source === ifr1.contentWindow) || (ifr2 && ev.source === ifr2.contentWindow);
+  if (!origemValida) return;
+  location.hash = "#ponto-" + d.ponto;
+});
+function inicializarCameras(){
+  var sel = document.getElementById("grade-seletor");
+  if (sel){
+    sel.addEventListener("click", function(ev){
+      var b = ev.target.closest ? ev.target.closest("button") : null;
+      if (!b) return;
+      aplicarGrade(Number(b.getAttribute("data-grade")));
+    });
+  }
+  var btnExp = document.getElementById("btn-expandir-cameras");
+  if (btnExp) btnExp.addEventListener("click", abrirCamerasExpandido);
+  aplicarGrade(gradeAtualCameras);
+}
+
+/* =================== cartão "Agora" =================== */
+function montarAgora(){
+  var wrap = document.getElementById("agora-card");
+  if (!wrap) return;
+  var todos = PONTOS.map(function(p){ return dadosPonto(p.id); });
+  var maisCarregado = todos.slice().sort(function(a,b){ return b.fluxoAtual - a.fluxoAtual; })[0];
+  var maiorFila = todos.slice().sort(function(a,b){ return b.filaAtual - a.filaAtual; })[0];
+  var ultima = todasIntervencoes()[0];
+  var seloS = seloHTML({texto:"DADO SINTÉTICO",classe:"sintetico"});
+  wrap.innerHTML =
+    '<div class="agora-linha"><span>Ponto mais carregado</span><b>Ponto '+maisCarregado.id+' — '+maisCarregado.fluxoAtual+' veíc./h'+seloS+'</b></div>' +
+    '<div class="agora-linha"><span>Maior fila</span><b>Ponto '+maiorFila.id+' — '+maiorFila.filaAtual+' veículos'+seloS+'</b></div>' +
+    '<div class="agora-linha"><span>Última intervenção</span><b>'+(ultima ? (ultima.local+' — '+rotuloResultado(ultima)) : "—")+seloS+'</b></div>';
+}
+
 /* =================== render: visão geral =================== */
 function renderGeral(){
   montarFilaFontes();
   montarKPIsGeral();
   desenharMapa();
   montarAlertas();
+  montarAgora();
   montarGraficosGeral();
   var criticoPrincipal = PONTOS.filter(function(p){ return p.status === "vermelho"; })[0] || PONTOS[6];
   var d = dadosPonto(criticoPrincipal.id);
@@ -741,8 +896,9 @@ function renderGeral(){
 var intervaloRelogio = null;
 function atualizarRelogioGeral(){
   var elx = document.getElementById("geral-atualizado");
-  if (!elx) return;
-  elx.textContent = "atualizado há " + segundosDesde(T0) + " s";
+  if (elx) elx.textContent = "atualizado há " + segundosDesde(T0) + " s";
+  var elc = document.getElementById("cam-atualizado");
+  if (elc) elc.textContent = "atualizado há " + segundosDesde(T0) + " s";
 }
 
 /* =================== detalhe do ponto =================== */
@@ -1236,6 +1392,7 @@ setInterval(function(){
 }, 1000);
 
 /* =================== inicialização =================== */
+inicializarCameras();
 buscarEstadoAPI().then(function(dados){
   estadoAPI = dados;
   aplicarAPISePossivel();
@@ -1247,5 +1404,6 @@ buscarEstadoAPI().then(function(dados){
 
 <script src="melhorias.js"></script>
 <script src="tour.js"></script>
+<script src="seletor-visual.js"></script>
 </body>
 </html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entrar — Visão de Rota</title>
+<style>
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --navy:#0b2545; --navy2:#12335e; --navy3:#173e73;
+  --text:#1b2433; --muted:#5c6b82; --border:#e2e8f2; --border2:#ccd6e6;
+  --focus:#2563eb;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.faixa-demo{position:fixed;top:0;left:0;right:0;background:#12335e;color:#dbe7fb;font-size:12.5px;text-align:center;padding:6px 14px;letter-spacing:.01em}
+.faixa-demo b{color:#ffd27a}
+
+.voltar{position:fixed;top:44px;left:18px;font-size:13px;font-weight:700;color:var(--navy2);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.voltar:hover{color:var(--navy3)}
+
+.cartao{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:min(420px,92vw);box-shadow:0 12px 34px rgba(15,37,68,.08);margin-top:36px}
+.marca{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.marca-icone{width:38px;height:38px;flex:none;border-radius:10px;background:var(--navy2);display:flex;align-items:center;justify-content:center}
+.marca-nome{font-size:15px;font-weight:700;color:#0f2544;line-height:1.2}
+.marca-sub{font-size:12px;color:var(--muted)}
+
+h1{margin:0 0 6px;font-size:21px;font-weight:800;color:#0f2544}
+.sub{margin:0 0 22px;font-size:13px;color:var(--muted)}
+
+.campo{margin-bottom:14px}
+.campo label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.campo input{width:100%;border:1.5px solid var(--border2);border-radius:9px;padding:12px 13px;font:inherit;font-size:14px;background:#f3f6fb;color:#5c6b82;cursor:not-allowed}
+
+.btn-entrar{width:100%;border:0;border-radius:12px;background:var(--navy2);color:#fff;font-size:17px;font-weight:800;padding:16px;min-height:56px;cursor:pointer;margin-top:6px;transition:background .15s}
+.btn-entrar:hover{background:var(--navy3)}
+.btn-entrar:active{background:var(--navy)}
+
+.aviso-acesso{margin-top:16px;font-size:12.5px;color:var(--muted);line-height:1.5;background:#eef2f8;border-radius:10px;padding:10px 12px}
+
+.rodape{margin-top:22px;text-align:center}
+.rodape a{font-size:13px;font-weight:700;color:var(--navy2);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.rodape a:hover{color:var(--navy3)}
+
+@media (max-width:480px){
+  .voltar{position:static;margin-bottom:14px;align-self:flex-start}
+  .cartao{margin-top:0}
+  body{padding:44px 16px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="faixa-demo">Demonstração — os números desta tela são gerados para mostrar o funcionamento; <b>nenhuma câmera real alimenta este painel.</b></div>
+
+<a href="#" class="voltar" id="link-voltar">← voltar à apresentação</a>
+
+<div class="cartao">
+  <div class="marca">
+    <div class="marca-icone" aria-hidden="true">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M4 8l4-3h8l4 3v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="#dbe7fb" stroke-width="1.6"/><circle cx="12" cy="12.5" r="3" stroke="#dbe7fb" stroke-width="1.6"/></svg>
+    </div>
+    <div>
+      <div class="marca-nome">Visão de Rota</div>
+      <div class="marca-sub">Patos de Minas</div>
+    </div>
+  </div>
+
+  <h1>Entrar como gestor</h1>
+  <p class="sub">Demonstração — acesso já aberto, sem senha.</p>
+
+  <form id="form-entrar">
+    <div class="campo">
+      <label for="perfil">Perfil</label>
+      <input id="perfil" type="text" value="Gestor de mobilidade — demonstração" disabled>
+    </div>
+    <button type="submit" class="btn-entrar" id="btn-entrar">Entrar</button>
+  </form>
+
+  <div class="aviso-acesso">Acesso aberto para a demonstração. Na cidade, a entrada seria pelo login que a prefeitura já usa.</div>
+</div>
+
+<div class="rodape"></div>
+
+<script>
+(function(){
+"use strict";
+function estaticoAtivo(){ return location.protocol === "file:" || /github\.io$/.test(location.hostname); }
+function destinoPainel(){ return estaticoAtivo() ? "painel.html" : "/claro"; }
+function destinoApresentacao(){ return estaticoAtivo() ? "https://enioxt.github.io/hackathon-dados-publicos/" : "https://enioxt.github.io/hackathon-dados-publicos/"; }
+
+var btn = document.getElementById("btn-entrar");
+var linkVoltar = document.getElementById("link-voltar");
+linkVoltar.href = destinoApresentacao();
+
+function entrar(){ location.href = destinoPainel(); }
+
+document.getElementById("form-entrar").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  entrar();
+});
+})();
+</script>
+
+</body>
+</html>

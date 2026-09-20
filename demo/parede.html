@@ -14,6 +14,12 @@ header b{font-size:16px;letter-spacing:.04em}header a{color:var(--a);text-decora
 .evbtn:hover{border-color:var(--r)}
 #layout{flex:1;display:flex;min-height:0}
 #grade{flex:1;display:grid;gap:4px;padding:4px;min-height:0}
+body.embutido{background:#050d16;overflow:hidden}
+body.embutido header,body.embutido .evrow,body.embutido aside#painel,body.embutido footer{display:none}
+body.embutido #layout{height:100vh}
+body.embutido #grade{gap:2px;padding:2px}
+.tela .video-clipe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000}
+.tela .selo-video{position:absolute;left:8px;top:6px;background:var(--a);color:#111;font:700 10px ui-monospace,monospace;padding:2px 6px;border-radius:4px;z-index:2;pointer-events:none;max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tela{position:relative;background:#0a141f;border:1px solid #1b2c3d;overflow:hidden;cursor:pointer;min-height:0}
 .tela:hover{border-color:var(--a)}.tela.alerta{border-color:var(--r);box-shadow:inset 0 0 0 2px var(--r)}
 .tela.evento-ativo{border-color:var(--corEvt,var(--r));animation:pulsaBordaEvento 1.1s ease-in-out infinite}
@@ -239,9 +245,17 @@ const CLIMAS=['dia','dia','dia','noite','chuva']; // determinístico por índice
 function criar(k){
   const r=rng(1000+k*97),el=document.createElement('div');el.className='tela';
   el.innerHTML='<canvas></canvas><div class=hud>CAM '+pad(k)+'<small>'+NOMES[(k-1)%NOMES.length]+' · DADO SINTÉTICO</small></div><div class=cont></div><div class=rod><span class=rec>● lendo</span><span class=fl></span><span>sem rosto · sem placa</span></div>';
-  el.onclick=()=>abrirModal(k);
+  el.onclick=()=>{
+    if(typeof EMBUTIDO!=='undefined' && EMBUTIDO){
+      try{ window.parent.postMessage({tipo:'vr-ponto',ponto:k},'*'); }catch(e){}
+      return;
+    }
+    abrirModal(k);
+  };
   const cv=el.querySelector('canvas'),cx=cv.getContext('2d');
-  const o={k,el,cv,cx,r,v:[],cont:{},fila:0,filaHist:[],densidade:.35+r()*.9,tick:0,seq:0,grupos:{},eventosAtivos:[],semaforoApagado:false,prioridadeEixo:null,
+  var densidadeBase=.35+r()*.9;
+  if(typeof EMBUTIDO!=='undefined' && EMBUTIDO && typeof N!=='undefined' && N>=32) densidadeBase*=0.4;
+  const o={k,el,cv,cx,r,v:[],cont:{},fila:0,filaHist:[],densidade:densidadeBase,tick:0,seq:0,grupos:{},eventosAtivos:[],semaforoApagado:false,prioridadeEixo:null,
     clima:CLIMAS[k%CLIMAS.length],flashes:[],mouseX:null,mouseY:null,vinheta:null};
   cv.addEventListener('mousemove',e=>{const b=cv.getBoundingClientRect();o.mouseX=e.clientX-b.left;o.mouseY=e.clientY-b.top});
   cv.addEventListener('mouseleave',()=>{o.mouseX=null;o.mouseY=null});
@@ -515,14 +529,16 @@ function desenhar2D(o){
   }
 }
 
-function montar(n){
+function montar(n,forcarColRow){
   N=n;const g=document.getElementById('grade');g.innerHTML='';telas=[];
-  const col=n<=2?n:n<=4?2:n<=6?3:n<=8?4:n<=12?4:Math.ceil(Math.sqrt(n));
-  g.style.gridTemplateColumns='repeat('+col+',1fr)';g.style.gridTemplateRows='repeat('+Math.ceil(n/col)+',1fr)';
+  var col,linhas;
+  if(forcarColRow){ col=forcarColRow.col; linhas=forcarColRow.row; }
+  else { col=n<=2?n:n<=4?2:n<=6?3:n<=8?4:n<=12?4:Math.ceil(Math.sqrt(n)); linhas=Math.ceil(n/col); }
+  g.style.gridTemplateColumns='repeat('+col+',1fr)';g.style.gridTemplateRows='repeat('+linhas+',1fr)';
   for(let k=1;k<=n;k++){const o=criar(k);g.append(o.el);telas.push(o)}
   document.querySelectorAll('#botoes button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n));
   ajustar();
-  history.replaceState(null,'','?n='+n);
+  if(!(typeof EMBUTIDO!=='undefined' && EMBUTIDO)) history.replaceState(null,'','?n='+n);
 }
 function avancarSimulado(segundos){
   const passos=Math.round(segundos/0.05);
@@ -1043,9 +1059,34 @@ window.onerror=function(msg,src,line,col,err){
   document.body.appendChild(d);
 };
 const params=new URLSearchParams(location.search);
-montar(N%2?N+1:N);
+var EMBUTIDO = params.get('embutido')==='1';
+if(EMBUTIDO) document.body.classList.add('embutido');
+var GRADE_MAP={2:{n:2,col:2,row:1},4:{n:4,col:2,row:2},6:{n:6,col:3,row:2},8:{n:8,col:4,row:2},32:{n:32,col:8,row:4}};
+var gradeParam=+(params.get('grade')||0);
+if(GRADE_MAP[gradeParam]){ var gm=GRADE_MAP[gradeParam]; montar(gm.n,{col:gm.col,row:gm.row}); }
+else { montar(N%2?N+1:N); }
 avancarSimulado(13);
 requestAnimationFrame(laco);
+function carregarClipesSeExistir(){
+  fetch('camadas/clipes.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(lista){
+      if(!Array.isArray(lista) || !lista.length) return;
+      lista.slice(0,telas.length).forEach(function(item,i){
+        var o=telas[i]; if(!o || !item || !item.clipe) return;
+        var v=document.createElement('video');
+        v.className='video-clipe'; v.src=item.clipe; v.muted=true; v.loop=true; v.autoplay=true; v.playsInline=true;
+        var hudEl=o.el.querySelector('.hud');
+        o.el.insertBefore(v, hudEl);
+        var selo=document.createElement('div');
+        selo.className='selo-video';
+        selo.textContent='VÍDEO PÚBLICO — '+(item.publicador||'fonte pública');
+        o.el.appendChild(selo);
+        o.el.classList.add('tem-video');
+      });
+    })
+    .catch(function(){ console.info('parede: camadas/clipes.json ausente — telas seguem sintéticas'); });
+}
+if(EMBUTIDO) carregarClipesSeExistir();
 
 if(params.get('abrir')){
   abrirModal(+params.get('abrir'));
@@ -1093,6 +1134,5 @@ if(params.get('teste')==='1'){
     document.body.appendChild(d2);
   }
 }
-</script><script src="melhorias.js"></script>
-<script src="tour.js"></script>
+</script><script>if(new URLSearchParams(location.search).get("embutido")!=="1"){["melhorias.js","tour.js"].forEach(function(n){var e=document.createElement("script");e.src=n;document.body.appendChild(e)})}</script>
 </body></html>
