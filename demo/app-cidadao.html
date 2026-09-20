@@ -505,23 +505,97 @@
     .risco-linha { grid-template-columns: 1fr; }
     .risco-linha .marcador { display: none; }
   }
+
+  /* ---------- protótipo clicável (medido 19/09 — nada reagia ao clique) ---------- */
+
+  /* alvo de toque >=44px + indicação visual de que dá pra clicar */
+  .moldura-clicavel,
+  [data-ir],
+  [data-voltar],
+  .tab-item,
+  .escala-item,
+  .pill-toque,
+  .chip-nav {
+    cursor: pointer;
+  }
+  [data-ir]:hover, [data-voltar]:hover, .tab-item:hover, .pill-toque:hover, .chip-nav:hover {
+    opacity: 0.82;
+  }
+  .moldura-clicavel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.55), inset 0 0 0 2px #1c3049;
+  }
+  .moldura-clicavel:focus-visible,
+  [data-ir]:focus-visible,
+  [data-voltar]:focus-visible,
+  .tab-item:focus-visible,
+  .escala-item:focus-visible,
+  .pill-toque:focus-visible,
+  .chip-nav:focus-visible,
+  .barra-navegacao-flutuante button:focus-visible {
+    outline: 3px solid var(--ambar);
+    outline-offset: 2px;
+  }
+
+  .tab-item { min-height: 44px; min-width: 44px; justify-content: center; }
+  .btn-ambar, .btn-fantasma { min-height: 44px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+  [data-voltar] { display: inline-block; min-height: 44px; padding: 8px 4px; }
+  .pill.pill-toque {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 10px; min-height: 44px; box-sizing: border-box;
+  }
+  .chip-nav {
+    display: inline-flex; align-items: center; gap: 4px;
+    border: 1px solid var(--app-linha); border-radius: 12px;
+    padding: 10px 12px; min-height: 44px; box-sizing: border-box;
+    font-size: 11px; font-weight: 700; color: var(--app-texto);
+  }
+  .pill-toque.escolhido { outline: 3px solid var(--app-texto); outline-offset: 1px; }
+
+  /* barra fixa: garante <=2 toques entre quaisquer duas telas, mesmo sem
+     nenhum link de conteúdo entre elas (reservada: canto inferior esquerdo é
+     do botão "Pedir melhoria" do melhorias.js — por isso fica no topo). */
+  .barra-navegacao-flutuante {
+    position: fixed; top: 10px; right: 10px; z-index: 500;
+    display: flex; gap: 8px; flex-wrap: wrap; max-width: 220px;
+  }
+  .barra-navegacao-flutuante button {
+    min-height: 44px; padding: 8px 12px;
+    border-radius: 999px; border: 1px solid var(--ambar);
+    background: rgba(11,27,43,0.92); color: var(--texto);
+    font-size: 12px; font-weight: 800; cursor: pointer;
+  }
+  .barra-navegacao-flutuante button[aria-pressed="true"] {
+    background: var(--ambar); color: #2B1A02;
+  }
+
+  /* modo foco: mostra só a tela ativa, em vez da prancha inteira */
+  body.modo-foco .prancha { display: flex; justify-content: center; }
+  body.modo-foco .tela-slot { display: none; }
+  body.modo-foco .tela-slot.tela-ativa { display: flex; }
+  body.modo-foco .moldura { width: 340px; height: 700px; }
 </style>
 </head>
 <body>
+
+<div class="barra-navegacao-flutuante" aria-label="Navegação do protótipo">
+  <button type="button" id="btn-nav-inicio" aria-pressed="false">🏠 Início</button>
+  <button type="button" id="btn-nav-indice" aria-pressed="true">▦ Índice</button>
+</div>
 
 <div class="page-header">
   <span class="tag-maquete">Maquete — dado sintético</span>
   <div class="page-title">App do Cidadão — telas propostas</div>
   <div class="page-sub">Projeto Visão de Rota. Conjunto de telas para viver dentro do aplicativo oficial que a cidade já tem — não é um aplicativo novo.</div>
   <div class="disclaimer-line">
-    Telas propostas para dentro do aplicativo que a cidade já tem. Nenhum número aqui é medição; é exemplo de como a informação apareceria.
+    Telas propostas para dentro do aplicativo que a cidade já tem. Nenhum número aqui é medição; é exemplo de como a informação apareceria. Toque em qualquer tela abaixo para abri-la; "▦ Índice" sempre volta pra esta visão geral.
   </div>
 </div>
 
 <div class="prancha">
 
   <!-- TELA 1 — INÍCIO -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="1">
     <div class="tela-numero">01 · Início</div>
     <div class="moldura">
       <div class="tela">
@@ -534,20 +608,20 @@
           <p class="app-topo">Bom dia, cidadão <span class="etiqueta-mini">maquete</span></p>
           <h1 class="app-titulo">Sua cidade, agora</h1>
           <div class="atalho-linha">
-            <div class="atalho-grande">
+            <div class="atalho-grande" data-ir="2">
               <div class="titulo">🚦 Como está agora</div>
               <div class="sub">veja o trânsito e as filas perto de você</div>
             </div>
-            <div class="atalho-grande" style="background:linear-gradient(135deg,#1a3a2c,#0B1B2B);">
+            <div class="atalho-grande" data-ir="3" style="background:linear-gradient(135deg,#1a3a2c,#0B1B2B);">
               <div class="titulo">📍 Registrar um ponto</div>
               <div class="sub">leva 5 segundos, ajuda a cidade toda</div>
             </div>
-            <div class="atalho-grande" style="background:linear-gradient(135deg,#3a2a10,#0B1B2B);">
+            <div class="atalho-grande" data-ir="5" style="background:linear-gradient(135deg,#3a2a10,#0B1B2B);">
               <div class="titulo">🎯 Missão da semana</div>
               <div class="sub">2 de 3 registros — quase lá</div>
             </div>
           </div>
-          <div class="cartao">
+          <div class="cartao" data-ir="9">
             <div class="linha-mini">
               <span>📣 Campanha ativa</span>
               <span class="pill amarelo">Semana da travessia segura</span>
@@ -566,7 +640,7 @@
   </div>
 
   <!-- TELA 2 — COMO ESTÁ AGORA -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="2">
     <div class="tela-numero">02 · Como está agora</div>
     <div class="moldura">
       <div class="tela">
@@ -576,7 +650,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar</p>
+          <p class="app-topo" data-voltar>← Voltar</p>
           <h1 class="app-titulo">Como está agora</h1>
           <div class="mapa-fake">
             <svg viewBox="0 0 300 130" preserveAspectRatio="none">
@@ -595,6 +669,11 @@
             <div class="linha-mini"><span>Terminal Rodoviário</span><span class="pill amarelo">+6 min</span></div>
             <div class="linha-mini"><span>Praça do Mercado</span><span class="pill amarelo">+5 min</span></div>
           </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="chip-nav" data-ir="6">🅿️ Vagas perto</span>
+            <span class="chip-nav" data-ir="7">🚌 Linha 204</span>
+            <span class="chip-nav" data-ir="8">📐 Antes e depois</span>
+          </div>
           <p class="app-legenda">Demonstração simulada · a fonte e a política de privacidade do piloto serão definidas com a cidade.</p>
         </div>
         <div class="tab-bar">
@@ -609,7 +688,7 @@
   </div>
 
   <!-- TELA 3 — REGISTRAR -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="3">
     <div class="tela-numero">03 · Registrar onde perdi tempo</div>
     <div class="moldura">
       <div class="tela">
@@ -619,7 +698,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar</p>
+          <p class="app-topo" data-voltar>← Voltar</p>
           <h1 class="app-titulo">Onde você perdeu tempo?</h1>
           <p class="app-legenda">Leva 5 segundos, não precisa escrever nada</p>
           <div class="escala-5">
@@ -636,14 +715,14 @@
           <div class="cartao">
             <p class="app-legenda" style="font-weight:700;color:var(--app-texto);margin-bottom:6px;">Categoria</p>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              <span class="pill cinza">Fila de ônibus</span>
-              <span class="pill amarelo">Trânsito parado</span>
-              <span class="pill cinza">Travessia difícil</span>
-              <span class="pill cinza">Calçada ruim</span>
-              <span class="pill cinza">Falta de vaga</span>
+              <span class="pill cinza pill-toque" data-grupo="categoria">Fila de ônibus</span>
+              <span class="pill amarelo pill-toque" data-grupo="categoria">Trânsito parado</span>
+              <span class="pill cinza pill-toque" data-grupo="categoria">Travessia difícil</span>
+              <span class="pill cinza pill-toque" data-grupo="categoria">Calçada ruim</span>
+              <span class="pill cinza pill-toque" data-grupo="categoria">Falta de vaga</span>
             </div>
           </div>
-          <div class="btn-ambar">Enviar</div>
+          <div class="btn-ambar" data-ir="4">Enviar</div>
         </div>
         <div class="tab-bar">
           <div class="tab-item"><div class="tab-icone"></div>Início</div>
@@ -657,7 +736,7 @@
   </div>
 
   <!-- TELA 4 — OBRIGADO -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="4">
     <div class="tela-numero">04 · Obrigado</div>
     <div class="moldura">
       <div class="tela">
@@ -686,7 +765,7 @@
               <p class="app-legenda" style="margin:0;">Quem decide prioriza o que mais gente sentiu</p>
             </div>
           </div>
-          <div class="btn-fantasma" style="width:100%;">Ver missão da semana</div>
+          <div class="btn-fantasma" data-ir="5" style="width:100%;">Ver missão da semana</div>
         </div>
         <div class="tab-bar">
           <div class="tab-item"><div class="tab-icone"></div>Início</div>
@@ -700,7 +779,7 @@
   </div>
 
   <!-- TELA 5 — MISSÃO DA SEMANA -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="5">
     <div class="tela-numero">05 · Missão da semana</div>
     <div class="moldura">
       <div class="tela">
@@ -710,7 +789,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <p class="app-topo" data-voltar>← Voltar <span class="etiqueta-mini">maquete</span></p>
           <h1 class="app-titulo">Missão da semana</h1>
           <div class="cartao">
             <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">Registre 3 pontos onde você perdeu tempo esta semana</p>
@@ -738,7 +817,7 @@
   </div>
 
   <!-- TELA 6 — VAGAS -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="6">
     <div class="tela-numero">06 · Vagas perto de você</div>
     <div class="moldura">
       <div class="tela">
@@ -748,7 +827,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <p class="app-topo" data-voltar>← Voltar <span class="etiqueta-mini">maquete</span></p>
           <h1 class="app-titulo">Vagas perto de você</h1>
           <div class="cartao">
             <div class="linha-mini"><span>🅿️ Estacionamento Central</span><span class="pill verde">14 livres</span></div>
@@ -777,7 +856,7 @@
   </div>
 
   <!-- TELA 7 — LINHA DE ÔNIBUS -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="7">
     <div class="tela-numero">07 · Linha do ônibus</div>
     <div class="moldura">
       <div class="tela">
@@ -787,7 +866,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <p class="app-topo" data-voltar>← Voltar <span class="etiqueta-mini">maquete</span></p>
           <h1 class="app-titulo">Linha 204 — Centro</h1>
           <div class="cartao">
             <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">Pontualidade na última semana</p>
@@ -822,7 +901,7 @@
   </div>
 
   <!-- TELA 8 — A RUA MUDOU -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="8">
     <div class="tela-numero">08 · A rua mudou</div>
     <div class="moldura">
       <div class="tela">
@@ -832,7 +911,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar <span class="etiqueta-mini">maquete</span></p>
+          <p class="app-topo" data-voltar>← Voltar <span class="etiqueta-mini">maquete</span></p>
           <h1 class="app-titulo">A rua perto de você mudou</h1>
           <div class="cartao">
             <p class="app-legenda" style="color:var(--app-texto);font-weight:700;">Travessia — Rua Coronel Cypriano</p>
@@ -851,9 +930,9 @@
           <div class="cartao">
             <p class="app-legenda" style="color:var(--app-texto);font-weight:700;margin-bottom:8px;">O que você achou?</p>
             <div style="display:flex;gap:8px;">
-              <span class="pill verde" style="flex:1;text-align:center;padding:8px;">Melhorou</span>
-              <span class="pill cinza" style="flex:1;text-align:center;padding:8px;">Igual</span>
-              <span class="pill vermelho" style="flex:1;text-align:center;padding:8px;">Piorou</span>
+              <span class="pill verde pill-toque" data-grupo="avaliacao" style="flex:1;text-align:center;">Melhorou</span>
+              <span class="pill cinza pill-toque" data-grupo="avaliacao" style="flex:1;text-align:center;">Igual</span>
+              <span class="pill vermelho pill-toque" data-grupo="avaliacao" style="flex:1;text-align:center;">Piorou</span>
             </div>
           </div>
         </div>
@@ -869,7 +948,7 @@
   </div>
 
   <!-- TELA 9 — CAMPANHA -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="9">
     <div class="tela-numero">09 · Campanha</div>
     <div class="moldura">
       <div class="tela">
@@ -879,7 +958,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar</p>
+          <p class="app-topo" data-voltar>← Voltar</p>
           <div class="atalho-grande" style="background:linear-gradient(135deg,#3a2a10,#0B1B2B);">
             <div class="titulo" style="font-size:16px;">🚶 Semana da travessia segura</div>
             <div class="sub">participe e ajude a cidade a medir</div>
@@ -909,7 +988,7 @@
   </div>
 
   <!-- TELA 10 — PRIVACIDADE -->
-  <div class="tela-slot">
+  <div class="tela-slot" data-tela="10">
     <div class="tela-numero">10 · Privacidade</div>
     <div class="moldura">
       <div class="tela">
@@ -919,7 +998,7 @@
           <div class="sinais"><span>●●●</span><span>Wi-Fi</span><span class="bar-icone"></span></div>
         </div>
         <div class="app-body">
-          <p class="app-topo">← Voltar</p>
+          <p class="app-topo" data-voltar>← Voltar</p>
           <h1 class="app-titulo">Sua privacidade</h1>
           <div class="cartao">
             <div class="linha-mini"><span>🙈 Rosto</span><span class="pill verde">nunca lido</span></div>
@@ -930,7 +1009,7 @@
           <div class="cartao">
             <p class="app-legenda">A câmera conta pessoas e veículos para saber o quanto a rua está cheia — ela não guarda quem você é.</p>
           </div>
-          <div class="btn-fantasma" style="border-color:var(--vermelho);color:var(--vermelho);width:100%;">Apagar meus registros</div>
+          <div class="btn-fantasma" id="btn-apagar-registros" style="border-color:var(--vermelho);color:var(--vermelho);width:100%;">Apagar meus registros</div>
         </div>
         <div class="tab-bar">
           <div class="tab-item"><div class="tab-icone"></div>Início</div>
@@ -1092,6 +1171,153 @@
 <footer class="rodape-pagina">
   Visão de Rota — maquete de demonstração. Todas as telas, números e nomes deste documento são exemplos sintéticos e não representam medição real.
 </footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---- estado de navegação ----
+  var pilha = [];   // histórico simples para "voltar"
+  var atual = null;  // número (string) da tela em foco, ou null = índice
+
+  function todasTelas(){ return document.querySelectorAll('.tela-slot'); }
+
+  function marcarBotoesFlutuantes(){
+    var bInicio = document.getElementById('btn-nav-inicio');
+    var bIndice = document.getElementById('btn-nav-indice');
+    if (bInicio) bInicio.setAttribute('aria-pressed', atual === '1' ? 'true' : 'false');
+    if (bIndice) bIndice.setAttribute('aria-pressed', atual === null ? 'true' : 'false');
+  }
+
+  function mostrarIndice(){
+    document.body.classList.remove('modo-foco');
+    todasTelas().forEach(function(t){ t.classList.remove('tela-ativa'); });
+    atual = null;
+    pilha = [];
+    marcarBotoesFlutuantes();
+  }
+
+  function abrirTela(n, empilhar){
+    n = String(n);
+    if (atual === n) { marcarBotoesFlutuantes(); return; }
+    var alvo = document.querySelector('.tela-slot[data-tela="' + n + '"]');
+    if (!alvo) return;
+    if (empilhar !== false && atual !== null) pilha.push(atual);
+    document.body.classList.add('modo-foco');
+    todasTelas().forEach(function(t){ t.classList.remove('tela-ativa'); });
+    alvo.classList.add('tela-ativa');
+    atual = n;
+    marcarBotoesFlutuantes();
+    alvo.scrollIntoView({ block: 'start' });
+  }
+
+  function voltar(){
+    if (pilha.length) {
+      abrirTela(pilha.pop(), false);
+    } else {
+      abrirTela('1', false);
+    }
+  }
+
+  // ---- helper: torna um elemento focável/clicável de verdade ----
+  function ativar(el, fn){
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    el.addEventListener('click', function(ev){ ev.stopPropagation(); fn(ev); });
+    el.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+        ev.preventDefault(); ev.stopPropagation(); fn(ev);
+      }
+    });
+  }
+
+  // ---- índice: clicar numa moldura abre a tela em foco ----
+  todasTelas().forEach(function(slot){
+    var n = slot.getAttribute('data-tela');
+    var moldura = slot.querySelector('.moldura');
+    if (moldura) {
+      moldura.classList.add('moldura-clicavel');
+      ativar(moldura, function(){ abrirTela(n); });
+    }
+  });
+
+  // ---- navegação declarada em HTML ----
+  document.querySelectorAll('[data-ir]').forEach(function(el){
+    ativar(el, function(){ abrirTela(el.getAttribute('data-ir')); });
+  });
+  document.querySelectorAll('[data-voltar]').forEach(function(el){
+    ativar(el, voltar);
+  });
+
+  // ---- tab-bar: mesma barra em todas as telas, mesmo destino por nome ----
+  var MAPA_TAB = { 'Início': '1', 'Chamados': '3', 'Trânsito': '2', 'Campanhas': '5', 'Perfil': '10' };
+  document.querySelectorAll('.tab-item').forEach(function(t){
+    var rotulo = t.textContent.trim();
+    var alvo = MAPA_TAB[rotulo];
+    if (alvo) ativar(t, function(){ abrirTela(alvo); });
+  });
+
+  // ---- tela 3: escala de humor (seleção única) ----
+  document.querySelectorAll('.escala-5').forEach(function(grupo){
+    var itens = grupo.querySelectorAll('.escala-item');
+    itens.forEach(function(item){
+      item.setAttribute('aria-pressed', item.classList.contains('selecionado') ? 'true' : 'false');
+      ativar(item, function(){
+        itens.forEach(function(i){ i.classList.remove('selecionado'); i.setAttribute('aria-pressed', 'false'); });
+        item.classList.add('selecionado');
+        item.setAttribute('aria-pressed', 'true');
+      });
+    });
+  });
+
+  // ---- tela 3: categoria (chips multi-seleção, cinza <-> amarelo) ----
+  document.querySelectorAll('[data-grupo="categoria"]').forEach(function(p){
+    p.setAttribute('aria-pressed', p.classList.contains('amarelo') ? 'true' : 'false');
+    ativar(p, function(){
+      if (p.classList.contains('amarelo')) {
+        p.classList.remove('amarelo'); p.classList.add('cinza');
+        p.setAttribute('aria-pressed', 'false');
+      } else {
+        p.classList.remove('cinza'); p.classList.add('amarelo');
+        p.setAttribute('aria-pressed', 'true');
+      }
+    });
+  });
+
+  // ---- tela 8: avaliação (seleção única, sem mudar a cor-base) ----
+  document.querySelectorAll('[data-grupo="avaliacao"]').forEach(function(p){
+    ativar(p, function(){
+      document.querySelectorAll('[data-grupo="avaliacao"]').forEach(function(o){
+        o.classList.remove('escolhido'); o.setAttribute('aria-pressed', 'false');
+      });
+      p.classList.add('escolhido');
+      p.setAttribute('aria-pressed', 'true');
+    });
+  });
+
+  // ---- tela 10: apagar registros (ação simulada — dado sintético) ----
+  var btnApagar = document.getElementById('btn-apagar-registros');
+  if (btnApagar) {
+    ativar(btnApagar, function(){
+      if (btnApagar.getAttribute('data-estado') === 'apagado') return;
+      btnApagar.setAttribute('data-estado', 'apagado');
+      btnApagar.setAttribute('aria-pressed', 'true');
+      btnApagar.textContent = 'Registros apagados (simulado)';
+      btnApagar.style.opacity = '0.6';
+      btnApagar.style.pointerEvents = 'none';
+    });
+  }
+
+  // ---- barra flutuante: garante <=2 toques entre quaisquer duas telas ----
+  var btnInicio = document.getElementById('btn-nav-inicio');
+  var btnIndice = document.getElementById('btn-nav-indice');
+  if (btnInicio) btnInicio.addEventListener('click', function(){ abrirTela('1'); });
+  if (btnIndice) btnIndice.addEventListener('click', mostrarIndice);
+
+  marcarBotoesFlutuantes();
+})();
+</script>
+<script src="melhorias.js"></script>
 
 </body>
 </html>
