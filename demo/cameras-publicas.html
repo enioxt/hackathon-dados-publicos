@@ -1,0 +1,85 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Câmeras públicas — Visão de Rota</title>
+<style>
+:root{--navy:#0b2a4a;--azul:#168be0;--verde:#16ae5e;--ambar:#f59a21;--cinza:#5b6b7f;--fundo:#f3f6fb;--borda:#dfe6f0}
+*{box-sizing:border-box}body{margin:0;background:var(--fundo);color:#0f2544;font:16px/1.45 Inter,Roboto,-apple-system,"Segoe UI",Arial,sans-serif}
+main{max-width:1320px;margin:0 auto;padding:22px 20px 90px}
+h1{font-size:30px;margin:0 0 4px}.sub{color:var(--cinza);margin:0 0 14px;max-width:900px}
+.aviso{background:#fff6e0;border:1px solid #f0d48a;color:#5b4300;border-radius:12px;padding:10px 14px;font-weight:600;font-size:14px;margin-bottom:14px}
+.barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.barra button{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--borda);background:#fff;font:600 14px inherit;color:#0f2544;cursor:pointer}
+.barra button[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cont{margin-left:auto;color:var(--cinza);font-size:14px;font-weight:600}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.cam{background:#fff;border:1px solid var(--borda);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.quadro{position:relative;aspect-ratio:16/9;background:#0b1626;cursor:pointer;border:0;padding:0;width:100%;display:block}
+.quadro img,.quadro iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0}
+.tocar{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(transparent 40%,rgba(5,13,22,.55))}
+.tocar span{background:#fff;color:var(--navy);font-weight:800;border-radius:999px;padding:10px 18px;font-size:14px}
+.info{padding:10px 12px 12px;display:grid;gap:4px}.info b{font-size:15px}.info small{color:var(--cinza)}
+.selos{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.selo{font:700 10.5px/1.5 inherit;letter-spacing:.03em;padding:2px 8px;border-radius:999px;color:#fff;background:#7a8ba0}
+.selo.lendo{background:var(--verde)}.selo.gravado{background:var(--ambar)}.selo.tipo{background:#e8eef7;color:#33465f}
+.info a{color:var(--azul);font-weight:600;font-size:13px;text-decoration:none}
+.nota{margin-top:18px;color:var(--cinza);font-size:14px;max-width:950px}
+</style></head><body><main>
+<h1>Câmeras públicas que já achamos</h1>
+<p class="sub">Transmissões que o próprio dono publica na internet. Servem para provar o ponto: a câmera já existe e já está no ar — falta a segunda leitura. Clique para abrir o vídeo original de cada uma.</p>
+<div class="aviso">O vídeo abaixo é o reprodutor original de quem publica, com o crédito dele. Nada é copiado nem guardado aqui. Onde está escrito LIDA PELO NOSSO CONTADOR, a contagem roda na máquina do time, com cerca de 15 s de atraso da transmissão.</div>
+<div class="barra" id="filtros"></div>
+<div class="grade" id="grade"></div>
+<p class="nota">Como funciona sem travar: só a miniatura é carregada; o vídeo abre quando você clica, e no máximo 4 ficam abertos ao mesmo tempo (o mais antigo volta a ser miniatura). Lista levantada em 20/09/2026; transmissão pública pode sair do ar a qualquer momento — quando sair, a miniatura fica cinza.</p>
+</main>
+<script>
+(function(){
+  // id do vídeo, nome, cidade/UF, quem publica, tipo de cena, estado no nosso leitor
+  var CAMS=[
+   ["1W-xxty4zcc","Viaduto em obra","Juazeiro, BA","Prefeitura de Juazeiro","cidade","lendo"],
+   ["5T4VVezfafo","BR-101 km 210, sentido sul","São José, SC","AEMFLO e CDL São José","rodovia","lendo"],
+   ["iG7le_TWCng","BR-101 km 210, sentido norte","São José, SC","AEMFLO e CDL São José","rodovia",""],
+   ["54N189ZcIfs","Cruzamento com faixa de pedestre","Balneário Camboriú, SC","ConexãoDCTV","cruzamento","gravado"],
+   ["NwbOe1Mb__M","Viaduto, acesso à BR-101","Itajaí, SC","ConexãoDCTV","rodovia","gravado"],
+   ["mZlT_81Gs7c","Avenida central","Tubarão, SC","Se-Connect","cidade","gravado"],
+   ["uE91_u_6AU0","Via expressa","São José e Palhoça, SC","Maaxcam","rodovia","gravado"],
+   ["YOc7l9dT2yM","Rotatória e avenida","Vale do Taquari, RS","Rádio Independente","cruzamento","gravado"],
+   ["N-qiV6w3HmE","Centro da cidade","Chapecó, SC","Portal Chapecó","cidade","gravado"],
+   ["4e9mp4lLQpE","Centro","Laguna, SC","Se-Connect","cidade",""],
+   ["eTz4XgOQaAE","Avenida vista do alto","São Paulo, SP","emissora de TV","cidade","gravado"],
+   ["O00YZItaim8","Dez câmeras de trânsito","Natal, RN","canal de câmeras da cidade","cidade",""]
+  ];
+  var ROT={lendo:"LIDA PELO NOSSO CONTADOR",gravado:"TRECHO GRAVADO E LIDO","":"AINDA NÃO LIDA"};
+  var TIPOS=["todas","cidade","cruzamento","rodovia","lidas"], filtro="todas", abertos=[];
+  var grade=document.getElementById("grade"), fb=document.getElementById("filtros");
+  function el(t,c,x){var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;}
+  function fechar(card){var q=card.querySelector(".quadro"), f=q.querySelector("iframe"); if(f){f.remove(); q.querySelector("img").hidden=false; q.querySelector(".tocar").hidden=false;}}
+  function abrir(card,id){
+    var q=card.querySelector(".quadro"); if(q.querySelector("iframe")) return;
+    if(abertos.length>=4){fechar(abertos.shift());}
+    var f=document.createElement("iframe"); f.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=1&mute=1&playsinline=1&rel=0";
+    f.allow="autoplay; encrypted-media; picture-in-picture"; f.setAttribute("allowfullscreen",""); f.title="transmissão original"; f.loading="lazy"; f.referrerPolicy="strict-origin-when-cross-origin";
+    q.querySelector("img").hidden=true; q.querySelector(".tocar").hidden=true; q.appendChild(f); abertos.push(card); contar();
+  }
+  function contar(){document.getElementById("cont").textContent=mostradas+" câmeras · "+abertos.filter(function(c){return c.querySelector("iframe")}).length+" de 4 vídeos abertos";}
+  var mostradas=0;
+  function desenhar(){
+    grade.textContent=""; abertos=[]; mostradas=0;
+    CAMS.forEach(function(c){
+      if(filtro!=="todas" && !(filtro==="lidas" ? c[5] : c[4]===filtro)) return; mostradas++;
+      var card=el("article","cam"), q=el("button","quadro"); q.type="button"; q.setAttribute("aria-label","abrir a transmissão de "+c[1]+", "+c[2]);
+      var img=el("img"); img.loading="lazy"; img.alt=""; img.src="https://i.ytimg.com/vi/"+c[0]+"/hqdefault_live.jpg";
+      img.onerror=function(){ if(!img.dataset.t){img.dataset.t=1; img.src="https://i.ytimg.com/vi/"+c[0]+"/hqdefault.jpg";} else {img.style.filter="grayscale(1) opacity(.4)";} };
+      var t=el("div","tocar"); t.appendChild(el("span","","▶ abrir o vídeo original")); q.appendChild(img); q.appendChild(t);
+      q.addEventListener("click",function(){abrir(card,c[0]);});
+      var info=el("div","info"); info.appendChild(el("b","",c[1])); info.appendChild(el("small","",c[2]+" · publicada por "+c[3]));
+      var s=el("div","selos"); s.appendChild(el("span","selo "+(c[5]||""),ROT[c[5]])); s.appendChild(el("span","selo tipo",c[4])); info.appendChild(s);
+      var a=el("a","","ver na página de quem publica →"); a.href="https://www.youtube.com/watch?v="+encodeURIComponent(c[0]); a.target="_blank"; a.rel="noopener noreferrer"; info.appendChild(a);
+      card.appendChild(q); card.appendChild(info); grade.appendChild(card);
+    }); contar();
+  }
+  TIPOS.forEach(function(t){var b=el("button","",t==="lidas"?"já lidas pelo contador":t); b.type="button"; b.setAttribute("aria-pressed",t===filtro);
+    b.addEventListener("click",function(){filtro=t; [].forEach.call(fb.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed",x===b)}); desenhar();}); fb.appendChild(b);});
+  var cont=el("span","cont",""); cont.id="cont"; fb.appendChild(cont); desenhar();
+})();
+</script>
+<script src="melhorias.js"></script>
+</body></html>
