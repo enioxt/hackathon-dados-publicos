@@ -11,10 +11,49 @@ main{padding:0 6vw 70px;max-width:1150px}
 a.card{display:block;background:var(--c);border:1px solid var(--b);border-radius:13px;padding:18px 20px;text-decoration:none;color:inherit}
 a.card:hover{border-color:var(--a)}a.card h3{margin:0 0 6px;font-size:18px;color:var(--a)}a.card p{margin:0;color:var(--z);font-size:14.5px}
 footer{padding:0 6vw 50px;color:var(--z);font-size:13px;max-width:1150px}
+.painel-hero{background:var(--c);border:1px solid var(--a);border-radius:16px;padding:22px 24px;margin:20px 6vw 4px;max-width:1150px;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.painel-hero .txt{flex:1 1 320px}
+.painel-hero h2{margin:0 0 8px;font-size:22px;color:var(--t);text-transform:none;letter-spacing:0}
+.painel-hero .sub{margin:0 0 16px;color:var(--z);font-size:14.5px}
+.btn-hero{display:inline-flex;align-items:center;gap:8px;background:var(--a);color:#111;font-weight:700;padding:13px 22px;border-radius:10px;text-decoration:none;font-size:15px}
+.layout-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.layout-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 12px;border:1px solid var(--b);border-radius:8px;color:var(--t);text-decoration:none;font-size:13px;font-weight:600}
+.layout-btn:hover{border-color:var(--a);color:var(--a)}
+.layout-btn svg{width:16px;height:16px;flex:none}
+.lbl{font-size:12px;color:var(--z);margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.painel-thumb{display:block;border-radius:10px;overflow:hidden;border:1px solid var(--b);width:260px;max-width:100%}
+.painel-thumb img{display:block;width:100%;height:auto}
+@media (max-width:640px){.painel-hero{flex-direction:column;align-items:stretch}.painel-thumb{width:100%;max-width:360px;margin:0 auto}}
+a.card-wide{display:block;background:var(--c);border:1px solid var(--b);border-radius:13px;padding:20px 22px;text-decoration:none;color:inherit;margin:0 6vw 20px;max-width:1150px}
+a.card-wide:hover{border-color:var(--a)}
+a.card-wide h3{margin:0 0 8px;font-size:19px;color:var(--a)}
+a.card-wide p{margin:0;color:var(--z);font-size:14.5px}
 </style></head><body>
 <header><small>HACKATHON CIDADES INTELIGENTES · PATOS DE MINAS · 2026</small><h1>Visão de Rota — demonstração</h1>
 <div class=lead>Demonstrações de como uma leitura de tráfego pode apoiar o antes e o depois de cada mudança na via. Fonte, acesso e política de privacidade do piloto dependem de validação com a cidade. Tudo abaixo abre no navegador, inclusive no celular.</div></header>
 <div class=faixa>O mapa usa dado público real (ocorrências de trânsito do Estado e base nacional de sinistros). Câmeras, alertas, vagas, frota e a parede de monitores são SIMULAÇÃO ou DADO SINTÉTICO — e está dito em cada tela.</div>
+
+<div class=painel-hero>
+  <div class=txt>
+    <h2>O painel do gestor</h2>
+    <p class=sub>Veja a cidade, entenda o problema, teste uma alternativa e meça se melhorou.</p>
+    <a class=btn-hero href="painel-gestor.html?layout=central">Abrir o painel →</a>
+    <div>
+      <p class=lbl>Outros jeitos de ver:</p>
+      <div class=layout-row>
+        <a class=layout-btn href="painel-gestor.html?layout=central"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>Central</a>
+        <a class=layout-btn href="painel-gestor.html?layout=painel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="7" height="7" rx="1.2"/><rect x="14" y="4" width="7" height="7" rx="1.2"/><rect x="3" y="15" width="18" height="5" rx="1.2"/></svg>Painel</a>
+        <a class=layout-btn href="painel-gestor.html?layout=foco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Foco</a>
+        <a class=layout-btn href="painel-gestor.html?layout=fila"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Fila</a>
+        <a class=layout-btn href="parede.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>Parede</a>
+      </div>
+    </div>
+  </div>
+  <a class=painel-thumb href="painel-gestor.html?layout=central" aria-label="Abrir o painel do gestor"><img src="painel-miniatura.jpg" alt="Miniatura do painel do gestor" width="640" height="360" loading="lazy"></a>
+</div>
+
+<a class=card-wide href="solucoes.html"><h3>O que propomos, onde e como funciona →</h3><p>Sete frentes, da que já dá para ver à que vem depois: medir o antes e o depois, mapa de calor do centro, corredor dos entregadores, rotação de horários, caminhar, participação voluntária e motorista de aplicativo. Cada uma diz até onde a resposta é confiável.</p></a>
+
 <main>
 <h2>A ideia</h2>
 <div class=g>
@@ -24,7 +63,6 @@ footer{padding:0 6vw 50px;color:var(--z);font-size:13px;max-width:1150px}
 </div>
 <h2>O protótipo</h2>
 <div class=g>
-<a class=card href="painel-gestor.html"><h3>Painel do gestor →</h3><p>Cinco jeitos de ver a mesma cidade (botão no canto: Central, Painel, Foco, Fila, Parede). Mapa com as ocorrências reais, zonas quentes, simulação de 10 a 600 câmeras, vagas, frota e relatório. Clique numa bolinha âmbar do mapa.</p></a>
 <a class=card href="parede.html"><h3>Parede de monitores →</h3><p>O que a leitura de várias câmeras mostraria ao mesmo tempo. Escolha 2, 4, 8 ou 16 telas.</p></a>
 <a class=card href="app-cidadao.html"><h3>App do cidadão →</h3><p>10 telas propostas para dentro do aplicativo que a cidade já tem: registrar onde perdeu tempo, ver vagas, ver o que mudou na rua.</p></a>
 </div>
@@ -48,4 +86,5 @@ footer{padding:0 6vw 50px;color:var(--z);font-size:13px;max-width:1150px}
 <a class=card href="https://github.com/enioxt/hackathon-dados-publicos"><h3>Dados e código →</h3><p>83 fontes públicas verificadas, ocorrências com coordenada, base legal e as técnicas que usamos.</p></a>
 </div>
 </main>
-<footer>Ocorrências de trânsito: dados abertos do Estado de Minas Gerais. Sinistros: base nacional aberta, extração de agosto de 2026. Posição de câmera é célula escolhida por cálculo, não câmera existente. Ruas com memória. Mobilidade com previsibilidade.</footer></body></html>
+<footer>Ocorrências de trânsito: dados abertos do Estado de Minas Gerais. Sinistros: base nacional aberta, extração de agosto de 2026. Posição de câmera é célula escolhida por cálculo, não câmera existente. Ruas com memória. Mobilidade com previsibilidade.</footer><script src="melhorias.js"></script>
+</body></html>
