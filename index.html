@@ -33,6 +33,12 @@
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
+  .skip-link{
+    position:fixed;left:16px;top:12px;z-index:100;
+    transform:translateY(-180%);padding:10px 14px;border-radius:8px;
+    background:var(--amber);color:#1A1100;font-weight:800;text-decoration:none;
+  }
+  .skip-link:focus{transform:translateY(0);}
   img{max-width:100%;}
   [hidden]{display:none!important;}
 
@@ -79,6 +85,9 @@
   .btn-amber{background:var(--amber);color:#1A1100;}
   .btn-outline{background:transparent;color:var(--text);border-color:var(--line);}
   .btn-outline:hover{border-color:var(--amber);}
+  a:focus-visible,.btn:focus-visible{
+    outline:3px solid var(--amber);outline-offset:3px;
+  }
 
   @media (max-width:760px){
     nav.top-links{display:none;}
@@ -257,6 +266,8 @@
 </head>
 <body>
 
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
 <header class="top">
   <div class="top-inner">
     <div class="brand">VISÃO <span>DE ROTA</span></div>
@@ -271,6 +282,7 @@
   </div>
 </header>
 
+<main id="conteudo">
 <section class="hero" id="ideia">
   <div class="hero-bg" aria-hidden="true">
     <svg width="100%" height="100%" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;opacity:.55;">
@@ -323,12 +335,12 @@
   <div class="wrap hero-content">
     <p class="kicker fade">Hackathon Cidades Inteligentes · Patos de Minas · 2026</p>
     <h1 class="hero-title fade">A mesma câmera. Outra pergunta.</h1>
-    <p class="hero-sub fade">A cidade já tem as câmeras. Elas contam pessoas para a segurança — e não contam um carro para o trânsito. A gente faz a segunda leitura: quantos passam, quanto de fila, onde quase bate. Sem rosto, sem placa.</p>
+    <p class="hero-sub fade">A cidade já tem câmeras. O protótipo faz uma segunda leitura: quantos passam, quanto de fila, onde há conflito de tráfego — sem identificar rosto ou placa.</p>
     <div class="hero-actions fade">
       <a class="btn btn-amber" href="#ver-funcionando">Ver a demonstração</a>
       <a class="btn btn-outline" href="hub/index.html">Ver o hub de ideias</a>
     </div>
-    <div class="seal fade"><span class="dot"></span>sem rosto · sem placa · imagem descartada depois da contagem</div>
+    <div class="seal fade"><span class="dot"></span>contagem por tipo · sem identificação de pessoa</div>
   </div>
 </section>
 
@@ -341,17 +353,17 @@
       <div class="card">
         <span class="tag tag-medido">Medido</span>
         <p class="num">1.100 ocorrências<small>com coordenada · 132 graves ou fatais</small></p>
-        <p class="origem">Dado aberto da Secretaria de Estado de Justiça e Segurança Pública (SEJUSP-MG), 2025 e início de 2026.</p>
+        <p class="origem">Dado aberto da Secretaria de Estado de Justiça e Segurança Pública (SEJUSP-MG), 2025 e início de 2026. <a href="dados/index.html#ocorrencias">Ver origem e limites</a>.</p>
       </div>
       <div class="card">
         <span class="tag tag-simulacao">Simulação</span>
         <p class="num">94 pontos de leitura<small>alcançam metade dessas ocorrências</small></p>
-        <p class="origem">Simulação nossa sobre o dado medido acima — a posição é uma célula no mapa, não uma câmera confirmada; a lista real dos pontos substitui a conta.</p>
+        <p class="origem">Simulação nossa sobre o dado medido acima — a posição é uma célula no mapa, não uma câmera confirmada; a lista real dos pontos substitui a conta. <a href="dados/index.html#leitura">Como ler</a>.</p>
       </div>
       <div class="card">
         <span class="tag tag-estimativa">Estimativa</span>
         <p class="num">R$ 49 mil<small>o piloto de 90 dias, contra R$ 1,2 milhão para 50 câmeras novas</small></p>
-        <p class="origem">Estimativa do time, sem cotação fechada, com as premissas abertas na calculadora do projeto.</p>
+        <p class="origem">Estimativa do time, sem cotação fechada, com as premissas abertas na <a href="demo/simulador.html">calculadora do projeto</a>.</p>
       </div>
     </div>
   </div>
@@ -363,7 +375,7 @@
     <div class="quote-block fade">
       <div>
         <blockquote>&ldquo;Eu tenho como tratar esses dados hoje? Não tenho massa crítica.&rdquo;</blockquote>
-        <p class="quote-attr">diretor de mobilidade da prefeitura, ao nosso time, 19/09</p>
+        <p class="quote-attr">relato de conversa do diretor de mobilidade com o time, 19/09 — requer validação formal para uso institucional</p>
       </div>
       <div class="quote-nums">
         <div class="mini-num"><b>R$ 320 mil/mês</b><span>um centro de controle completo</span></div>
@@ -377,20 +389,20 @@
 <section id="como-funciona">
   <div class="wrap">
     <p class="eyebrow">Como funciona</p>
-    <h2>Quatro passos, nenhum equipamento novo</h2>
-    <p class="lede">Não propomos câmera nova, sensor novo nem aplicativo novo. Propomos uma segunda leitura do que já está ligado.</p>
+    <h2>Quatro passos, sem pedir equipamento novo</h2>
+    <p class="lede">O pedido de piloto não inclui câmera, sensor nem aplicativo novo. Propõe uma segunda leitura do que já está ligado, sujeita à validação técnica da cidade.</p>
     <div class="steps">
       <div class="step fade">
         <span class="n">01</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--amber)"><rect x="4" y="6" width="13" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2"/></svg>
-        <h3>A câmera que já existe grava</h3>
-        <p>O ponto de captura não muda — é o que a cidade já instalou.</p>
+        <h3>Uma câmera existente fornece o vídeo do piloto</h3>
+        <p>O ponto de captura é definido com a cidade; o protótipo não pressupõe câmera nova.</p>
       </div>
       <div class="step fade">
         <span class="n">02</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--amber)"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
-        <h3>O vídeo é lido onde já está</h3>
-        <p>Processamento na própria máquina do ponto — a imagem não viaja.</p>
+        <h3>O vídeo é processado no ambiente aprovado</h3>
+        <p>O piloto deve definir onde processa, quem acessa e como audita a retenção.</p>
       </div>
       <div class="step fade">
         <span class="n">03</span>
@@ -407,7 +419,7 @@
     </div>
     <div class="banner">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17.3a1.8 1.8 0 0 0 1.6 2.7h15.4a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/></svg>
-      <span>Não instalamos câmera. Não lemos rosto nem placa. A imagem é descartada depois de contar.</span>
+      <span>O protótipo não usa reconhecimento facial nem leitura de placas. Para um piloto, a retenção de imagem deve ser proibida e verificada antes da operação.</span>
     </div>
   </div>
 </section>
@@ -481,7 +493,7 @@
         <p>Um trecho para medir o antes e o depois de uma mudança de trânsito.</p>
       </div>
     </div>
-    <p class="notice">Nenhum dos três custa equipamento novo.</p>
+    <p class="notice">O pedido não inclui compra de equipamento novo; disponibilidade de equipe e infraestrutura precisa ser confirmada pela cidade.</p>
   </div>
 </section>
 
@@ -500,11 +512,12 @@
       </div>
       <div class="actions">
         <a class="btn btn-amber" href="hub/index.html">Ver o hub de ideias</a>
-        <a class="btn btn-outline" href="dados/">Ver o repositório de dados</a>
+        <a class="btn btn-outline" href="dados/index.html">Ver o repositório de dados</a>
       </div>
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="wrap">

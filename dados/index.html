@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dados abertos — Visão de Rota</title>
+<meta name="description" content="Origem, escopo e limites dos conjuntos públicos usados pelo projeto Visão de Rota.">
+<style>
+:root{--bg:#0B1B2B;--card:#12273B;--text:#F6F8FA;--dim:#C6D0DA;--amber:#E8A33D;--line:rgba(246,248,250,.12);color-scheme:dark}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}.wrap{max-width:940px;margin:auto;padding:0 24px}.top{border-bottom:1px solid var(--line);padding:18px 0}.brand{font-weight:800;letter-spacing:.12em;text-transform:uppercase}.brand span{color:var(--amber)}a{color:var(--amber)}a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}main{padding:64px 0}h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1.1;margin:.2em 0}.lede{color:var(--dim);max-width:65ch}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin:34px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}.tag{display:inline-block;color:var(--amber);font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.card h2{font-size:1.25rem;line-height:1.25}.card p{color:var(--dim)}.note{border-left:3px solid var(--amber);padding:16px 20px;background:rgba(232,163,61,.08);color:var(--dim);margin-top:28px}footer{padding:28px 0 48px;border-top:1px solid var(--line);color:var(--dim);font-size:.9rem}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand">Visão <span>de Rota</span></div><a href="../index.html">← Voltar à apresentação</a></div></header>
+<main class="wrap">
+  <p class="tag">Transparência do projeto</p>
+  <h1>Dados públicos, com escopo e limites claros.</h1>
+  <p class="lede">Esta página separa dado medido, simulação e estimativa. Os arquivos abaixo são públicos e baixáveis; não são uma base operacional da prefeitura.</p>
+  <section class="grid" aria-label="Conjuntos de dados">
+    <article class="card" id="ocorrencias">
+      <p class="tag">Medido</p>
+      <h2>Ocorrências de trânsito em Patos de Minas</h2>
+      <p>1.100 ocorrências georreferenciadas em 2025 e no início de 2026; 132 têm pior gravidade grave ou fatal. Fonte: SEJUSP-MG, Banco de Vítimas de Acidente de Trânsito.</p>
+      <p><a href="acidentes-patos-sejusp-mg-2025-2026.json">Baixar JSON de ocorrências</a></p>
+    </article>
+    <article class="card">
+      <p class="tag">Pesquisa de referência</p>
+      <h2>Contratações públicas de mobilidade</h2>
+      <p>Recorte de 689 contratações identificadas por método textual no PNCP, de 2024 a 2026. É referência para comparação, não cotação nem prova de preço local.</p>
+      <p><a href="editais-mobilidade-pncp-2024-2026.json">Baixar JSON do PNCP</a></p>
+    </article>
+    <article class="card">
+      <p class="tag">Lacuna declarada</p>
+      <h2>Programa federal Avançar Cidades</h2>
+      <p>A investigação registra fontes consultadas e o que não foi construído. Ausência na busca não prova ausência de repasse ou projeto.</p>
+      <p><a href="editais-federal-avancar-cidades.json">Baixar o registro da investigação</a></p>
+    </article>
+  </section>
+  <section class="note" id="leitura">
+    <strong>Como ler os números do projeto.</strong><br>
+    Ocorrências são dado medido. Pontos de leitura no mapa são uma simulação, não câmeras confirmadas. Valores do piloto são estimativas do time, não cotação ou contrato. O projeto não publica rostos, placas, vídeo bruto, dados pessoais ou acesso a sistemas públicos.
+  </section>
+</main>
+<footer><div class="wrap">Projeto do Hackathon Cidades Inteligentes de Patos de Minas, 2026. Em desenvolvimento; não é serviço em produção da prefeitura.</div></footer>
+</body>
+</html>
