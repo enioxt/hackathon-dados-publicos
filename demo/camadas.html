@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Como a máquina conta — Visão de Rota</title>
+<style>
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --navy:#0b2545; --navy2:#12335e; --navy3:#173e73;
+  --text:#1b2433; --muted:#5c6b82; --border:#e2e8f2; --border2:#ccd6e6;
+  --green:#1f9d55; --green-bg:#e7f8ee; --amber:#e2a129; --amber-bg:#fdf3e0;
+  --red:#d6444a; --red-bg:#fbe9ea; --blue:#2563eb; --blue-bg:#e8eefd;
+  --focus:#2563eb;
+  --c-automovel:#2563eb; --c-moto:#e2a129; --c-onibus:#1f9d55; --c-caminhao:#d6444a;
+  --c-bicicleta:#7c3aed; --c-pedestre:#64748b; --c-nao:#94a3b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.app{display:flex;height:100vh;max-height:100vh;overflow:hidden}
+
+.sidebar{width:150px;flex:none;background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%);color:#dbe7fb;
+  display:flex;flex-direction:column;padding:14px 12px}
+.marca{display:flex;flex-direction:column;gap:2px;margin-bottom:14px}
+.marca-nome{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
+.marca-sub{font-size:11px;color:#9db3d6}
+.voltar{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#c7d7f0;text-decoration:none;
+  padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.06);margin-bottom:16px}
+.voltar:hover{background:rgba(255,255,255,.12)}
+.sb-titulo{font-size:12px;font-weight:800;color:#fff;margin:4px 0 6px}
+.sb-texto{font-size:11.5px;color:#a9bcda;line-height:1.5;margin-bottom:10px}
+.sb-selo{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;background:var(--blue-bg);color:#1d4ed8;margin-bottom:8px}
+.sb-spacer{flex:1}
+.sb-foot{font-size:10.5px;color:#7d93b6;line-height:1.5}
+.sb-foot a{color:#ffd27a;text-decoration:none;font-weight:700}
+
+.content{flex:1;min-width:0;padding:10px 14px 8px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+
+/* header */
+.topo{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.topo h1{margin:0 0 2px;font-size:18px;font-weight:800;color:#0f2544}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.badge{font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--blue-bg);color:#1d4ed8;white-space:nowrap}
+.badge.mut{background:#eef0f5;color:#586479}
+.clip-select{font:600 12px inherit;border:1.5px solid var(--border2);border-radius:8px;padding:5px 8px;background:#fff;color:var(--text)}
+
+/* stage: video + graphs */
+.stage{display:flex;gap:10px;flex:1;min-height:0}
+.video-col{width:59%;flex:none;display:flex;flex-direction:column;gap:6px;min-height:0}
+.video-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:12px;overflow:hidden;box-shadow:0 1px 0 var(--border)}
+.video-wrap.so-numeros{background:#e7ebf2}
+.video-wrap video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill}
+.video-wrap.so-numeros video{visibility:hidden}
+.video-wrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+.camadas-bar{position:absolute;top:0;left:0;right:0;display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:linear-gradient(180deg,rgba(10,20,35,.72),rgba(10,20,35,0));z-index:5}
+.cam-sw{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;
+  border-radius:999px;padding:5px 10px 5px 6px;font-size:11.5px;font-weight:700;cursor:pointer;min-height:30px}
+.cam-sw .pt{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.25);flex:none;position:relative}
+.cam-sw .pt::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#8aa0c4}
+.cam-sw.on{background:#1c4a86;border-color:#2f66ab}
+.cam-sw.on .pt::after{background:#57d08f}
+.cam-sw.corrigir.on{background:#93670c;border-color:#b98416}
+.cam-sw.corrigir.on .pt::after{background:#ffd27a}
+.btn-so-numeros{margin-left:auto;background:#fff;color:#0f2544;border:0;border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:800;cursor:pointer;min-height:30px}
+.btn-so-numeros.on{background:#ffd27a}
+
+.flash-mais1{position:absolute;font-size:22px;font-weight:900;color:#57d08f;text-shadow:0 1px 3px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .15s, transform .5s;z-index:6}
+.flash-mais1.show{opacity:1}
+
+.player-bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:7px 10px;background:linear-gradient(0deg,rgba(10,20,35,.78),rgba(10,20,35,0));z-index:5}
+.pl-btn{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pl-btn.sm{min-width:40px;min-height:36px;font-size:12px;font-weight:800}
+.pl-seek{flex:1;accent-color:#57d08f}
+.pl-vel{display:flex;gap:3px}
+.pl-time{color:#dbe7fb;font-size:11px;font-variant-numeric:tabular-nums;min-width:70px;text-align:right}
+
+.selecionar-pop{position:absolute;z-index:20;background:#0f2544;border:1px solid #1c4a86;border-radius:12px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.4);width:260px}
+.selecionar-pop .sp-titulo{color:#c7d7f0;font-size:11px;margin:0 0 6px;font-weight:700}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.sp-btn{background:#173e73;color:#fff;border:1px solid #2f66ab;border-radius:8px;padding:9px 6px;font-size:12px;font-weight:700;cursor:pointer;min-height:44px}
+.sp-btn:hover{background:#1c4a86}
+.sp-btn.evento{grid-column:1/-1;background:#93670c;border-color:#b98416}
+.sp-confirmar{margin-top:6px;font-size:10.5px;color:#9db3d6;text-align:center}
+
+.rodape-legenda{font-size:11px;color:var(--muted);line-height:1.4}
+.rodape-legenda b{color:var(--text)}
+
+/* right column */
+.painel-direita{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;min-height:0}
+.tabs-direita{display:flex;gap:6px}
+.tab-btn{flex:1;border:1.5px solid var(--border2);background:#fff;border-radius:9px;padding:7px 6px;font-size:11.5px;font-weight:700;color:var(--text);cursor:pointer;min-height:34px}
+.tab-btn.ativo{background:var(--navy2);color:#fff;border-color:var(--navy2)}
+
+.graficos{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0}
+.g-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 9px;display:flex;flex-direction:column;min-height:0}
+.g-card h3{margin:0;font-size:11.5px;font-weight:800;color:#0f2544}
+.g-card p{margin:1px 0 4px;font-size:10px;color:var(--muted);line-height:1.3}
+.g-card canvas{flex:1;width:100%;min-height:0}
+.g-card .formula{font-size:10px;color:var(--muted);margin-top:3px}
+
+.passo-a-passo{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto}
+.pilula{flex:1;min-width:0;text-align:center;background:#eef1f6;border:1px solid var(--border);border-radius:999px;padding:5px 6px;font-size:9.5px;font-weight:700;color:#7d8aa0;white-space:nowrap}
+.pilula.acesa{background:var(--green-bg);color:#1c7a44;border-color:#bfe6cf}
+
+/* revisão humana */
+.revisao{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto}
+.revisao h3{margin:0;font-size:12.5px;color:#0f2544}
+.revisao .frase{font-size:11px;color:var(--muted)}
+.rev-kpis{display:flex;gap:6px}
+.rev-kpi{flex:1;background:#f5f8fc;border-radius:9px;padding:6px 8px;text-align:center}
+.rev-kpi b{display:block;font-size:16px;color:#0f2544}
+.rev-kpi span{font-size:9.5px;color:var(--muted)}
+table.matriz{border-collapse:collapse;width:100%;font-size:10.5px}
+table.matriz th,table.matriz td{border:1px solid var(--border);padding:3px 5px;text-align:left}
+table.matriz th{background:#eef1f6}
+.rev-botoes{display:flex;gap:6px}
+.rev-botoes button{flex:1;min-height:36px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;font-size:11px;font-weight:700;cursor:pointer}
+.rev-export{width:100%;font:11px/1.4 ui-monospace,monospace;border:1px solid var(--border2);border-radius:8px;padding:6px;height:70px}
+
+.tag-caixa{position:absolute;font-size:10px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-nome">Visão de Rota</div>
+      <div class="marca-sub">Patos de Minas</div>
+    </div>
+    <a class="voltar" id="link-painel" href="/claro" data-local="/claro" data-estatico="painel-claro.html">← painel</a>
+    <script>(function(){var est=location.protocol==='file:'||/github\.io$/.test(location.hostname);var a=document.getElementById('link-painel');var d=est?a.dataset.estatico:a.dataset.local;if(d)a.href=d;})();</script>
+    <div class="sb-selo">MEDIDO</div>
+    <div class="sb-titulo">Como a máquina conta</div>
+    <div class="sb-texto" id="sb-atribuicao">carregando…</div>
+    <div class="sb-spacer"></div>
+    <div class="sb-foot">
+      <div class="frase" style="color:#c7d7f0;font-weight:700;margin-bottom:4px">Nada disto é câmera de Patos de Minas.</div>
+      Vídeo aberto usado só para provar o pipeline.
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topo">
+      <div>
+        <h1>Como a máquina conta</h1>
+        <div class="badges">
+          <span class="badge">MEDIDO — vídeo aberto, não é de Patos de Minas</span>
+          <span class="badge mut" id="badge-fps">processado depois, a … quadros por segundo nesta máquina</span>
+        </div>
+      </div>
+      <select class="clip-select" id="seletor-clipe" hidden></select>
+    </div>
+
+    <div class="stage">
+      <div class="video-col">
+        <div class="video-wrap" id="video-wrap">
+          <video id="video" muted playsinline preload="auto"></video>
+          <canvas id="tela"></canvas>
+          <div class="flash-mais1" id="flash">+1</div>
+
+          <div class="camadas-bar" id="camadas-bar">
+            <button class="cam-sw on" data-camada="imagem"><span class="pt"></span>Imagem</button>
+            <button class="cam-sw on" data-camada="caixas"><span class="pt"></span>Caixas</button>
+            <button class="cam-sw" data-camada="confianca"><span class="pt"></span>Confiança</button>
+            <button class="cam-sw" data-camada="identidade"><span class="pt"></span>Identidade</button>
+            <button class="cam-sw" data-camada="trajetoria"><span class="pt"></span>Trajetória</button>
+            <button class="cam-sw" data-camada="linha"><span class="pt"></span>Linha de contagem</button>
+            <button class="cam-sw corrigir" data-camada="corrigir"><span class="pt"></span>Corrigir à mão</button>
+            <button class="btn-so-numeros" id="btn-so-numeros">Só os números</button>
+          </div>
+
+          <div class="player-bar">
+            <button class="pl-btn" id="btn-play" aria-label="Tocar/pausar">▶</button>
+            <input class="pl-seek" id="seek" type="range" min="0" max="1000" value="0" aria-label="Posição no vídeo">
+            <span class="pl-time" id="tempo">0:00 / 0:00</span>
+            <div class="pl-vel">
+              <button class="pl-btn sm" data-vel="0.5">0.5×</button>
+              <button class="pl-btn sm" data-vel="1">1×</button>
+              <button class="pl-btn sm" data-vel="2">2×</button>
+            </div>
+            <button class="pl-btn sm" id="btn-reiniciar" aria-label="Reiniciar">↺</button>
+          </div>
+        </div>
+        <div class="rodape-legenda" id="rodape-legenda">carregando origem…</div>
+      </div>
+
+      <div class="painel-direita">
+        <div class="tabs-direita">
+          <button class="tab-btn ativo" id="tab-graficos" type="button">Gráficos</button>
+          <button class="tab-btn" id="tab-revisao" type="button">Pessoa × máquina</button>
+        </div>
+
+        <div class="graficos" id="painel-graficos">
+          <div class="g-card">
+            <h3>Contagem acumulada</h3>
+            <p>Cada degrau é um veículo que cruzou a linha.</p>
+            <canvas id="g-a"></canvas>
+          </div>
+          <div class="g-card">
+            <h3>Na cena agora</h3>
+            <p>Objetos vistos neste instante, por tipo.</p>
+            <canvas id="g-b"></canvas>
+          </div>
+          <div class="g-card">
+            <h3>Confiança das detecções</h3>
+            <p>Quão certa a máquina estava de cada caixa.</p>
+            <canvas id="g-c"></canvas>
+          </div>
+          <div class="g-card">
+            <h3>Fluxo projetado</h3>
+            <p>Se o ritmo observado continuasse por uma hora.</p>
+            <canvas id="g-d"></canvas>
+            <div class="formula" id="g-d-formula">cruzamentos ÷ segundos observados × 3600 = veíc./h</div>
+          </div>
+        </div>
+
+        <div class="revisao" id="painel-revisao" hidden>
+          <h3>Pessoa × máquina</h3>
+          <div class="frase">Cada correção vira exemplo para ajustar o leitor depois.</div>
+          <div class="rev-kpis">
+            <div class="rev-kpi"><b id="rev-revisados">0</b><span>rastros revisados</span></div>
+            <div class="rev-kpi"><b id="rev-concordou">0</b><span>pessoa concordou</span></div>
+            <div class="rev-kpi"><b id="rev-trocou">0</b><span>pessoa trocou</span></div>
+          </div>
+          <div id="rev-matriz-wrap" style="overflow-x:auto"></div>
+          <div class="rev-botoes">
+            <button id="btn-exportar">Exportar correções</button>
+            <button id="btn-apagar">Apagar correções</button>
+          </div>
+          <textarea class="rev-export" id="rev-export" hidden readonly></textarea>
+        </div>
+
+        <div class="passo-a-passo" id="passo-a-passo">
+          <div class="pilula" data-passo="quadro">quadro</div>
+          <div class="pilula" data-passo="caixas">caixas (detecção)</div>
+          <div class="pilula" data-passo="identidade">mesmo objeto (rastreio)</div>
+          <div class="pilula" data-passo="linha">cruzou a linha?</div>
+          <div class="pilula" data-passo="soma">soma por tipo</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var CLASSES = {
+  automovel:{cor:"#2563eb",rotulo:"carro"},
+  moto:{cor:"#e2a129",rotulo:"moto"},
+  onibus:{cor:"#1f9d55",rotulo:"ônibus"},
+  caminhao:{cor:"#d6444a",rotulo:"caminhão"},
+  bicicleta:{cor:"#7c3aed",rotulo:"bicicleta"},
+  pedestre:{cor:"#64748b",rotulo:"pedestre"},
+  nao_veiculo:{cor:"#94a3b8",rotulo:"não é veículo"}
+};
+var OPCOES_CORRECAO = [
+  ["automovel","Carro"], ["moto","Moto"], ["onibus","Ônibus"], ["caminhao","Caminhão"],
+  ["bicicleta","Bicicleta"], ["pedestre","Pedestre"], ["nao_veiculo","Não é veículo"]
+];
+
+// -------------- estado --------------
+var st = {
+  clipes: [], clipeAtual: 0,
+  trilhas: null, origem: null,
+  camadas: {imagem:true, caixas:true, confianca:false, identidade:false, trajetoria:false, linha:false, corrigir:false},
+  soNumeros: false,
+  correcoes: {}, // id -> {classeCorrigida, concordou, evento}
+  selecaoAtual: null, // {id, classeOriginal}
+  crossings: [], // [{t, classe}]
+  confSeries: [], // [{t, conf}]
+  cumulSeries: [], // [{t, acumulado:{tipo:n}}]
+  ultimoAcumTotal: 0
+};
+
+var video = document.getElementById("video");
+var tela = document.getElementById("tela");
+var ctx = tela.getContext("2d");
+var videoWrap = document.getElementById("video-wrap");
+
+function chaveLS(){ return "vrm-correcoes-" + (st.clipes[st.clipeAtual] ? st.clipes[st.clipeAtual].clipe : "default"); }
+function carregarCorrecoes(){
+  try{
+    var raw = localStorage.getItem(chaveLS());
+    st.correcoes = raw ? JSON.parse(raw) : {};
+  }catch(e){ st.correcoes = {}; }
+}
+function salvarCorrecoes(){
+  try{ localStorage.setItem(chaveLS(), JSON.stringify(st.correcoes)); }catch(e){}
+}
+
+// -------------- carregar clipes.json (ou fallback 1 item) --------------
+function carregarListaClipes(cb){
+  fetch("camadas/clipes.json").then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(lista){ if(Array.isArray(lista) && lista.length){ st.clipes = lista; } else { fallback(); } cb(); })
+    .catch(function(){ fallback(); cb(); });
+  function fallback(){
+    st.clipes = [{nome:"Chicago — Jane M. Byrne Interchange (demo)", cidade:"Chicago, EUA", publicador:"Wikimedia Commons", clipe:"camadas/clipe.mp4", trilhas:"camadas/trilhas.json"}];
+  }
+}
+
+function montarSeletorClipes(){
+  var sel = document.getElementById("seletor-clipe");
+  if(st.clipes.length <= 1){ sel.hidden = true; return; }
+  sel.hidden = false;
+  sel.innerHTML = "";
+  st.clipes.forEach(function(c,i){
+    var o = document.createElement("option");
+    o.value = i; o.textContent = c.nome + (c.cidade ? " — " + c.cidade : "");
+    sel.appendChild(o);
+  });
+  sel.onchange = function(){ carregarClipe(parseInt(sel.value,10)); };
+}
+
+function carregarClipe(i){
+  st.clipeAtual = i;
+  var c = st.clipes[i];
+  video.src = c.clipe;
+  video.load();
+  carregarCorrecoes();
+  return fetch(c.trilhas).then(function(r){ return r.json(); }).then(function(t){
+    st.trilhas = t;
+    prepararSeries();
+    st.selecaoAtual = null;
+    fecharPopSelecao();
+    atualizarLegendaRodape();
+  });
+}
+
+function carregarOrigem(){
+  fetch("camadas/ORIGEM.json").then(function(r){ return r.ok ? r.json() : null; }).then(function(o){
+    st.origem = o;
+    atualizarLegendaRodape();
+  }).catch(function(){});
+}
+
+function atualizarLegendaRodape(){
+  var o = st.origem;
+  var fps = o ? o.quadros_por_segundo_medido : null;
+  document.getElementById("badge-fps").textContent = "processado depois, a " + (fps!=null ? fps.toFixed(2) : "…") + " quadros por segundo nesta máquina";
+  var atrib = o ? (o.titulo_video + " — " + o.fonte_video + " — " + o.licenca) : "";
+  document.getElementById("sb-atribuicao").textContent = atrib || "atribuição a confirmar";
+  var nota = o && o.nota_trecho ? (" · " + o.nota_trecho) : "";
+  document.getElementById("rodape-legenda").innerHTML =
+    "<b>" + (o ? o.titulo_video : "vídeo de prova") + "</b> — " + (o ? o.fonte_video : "") + ", " + (o ? o.licenca : "") +
+    ". Cidade do vídeo: " + (o ? o.cidade_do_video.split(" — ")[0] : "desconhecida") + " (não é Patos de Minas)." + nota;
+}
+
+// -------------- séries pré-computadas (para gráficos) --------------
+function prepararSeries(){
+  var quadros = (st.trilhas && st.trilhas.quadros) || [];
+  st.confSeries = [];
+  st.cumulSeries = [];
+  st.crossings = [];
+  var ultimo = null;
+  quadros.forEach(function(q){
+    q.caixas.forEach(function(c){
+      if(c[6] != null) st.confSeries.push({t:q.t, conf:c[6]});
+    });
+    st.cumulSeries.push({t:q.t, acumulado:q.acumulado || {}});
+    if(ultimo){
+      Object.keys(q.acumulado||{}).forEach(function(k){
+        var antes = ultimo[k]||0, agora = (q.acumulado||{})[k]||0;
+        for(var i=0;i<(agora-antes);i++) st.crossings.push({t:q.t, classe:k});
+      });
+    }
+    ultimo = q.acumulado || ultimo;
+  });
+}
+
+function classeEfetiva(id, classeOriginal){
+  var cr = st.correcoes[id];
+  if(cr && cr.classeCorrigida) return cr.classeCorrigida;
+  return classeOriginal;
+}
+
+// -------------- interpolação de posição por tempo --------------
+function quadrosVizinhos(t){
+  var qs = (st.trilhas && st.trilhas.quadros) || [];
+  var prev = null, next = null;
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].t <= t) prev = qs[i];
+    if(qs[i].t > t && !next){ next = qs[i]; break; }
+  }
+  return {prev:prev, next:next};
+}
+
+function caixasInterpoladas(t){
+  var viz = quadrosVizinhos(t);
+  var prev = viz.prev, next = viz.next;
+  var out = [];
+  if(!prev){ return out; }
+  var HOLD = 0.6; // segura caixa "sumida" por até 0.6s (frames escassos)
+  var porId = {};
+  prev.caixas.forEach(function(c){ porId[c[0]] = {p:c}; });
+  if(next && (next.t - prev.t) < 1.2){
+    next.caixas.forEach(function(c){
+      if(porId[c[0]]) porId[c[0]].n = c;
+    });
+  }
+  Object.keys(porId).forEach(function(id){
+    var e = porId[id];
+    var c = e.p;
+    var x1=c[2],y1=c[3],x2=c[4],y2=c[5];
+    if(e.n && next){
+      var f = (t - prev.t) / Math.max(0.001,(next.t-prev.t));
+      f = Math.max(0, Math.min(1,f));
+      x1 = c[2] + (e.n[2]-c[2])*f; y1 = c[3] + (e.n[3]-c[3])*f;
+      x2 = c[4] + (e.n[4]-c[4])*f; y2 = c[5] + (e.n[5]-c[5])*f;
+    }
+    if(prev.t < t - HOLD) return; // muito velho, não desenha
+    out.push({id:parseInt(id,10), classe:c[1], x1:x1,y1:y1,x2:x2,y2:y2, conf:c[6]});
+  });
+  return out;
+}
+
+function historicoTrajetoria(id, t, janela){
+  var qs = (st.trilhas && st.trilhas.quadros) || [];
+  var pts = [];
+  qs.forEach(function(q){
+    if(q.t > t || q.t < t - janela) return;
+    q.caixas.forEach(function(c){
+      if(c[0] === id){
+        pts.push({t:q.t, cx:(c[2]+c[4])/2, cy:(c[3]+c[5])/2});
+      }
+    });
+  });
+  pts.sort(function(a,b){ return a.t-b.t; });
+  return pts;
+}
+
+// -------------- desenho no canvas --------------
+function redimensionarTela(){
+  var r = videoWrap.getBoundingClientRect();
+  tela.width = Math.round(r.width);
+  tela.height = Math.round(r.height);
+}
+window.addEventListener("resize", redimensionarTela);
+
+var flashEl = document.getElementById("flash");
+function dispararFlash(x,y,texto){
+  flashEl.textContent = texto || "+1";
+  flashEl.style.left = (x*100) + "%";
+  flashEl.style.top = (y*100) + "%";
+  flashEl.classList.remove("show");
+  void flashEl.offsetWidth;
+  flashEl.classList.add("show");
+  setTimeout(function(){ flashEl.classList.remove("show"); }, 900);
+}
+
+var linhaCoords = null;
+function desenhar(){
+  var W = tela.width, H = tela.height;
+  ctx.clearRect(0,0,W,H);
+  if(!st.trilhas) return;
+  var t = video.currentTime;
+  var caixas = caixasInterpoladas(t);
+
+  if(st.camadas.trajetoria){
+    caixas.forEach(function(b){
+      var hist = historicoTrajetoria(b.id, t, 2.0);
+      if(hist.length < 2) return;
+      var cor = CLASSES[classeEfetiva(b.id,b.classe)] ? CLASSES[classeEfetiva(b.id,b.classe)].cor : "#888";
+      ctx.beginPath();
+      hist.forEach(function(p,i){
+        var x=p.cx*W, y=p.cy*H;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.strokeStyle = cor; ctx.globalAlpha = .55; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1;
+    });
+  }
+
+  if(st.camadas.caixas){
+    caixas.forEach(function(b){
+      var classe = classeEfetiva(b.id, b.classe);
+      var info = CLASSES[classe] || {cor:"#888",rotulo:classe};
+      var x1=b.x1*W,y1=b.y1*H,x2=b.x2*W,y2=b.y2*H;
+      var alpha = st.camadas.confianca ? Math.max(.25, Math.min(1, b.conf||0.5)) : 0.95;
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = info.cor; ctx.lineWidth = 2;
+      ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+      ctx.globalAlpha = 1;
+
+      var corrigido = st.correcoes[b.id] && st.correcoes[b.id].classeCorrigida;
+      var rotuloTopo = "";
+      if(st.camadas.identidade) rotuloTopo += "#" + b.id + " ";
+      rotuloTopo += info.rotulo;
+      if(st.camadas.confianca && b.conf!=null) rotuloTopo += " " + b.conf.toFixed(2);
+      if(corrigido) rotuloTopo += " ✓pessoa";
+      if(st.correcoes[b.id] && st.correcoes[b.id].evento === "parado") rotuloTopo += " · parado(marcado)";
+
+      ctx.font = "700 11px system-ui, sans-serif";
+      var tw = ctx.measureText(rotuloTopo).width;
+      ctx.fillStyle = "rgba(10,20,35,.72)";
+      ctx.fillRect(x1, Math.max(0,y1-16), tw+8, 15);
+      ctx.fillStyle = corrigido ? "#ffd27a" : "#fff";
+      ctx.fillText(rotuloTopo, x1+4, Math.max(11,y1-4));
+
+      b._tela = {x1:x1,y1:y1,x2:x2,y2:y2}; // guarda p/ hit-test
+    });
+  }
+
+  if(st.camadas.linha && st.trilhas.linha){
+    var L = st.trilhas.linha;
+    ctx.beginPath();
+    ctx.moveTo(L[0]*W, L[1]*H); ctx.lineTo(L[2]*W, L[3]*H);
+    ctx.strokeStyle = "#ff5a63"; ctx.lineWidth = 3;
+    var piscar = (Math.floor(t*4) % 2 === 0);
+    ctx.globalAlpha = piscar ? 1 : .55;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  st._ultimasCaixas = caixas;
+}
+
+// -------------- eventos de cruzamento (dispara +1) --------------
+function checarCruzamentos(t){
+  var acumTotal = 0;
+  var viz = quadrosVizinhos(t);
+  if(viz.prev) acumTotal = Object.keys(viz.prev.acumulado||{}).reduce(function(s,k){ return s+viz.prev.acumulado[k]; },0);
+  if(acumTotal > st.ultimoAcumTotal && st.camadas.linha && st.trilhas && st.trilhas.linha){
+    var L = st.trilhas.linha;
+    dispararFlash((L[0]+L[2])/2, (L[1]+L[3])/2);
+  }
+  st.ultimoAcumTotal = acumTotal;
+}
+
+// -------------- switches de camada --------------
+document.getElementById("camadas-bar").addEventListener("click", function(e){
+  var btn = e.target.closest(".cam-sw");
+  if(!btn) return;
+  var cam = btn.dataset.camada;
+  st.camadas[cam] = !st.camadas[cam];
+  btn.classList.toggle("on", st.camadas[cam]);
+  if(cam === "imagem"){
+    videoWrap.classList.toggle("so-numeros", !st.camadas.imagem);
+  }
+  atualizarPassoAPasso();
+});
+
+document.getElementById("btn-so-numeros").addEventListener("click", function(){
+  st.soNumeros = !st.soNumeros;
+  this.classList.toggle("on", st.soNumeros);
+  st.camadas.imagem = !st.soNumeros;
+  document.querySelector('.cam-sw[data-camada="imagem"]').classList.toggle("on", st.camadas.imagem);
+  if(st.soNumeros){
+    st.camadas.caixas = true; st.camadas.trajetoria = true; st.camadas.linha = true;
+    ["caixas","trajetoria","linha"].forEach(function(c){
+      document.querySelector('.cam-sw[data-camada="'+c+'"]').classList.add("on");
+    });
+  }
+  videoWrap.classList.toggle("so-numeros", st.soNumeros);
+  atualizarPassoAPasso();
+});
+
+function atualizarPassoAPasso(){
+  var mapa = {
+    quadro: true,
+    caixas: st.camadas.caixas,
+    identidade: st.camadas.identidade || st.camadas.trajetoria,
+    linha: st.camadas.linha,
+    soma: st.camadas.linha
+  };
+  document.querySelectorAll(".pilula").forEach(function(p){
+    p.classList.toggle("acesa", !!mapa[p.dataset.passo]);
+  });
+}
+
+// -------------- player --------------
+var btnPlay = document.getElementById("btn-play");
+btnPlay.addEventListener("click", function(){
+  if(video.paused){ video.play(); } else { video.pause(); }
+});
+video.addEventListener("play", function(){ btnPlay.textContent = "❚❚"; });
+video.addEventListener("pause", function(){ btnPlay.textContent = "▶"; });
+video.addEventListener("ended", function(){ video.currentTime = 0; video.play(); });
+
+document.querySelectorAll(".pl-vel").forEach(function(){});
+document.querySelectorAll("[data-vel]").forEach(function(b){
+  b.addEventListener("click", function(){ video.playbackRate = parseFloat(b.dataset.vel); });
+});
+document.getElementById("btn-reiniciar").addEventListener("click", function(){
+  video.currentTime = 0;
+});
+
+var seek = document.getElementById("seek");
+var arrastandoSeek = false;
+seek.addEventListener("input", function(){
+  arrastandoSeek = true;
+  if(video.duration) video.currentTime = (seek.value/1000)*video.duration;
+});
+seek.addEventListener("change", function(){ arrastandoSeek = false; });
+
+function fmt(s){
+  if(!isFinite(s)) return "0:00";
+  var m = Math.floor(s/60), r = Math.floor(s%60);
+  return m + ":" + (r<10?"0":"") + r;
+}
+
+function loop(){
+  if(video.duration){
+    if(!arrastandoSeek) seek.value = Math.round((video.currentTime/video.duration)*1000);
+    document.getElementById("tempo").textContent = fmt(video.currentTime) + " / " + fmt(video.duration);
+  }
+  desenhar();
+  checarCruzamentos(video.currentTime);
+  desenharGraficos(video.currentTime);
+  requestAnimationFrame(loop);
+}
+
+// -------------- correção humana (camada 7) --------------
+var popSelecao = null;
+function fecharPopSelecao(){
+  if(popSelecao){ popSelecao.remove(); popSelecao = null; }
+  st.selecaoAtual = null;
+}
+
+tela.addEventListener("click", function(e){
+  if(!st.camadas.corrigir) return;
+  var rect = tela.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var caixas = st._ultimasCaixas || [];
+  var alvo = null;
+  for(var i=caixas.length-1;i>=0;i--){
+    var c = caixas[i]._tela;
+    if(c && x>=c.x1 && x<=c.x2 && y>=c.y1 && y<=c.y2){ alvo = caixas[i]; break; }
+  }
+  if(!alvo) return;
+  video.pause();
+  abrirPopSelecao(alvo, x, y);
+});
+
+function abrirPopSelecao(caixa, x, y){
+  fecharPopSelecao();
+  st.selecaoAtual = {id: caixa.id, classeOriginal: caixa.classe};
+  var pop = document.createElement("div");
+  pop.className = "selecionar-pop";
+  var left = Math.min(x, tela.clientWidth - 270);
+  var top = Math.min(y, tela.clientHeight - 220);
+  pop.style.left = Math.max(4,left) + "px";
+  pop.style.top = Math.max(4,top) + "px";
+  var html = '<div class="sp-titulo">Rastro #' + caixa.id + ' — a máquina disse: ' + (CLASSES[caixa.classe]?CLASSES[caixa.classe].rotulo:caixa.classe) + '</div><div class="sp-grid">';
+  OPCOES_CORRECAO.forEach(function(o){ html += '<button class="sp-btn" data-classe="'+o[0]+'">'+o[1]+'</button>'; });
+  html += '<button class="sp-btn evento" data-evento="parado">Parado na via <span style="font-weight:400;font-size:10px">(marcação da pessoa — o leitor não detecta parada nem acidente sozinho)</span></button>';
+  html += '</div><div class="sp-confirmar">Enter = a máquina acertou</div>';
+  pop.innerHTML = html;
+  videoWrap.appendChild(pop);
+  popSelecao = pop;
+
+  pop.querySelectorAll(".sp-btn[data-classe]").forEach(function(b){
+    b.addEventListener("click", function(){
+      registrarCorrecao(caixa.id, b.dataset.classe, false, null);
+      fecharPopSelecao();
+    });
+  });
+  pop.querySelector(".sp-btn.evento").addEventListener("click", function(){
+    registrarCorrecao(caixa.id, null, false, "parado");
+    fecharPopSelecao();
+  });
+}
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" && popSelecao && st.selecaoAtual){
+    registrarCorrecao(st.selecaoAtual.id, st.selecaoAtual.classeOriginal, true, null);
+    fecharPopSelecao();
+  }
+  if(e.key === "Escape" && popSelecao){ fecharPopSelecao(); }
+});
+
+function registrarCorrecao(id, classeCorrigida, concordou, evento){
+  var atual = st.correcoes[id] || {};
+  st.correcoes[id] = {
+    classeCorrigida: classeCorrigida || atual.classeCorrigida || null,
+    classeOriginal: atual.classeOriginal || (caixaOriginalDe(id) || null),
+    concordou: !!concordou,
+    evento: evento || atual.evento || null,
+    t: Date.now()
+  };
+  salvarCorrecoes();
+  atualizarPainelRevisao();
+}
+
+function caixaOriginalDe(id){
+  var qs = (st.trilhas && st.trilhas.quadros) || [];
+  for(var i=0;i<qs.length;i++){
+    for(var j=0;j<qs[i].caixas.length;j++){
+      if(qs[i].caixas[j][0] === id) return qs[i].caixas[j][1];
+    }
+  }
+  return null;
+}
+
+function atualizarPainelRevisao(){
+  var ids = Object.keys(st.correcoes);
+  var revisados = ids.length;
+  var concordou = 0, trocou = 0;
+  var matriz = {};
+  ids.forEach(function(id){
+    var c = st.correcoes[id];
+    if(c.concordou){ concordou++; return; }
+    if(c.classeCorrigida && c.classeOriginal && c.classeCorrigida !== c.classeOriginal){
+      trocou++;
+      var chave = c.classeOriginal + "→" + c.classeCorrigida;
+      matriz[chave] = (matriz[chave]||0) + 1;
+    }
+  });
+  document.getElementById("rev-revisados").textContent = revisados;
+  document.getElementById("rev-concordou").textContent = concordou;
+  document.getElementById("rev-trocou").textContent = trocou;
+
+  var wrap = document.getElementById("rev-matriz-wrap");
+  var chaves = Object.keys(matriz);
+  if(!chaves.length){
+    wrap.innerHTML = '<div style="font-size:11px;color:var(--muted)">Nenhuma troca de classe ainda.</div>';
+  } else {
+    var html = '<table class="matriz"><tr><th>máquina → pessoa</th><th>vezes</th></tr>';
+    chaves.forEach(function(k){
+      var partes = k.split("→");
+      var rot = (CLASSES[partes[0]]?CLASSES[partes[0]].rotulo:partes[0]) + " → " + (CLASSES[partes[1]]?CLASSES[partes[1]].rotulo:partes[1]);
+      html += '<tr><td>'+rot+'</td><td>'+matriz[k]+'</td></tr>';
+    });
+    html += '</table>';
+    wrap.innerHTML = html;
+  }
+}
+
+document.getElementById("btn-exportar").addEventListener("click", function(){
+  var ta = document.getElementById("rev-export");
+  ta.value = JSON.stringify(st.correcoes, null, 2);
+  ta.hidden = false;
+  ta.focus(); ta.select();
+});
+document.getElementById("btn-apagar").addEventListener("click", function(){
+  st.correcoes = {};
+  salvarCorrecoes();
+  atualizarPainelRevisao();
+  document.getElementById("rev-export").hidden = true;
+});
+
+// tabs direita
+document.getElementById("tab-graficos").addEventListener("click", function(){
+  this.classList.add("ativo");
+  document.getElementById("tab-revisao").classList.remove("ativo");
+  document.getElementById("painel-graficos").hidden = false;
+  document.getElementById("painel-revisao").hidden = true;
+});
+document.getElementById("tab-revisao").addEventListener("click", function(){
+  this.classList.add("ativo");
+  document.getElementById("tab-graficos").classList.remove("ativo");
+  document.getElementById("painel-graficos").hidden = true;
+  document.getElementById("painel-revisao").hidden = false;
+  atualizarPainelRevisao();
+});
+
+// -------------- gráficos (canvas simples) --------------
+function ctxOf(id){ var c = document.getElementById(id); var dctx = c.getContext("2d"); return {c:c, x:dctx}; }
+function ajustarCanvas(c){
+  var r = c.getBoundingClientRect();
+  if(c.width !== Math.round(r.width) || c.height !== Math.round(r.height)){
+    c.width = Math.round(r.width); c.height = Math.round(r.height);
+  }
+}
+
+function desenharGraficos(t){
+  desenharA(t); desenharB(t); desenharC(t); desenharD(t);
+}
+
+function desenharA(t){
+  var o = ctxOf("g-a"); ajustarCanvas(o.c); var x = o.x, W=o.c.width, H=o.c.height;
+  x.clearRect(0,0,W,H);
+  var pts = st.cumulSeries.filter(function(p){ return p.t <= t; });
+  if(!pts.length){ return; }
+  var tipos = Object.keys(CLASSES).filter(function(k){ return k!=="nao_veiculo"; });
+  var max = 1;
+  pts.forEach(function(p){ tipos.forEach(function(k){ max = Math.max(max, p.acumulado[k]||0); }); });
+  var padL=4, padB=4;
+  tipos.forEach(function(k){
+    var info = CLASSES[k];
+    x.beginPath();
+    pts.forEach(function(p,i){
+      var px = padL + (p.t/Math.max(1,st.trilhas.quadros[st.trilhas.quadros.length-1].t)) * (W-padL*2);
+      var py = H-padB - ((p.acumulado[k]||0)/max) * (H-padB*2);
+      if(i===0) x.moveTo(px,py); else x.lineTo(px,py);
+    });
+    x.strokeStyle = info.cor; x.lineWidth = 2; x.stroke();
+  });
+}
+
+function desenharB(t){
+  var o = ctxOf("g-b"); ajustarCanvas(o.c); var x = o.x, W=o.c.width, H=o.c.height;
+  x.clearRect(0,0,W,H);
+  var caixas = st._ultimasCaixas || [];
+  var cont = {};
+  caixas.forEach(function(c){ var cl = classeEfetiva(c.id,c.classe); cont[cl]=(cont[cl]||0)+1; });
+  var tipos = Object.keys(CLASSES);
+  var max = Math.max(1, Math.max.apply(null, tipos.map(function(k){ return cont[k]||0; })));
+  var bw = (W-8)/tipos.length;
+  tipos.forEach(function(k,i){
+    var v = cont[k]||0;
+    var h = (v/max) * (H-16);
+    x.fillStyle = CLASSES[k].cor;
+    x.fillRect(4+i*bw, H-4-h, bw*0.7, h);
+    if(v){ x.fillStyle = "#333"; x.font="9px system-ui"; x.fillText(String(v), 4+i*bw, H-6-h); }
+  });
+}
+
+function desenharC(t){
+  var o = ctxOf("g-c"); ajustarCanvas(o.c); var x = o.x, W=o.c.width, H=o.c.height;
+  x.clearRect(0,0,W,H);
+  var confs = st.confSeries.filter(function(p){ return p.t<=t; }).map(function(p){ return p.conf; });
+  var bins = new Array(10).fill(0);
+  confs.forEach(function(c){ var i = Math.min(9, Math.floor(c*10)); bins[i]++; });
+  var max = Math.max(1, Math.max.apply(null,bins));
+  var bw = (W-8)/10;
+  bins.forEach(function(v,i){
+    var h = (v/max)*(H-14);
+    x.fillStyle = "#2563eb";
+    x.fillRect(4+i*bw, H-4-h, bw*0.75, h);
+  });
+  var lim = st.origem ? st.origem.confianca_minima_usada : 0.1;
+  var lx = 4 + lim*10*bw;
+  x.strokeStyle = "#d6444a"; x.lineWidth = 1.5;
+  x.beginPath(); x.moveTo(lx,2); x.lineTo(lx,H-2); x.stroke();
+}
+
+function desenharD(t){
+  var o = ctxOf("g-d"); ajustarCanvas(o.c); var x = o.x, W=o.c.width, H=o.c.height;
+  x.clearRect(0,0,W,H);
+  var janela = Math.max(1, Math.min(60, t));
+  var n = st.crossings.filter(function(c){ return c.t <= t && c.t >= t-janela; }).length;
+  var porHora = Math.round((n/janela)*3600);
+  x.fillStyle = "#0f2544"; x.font="700 26px system-ui"; x.textBaseline="middle";
+  x.fillText(porHora + " veíc./h", 8, H/2 - 6);
+  x.fillStyle = "#5c6b82"; x.font="11px system-ui";
+  x.fillText(n + " cruzamento(s) em " + janela.toFixed(0) + " s observado(s)", 8, H/2 + 16);
+  document.getElementById("g-d-formula").textContent =
+    n + " cruzamentos ÷ " + janela.toFixed(0) + " s × 3600 = " + porHora + " veíc./h";
+}
+
+// -------------- boot --------------
+carregarOrigem();
+carregarListaClipes(function(){
+  montarSeletorClipes();
+  carregarClipe(0).then(function(){
+    redimensionarTela();
+    atualizarPassoAPasso();
+    atualizarPainelRevisao();
+    requestAnimationFrame(loop);
+  });
+});
+})();
+</script>
+<script src="melhorias.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+ "arquivo_origem": "5-motor/leitor-video/prova/jane_interchange.webm",
+ "titulo_video": "Jane M. Byrne Interchange Traffic",
+ "fonte_video": "Wikimedia Commons",
+ "url_video": "https://commons.wikimedia.org/wiki/File:Jane_M._Byrne_Interchange_Traffic.webm",
+ "licenca": "CC BY-SA 4.0 (autor: ver página do arquivo)",
+ "cidade_do_video": "Chicago, EUA — NÃO é Patos de Minas; usado só para provar o pipeline de ponta a ponta",
+ "trecho_processado_s": [
+  0,
+  30
+ ],
+ "duracao_total_video_s": 31.264,
+ "comando_leitor": "python3 leitor.py --fonte prova/jane_interchange.webm --camera-id cco-demo --fonte-id jane-interchange-demo --linha 0.9,0.7,0.5,0.7 --max-s 30 --imgsz 1920 --conf 0.15 --fps-alvo 5 --saida <jsonl> --trilhas camadas/trilhas.json",
+ "linha_contagem_fracao": [
+  0.9,
+  0.7,
+  0.5,
+  0.7
+ ],
+ "quadros_processados": 150,
+ "quadros_com_deteccao": 107,
+ "quadros_por_segundo_medido": 1.56,
+ "ids_rastreados_distintos": 51,
+ "deteccoes_totais": 581,
+ "cruzamentos_contados_no_trecho": {
+  "automovel": 1,
+  "moto": 0,
+  "onibus": 0,
+  "caminhao": 0,
+  "bicicleta": 0,
+  "pedestre": 0
+ },
+ "confianca_minima_usada": 0.1,
+ "imgsz_usado": 1920,
+ "data_geracao": "2026-09-20",
+ "clipe_web": {
+  "arquivo": "camadas/clipe.mp4",
+  "comando": "ffmpeg -y -ss 0 -t 30 -i jane_interchange.webm -vf scale=960:-2 -an -c:v libx264 -crf 28 -preset veryfast clipe.mp4",
+  "tamanho_bytes": 3268178
+ },
+ "confirmacao_privacidade": "2 quadros conferidos visualmente (t=2s e t=15s) — vista aérea alta de viaduto, sem rosto nem placa legível",
+ "linha_escolhida_por": "varredura de segmentos sobre os centros dos rastros: a linha que mais rastros cruzam"
+}
