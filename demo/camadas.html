@@ -151,7 +151,7 @@ table.matriz th{background:#eef1f6}
       <div>
         <h1>Como a máquina conta</h1>
         <div class="badges">
-          <span class="badge">MEDIDO — vídeo aberto, não é de Patos de Minas</span>
+          <span class="badge">MEDIDO — vídeo de outra cidade, não é de Patos de Minas</span>
           <span class="badge mut" id="badge-fps">processado depois, a … quadros por segundo nesta máquina</span>
         </div>
       </div>
@@ -343,6 +343,18 @@ function carregarOrigem(){
 }
 
 function atualizarLegendaRodape(){
+  var c = (st.clipes||[])[st.clipeAtual||0];
+  if (c && c.credito){ /* clipe com crédito próprio: vale o dele, nunca o do clipe padrão */
+    document.getElementById("badge-fps").textContent = "processado depois, a " + (c.quadros_por_segundo!=null ? Number(c.quadros_por_segundo).toFixed(2) : "…") + " quadros por segundo nesta máquina";
+    document.getElementById("sb-atribuicao").textContent = c.credito;
+    var r = document.getElementById("rodape-legenda"); r.textContent = "";
+    var bb = document.createElement("b"); bb.textContent = c.nome; r.appendChild(bb);
+    r.appendChild(document.createTextNode(" — " + c.credito + " (não é Patos de Minas). "));
+    var g = document.createElement("b"); g.textContent = "GRAVADO" + (c.gravado_em ? " em " + c.gravado_em : "") + " — não é transmissão. "; r.appendChild(g);
+    if (c.url_origem && /^https:\/\//.test(c.url_origem)){ var l = document.createElement("a"); l.href = c.url_origem; l.target = "_blank"; l.rel = "noopener"; l.textContent = "abrir a transmissão original →"; l.id = "link-origem"; r.appendChild(l); }
+    var sc = document.getElementById("seletor-clipe"); if (sc) sc.value = String(st.clipeAtual||0);
+    return;
+  }
   var o = st.origem;
   var fps = o ? o.quadros_por_segundo_medido : null;
   document.getElementById("badge-fps").textContent = "processado depois, a " + (fps!=null ? fps.toFixed(2) : "…") + " quadros por segundo nesta máquina";
@@ -541,6 +553,11 @@ document.getElementById("camadas-bar").addEventListener("click", function(e){
   var cam = btn.dataset.camada;
   st.camadas[cam] = !st.camadas[cam];
   btn.classList.toggle("on", st.camadas[cam]);
+  /* confiança e identidade são escritas na caixa: ligar uma delas liga as caixas junto */
+  if (st.camadas[cam] && (cam === "confianca" || cam === "identidade") && !st.camadas.caixas){
+    st.camadas.caixas = true;
+    var bc = document.querySelector('.cam-sw[data-camada="caixas"]'); if (bc) bc.classList.add("on");
+  }
   if(cam === "imagem"){
     videoWrap.classList.toggle("so-numeros", !st.camadas.imagem);
   }
@@ -850,7 +867,7 @@ function desenharD(t){
 carregarOrigem();
 carregarListaClipes(function(){
   montarSeletorClipes();
-  carregarClipe(0).then(function(){
+  carregarClipe((function(){var n=parseInt(new URLSearchParams(location.search).get("clipe"),10);return (n>=0&&n<st.clipes.length)?n:0})()).then(function(){
     redimensionarTela();
     atualizarPassoAPasso();
     atualizarPainelRevisao();

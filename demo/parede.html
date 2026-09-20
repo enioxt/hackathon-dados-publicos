@@ -1079,9 +1079,10 @@ function carregarClipesSeExistir(){
         o.el.insertBefore(v, hudEl);
         var selo=document.createElement('div');
         selo.className='selo-video';
-        selo.textContent='VÍDEO PÚBLICO — '+(item.publicador||'fonte pública');
+        selo.textContent='VÍDEO PÚBLICO GRAVADO — '+(item.publicador||'fonte pública')+(item.gravado_em?' · '+item.gravado_em:'');
         o.el.appendChild(selo);
         o.el.classList.add('tem-video');
+        o.el.addEventListener('click', function(ev){ ev.stopPropagation(); try{ window.parent.postMessage({tipo:'vr-clipe',indice:i},'*'); }catch(e){} }, true);
       });
     })
     .catch(function(){ console.info('parede: camadas/clipes.json ausente — telas seguem sintéticas'); });

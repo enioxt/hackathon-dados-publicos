@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Ajuda — Visão de Rota</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --navy:#0b2545; --navy2:#12335e; --navy3:#173e73;
+  --text:#1b2433; --muted:#5c6b82; --border:#e2e8f2; --border2:#ccd6e6;
+  --green:#1f9d55; --green-bg:#e7f8ee; --amber:#e2a129; --amber-bg:#fdf3e0;
+  --red:#d6444a; --red-bg:#fbe9ea; --blue:#2563eb; --blue-bg:#e8eefd;
+  --focus:#2563eb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3{color:#0f2544}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+
+/* ---------- topo ---------- */
+.topo-ajuda{background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%);color:#eaf1fc;padding:34px 20px 26px}
+.topo-ajuda .wrap{max-width:980px}
+.topo-ajuda h1{color:#fff;margin:0 0 8px;font-size:clamp(24px,4vw,32px)}
+.topo-ajuda .sub{margin:0 0 18px;color:#c7d7f0;font-size:16px;max-width:640px}
+.topo-botoes{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:14px 18px;font-size:16px;font-weight:700;cursor:pointer;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;text-decoration:none}
+.btn.grande{min-height:56px;font-size:16.5px;padding:14px 22px}
+.btn.primario{background:#ffd27a;color:#12203a}
+.btn.primario:hover{background:#ffdd99}
+.btn.secundario{background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
+.btn.secundario:hover{background:rgba(255,255,255,.16)}
+.btn.claro{background:#fff;color:#0f2544;border:1.5px solid var(--border2)}
+.btn.claro:hover{background:#f3f6fb}
+
+main{padding:28px 0 60px}
+section{margin-top:44px}
+section:first-of-type{margin-top:0}
+h2{font-size:22px;margin:0 0 4px}
+.h-sub{margin:0 0 16px;color:var(--muted);font-size:15px}
+
+/* ---------- comece por aqui ---------- */
+.cards-comece{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card-comece{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:6px;min-height:110px;transition:border-color .15s}
+.card-comece:hover{border-color:var(--blue)}
+.card-comece .ico{font-size:22px}
+.card-comece b{font-size:15.5px;color:#0f2544}
+.card-comece span.desc{font-size:13px;color:var(--muted)}
+.card-comece.desativado{opacity:.55;cursor:default}
+
+/* ---------- faq ---------- */
+#busca-faq{width:100%;border:1.5px solid var(--border2);border-radius:12px;padding:13px 16px;font:inherit;font-size:16px;margin-bottom:16px;background:var(--card)}
+.grupo-faq{margin-bottom:22px}
+.grupo-faq h3{font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);margin:0 0 8px;font-weight:800}
+.item-faq{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.item-faq summary{padding:14px 16px;font-weight:700;font-size:15.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.item-faq summary::-webkit-details-marker{display:none}
+.item-faq summary .seta{color:var(--muted);transition:transform .15s;flex:none}
+.item-faq[open] summary .seta{transform:rotate(90deg)}
+.item-faq .corpo{padding:0 16px 16px}
+.item-faq .corpo p{margin:0 0 12px;color:#33415c;font-size:15px}
+.item-faq .votos{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.item-faq .votos button{border:1.5px solid var(--border2);background:#fff;border-radius:999px;min-height:36px;padding:4px 12px;cursor:pointer;font-size:14px}
+.item-faq .votos button.marcado{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.item-faq .votou{color:var(--green);font-weight:700;font-size:13px}
+.campo-faltou{margin-top:10px;display:none}
+.campo-faltou.aberto{display:block}
+.campo-faltou textarea{width:100%;border:1.5px solid var(--border2);border-radius:10px;padding:10px;font:inherit;font-size:15px;min-height:60px}
+.campo-faltou .btn{margin-top:8px}
+.faq-vazio{color:var(--muted);padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+
+/* ---------- assistente ---------- */
+.caixa-assistente{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;max-width:640px}
+#log-assistente{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto;margin-bottom:12px;padding-right:2px}
+.msg-assistente{padding:11px 14px;border-radius:12px;font-size:15px;max-width:92%;white-space:pre-wrap;word-break:break-word}
+.msg-assistente.eu{align-self:flex-end;background:var(--blue);color:#fff}
+.msg-assistente.ia{align-self:flex-start;background:#eef2f8;color:var(--text)}
+.msg-assistente.pensando{align-self:flex-start;background:#eef2f8;color:var(--muted);font-style:italic}
+.forma-assistente{display:flex;gap:8px;align-items:flex-end}
+.forma-assistente textarea{flex:1;border:1.5px solid var(--border2);border-radius:12px;padding:13px 14px;font:inherit;font-size:18px;resize:none;min-height:52px;max-height:140px}
+.forma-assistente button{min-height:52px;min-width:52px}
+.nota-teto{font-size:12px;color:var(--muted);margin-top:8px}
+.sugestoes-erro{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.sugestoes-erro a{font-size:14px;color:var(--blue);text-decoration:none;font-weight:600}
+.sugestoes-erro a:hover{text-decoration:underline}
+
+/* ---------- time ---------- */
+.cards-time{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:8px}
+.card-time{background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:18px;text-align:left;cursor:pointer;font:inherit}
+.card-time.ativo{border-color:var(--blue);background:var(--blue-bg)}
+.card-time b{display:block;font-size:16px;margin-bottom:4px;color:#0f2544}
+.card-time span{font-size:13.5px;color:var(--muted)}
+.forma-time{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-top:14px;max-width:640px}
+.forma-time .campo{margin-bottom:12px}
+.forma-time label{display:block;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.forma-time textarea{width:100%;border:1.5px solid var(--border2);border-radius:10px;padding:11px 12px;font:inherit;font-size:16px;min-height:52px}
+.aviso-sem-dado{font-size:13px;color:var(--muted);background:#f6f8fc;border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.linha-explica{font-size:13.5px;color:var(--muted);margin-top:4px;margin-bottom:10px}
+.link-pronto{display:none;margin-top:10px;background:var(--green-bg);border:1px solid #bfe6cf;border-radius:10px;padding:12px}
+.link-pronto.aberto{display:block}
+.link-pronto a{color:#1c7a44;font-weight:800;font-size:15px;text-decoration:none}
+.link-pronto a:hover{text-decoration:underline}
+.link-pronto p{margin:0 0 6px;font-size:13px;color:#33513f}
+
+#pedidos-recentes{margin-top:22px}
+#pedidos-recentes h3{font-size:14px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);margin:0 0 8px}
+.pedido-linha{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:14px;text-decoration:none;color:var(--text);display:flex;justify-content:space-between;gap:10px}
+.pedido-linha:hover{border-color:var(--border2)}
+.pedido-linha .quando{color:var(--muted);font-size:12.5px;flex:none}
+
+/* ---------- rodapé ---------- */
+footer{border-top:1px solid var(--border);padding:26px 0 40px;background:var(--card)}
+footer .wrap{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+footer .frase{font-weight:700;color:#0f2544;font-size:15.5px}
+.rodape-links{display:flex;gap:16px;flex-wrap:wrap}
+.rodape-links a{font-size:14px;font-weight:700;color:var(--navy2);text-decoration:none}
+.rodape-links a:hover{text-decoration:underline}
+
+@media (max-width:820px){
+  .cards-comece{grid-template-columns:1fr 1fr}
+  .cards-time{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .cards-comece{grid-template-columns:1fr}
+  .topo-botoes{flex-direction:column}
+  .topo-botoes .btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="topo-ajuda">
+  <div class="wrap">
+    <h1>Ajuda e atendimento</h1>
+    <p class="sub">Pergunte, teste, critique. Tudo o que você escrever aqui ajuda a melhorar a ferramenta.</p>
+    <div class="topo-botoes">
+      <button type="button" class="btn grande primario" data-ir="#faq">Perguntas frequentes</button>
+      <button type="button" class="btn grande secundario" data-ir="#assistente">Falar com o assistente</button>
+      <button type="button" class="btn grande secundario" data-ir="#time">Falar com o time</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section id="comece">
+      <h2>Comece por aqui</h2>
+      <p class="h-sub">Quatro jeitos de ver a ferramenta funcionando.</p>
+      <div class="cards-comece" id="cards-comece">
+        <a class="card-comece" href="#" data-local="/entrar" data-estatico="entrar.html">
+          <span class="ico">🔑</span><b>Entrar como gestor</b><span class="desc">O painel que a prefeitura veria.</span>
+        </a>
+        <a class="card-comece" href="#" data-local="/camadas" data-estatico="camadas.html">
+          <span class="ico">🎥</span><b>Ver a máquina contando</b><span class="desc">O passo a passo da leitura de vídeo.</span>
+        </a>
+        <a class="card-comece" href="#" data-local="/parede" data-estatico="parede.html">
+          <span class="ico">🖥️</span><b>Ver a parede de câmeras</b><span class="desc">Vários pontos ao mesmo tempo.</span>
+        </a>
+        <a class="card-comece" href="#" data-local="" data-estatico="ficha-tecnica.html">
+          <span class="ico">📊</span><b>Ver os números e a stack</b><span class="desc">O que medimos e do que é feito.</span>
+        </a>
+      </div>
+    </section>
+
+    <section id="faq">
+      <h2>Perguntas frequentes</h2>
+      <p class="h-sub">Busque por uma palavra ou abra um grupo.</p>
+      <input id="busca-faq" type="search" placeholder="Buscar uma pergunta… (ex.: placa, preço, código)" aria-label="Buscar nas perguntas frequentes">
+      <div id="grupos-faq"></div>
+    </section>
+
+    <section id="assistente">
+      <h2>Falar com o assistente</h2>
+      <p class="h-sub">Ele lê os arquivos desta demonstração e responde. Pode levar de 5 a 30 segundos.</p>
+      <div class="caixa-assistente">
+        <div id="log-assistente" aria-live="polite"></div>
+        <div class="forma-assistente">
+          <textarea id="ipt-assistente" rows="1" placeholder="Pergunte sobre os dados, o preço ou como funciona…" aria-label="Escrever pergunta ao assistente"></textarea>
+          <button type="button" class="btn primario" id="btn-perguntar" style="background:var(--navy2);color:#fff">Perguntar</button>
+        </div>
+        <p class="nota-teto">Até 12 perguntas por hora por visitante. Sem conta, sem dado pessoal.</p>
+        <div class="sugestoes-erro" id="sugestoes-erro" hidden></div>
+      </div>
+    </section>
+
+    <section id="time">
+      <h2>Falar com o time</h2>
+      <p class="h-sub">Este é o nosso atendimento. Escolha o caminho mais parecido com o seu caso.</p>
+      <div class="cards-time" id="cards-time">
+        <button type="button" class="card-time" data-tipo="Não clica / quebrou" data-titulo="Achei um problema">
+          <b>Achei um problema</b><span>Algo não abriu, não clicou, ou o número parece errado.</span>
+        </button>
+        <button type="button" class="card-time" data-tipo="Ideia de layout" data-titulo="Tenho uma ideia">
+          <b>Tenho uma ideia</b><span>Uma tela, um número ou um caminho que faltou.</span>
+        </button>
+        <button type="button" class="card-time" data-tipo="Outra coisa" data-titulo="Quero usar na minha cidade">
+          <b>Quero usar na minha cidade</b><span>Você trabalha ou decide em outra prefeitura.</span>
+        </button>
+      </div>
+
+      <div class="forma-time" id="forma-time" hidden>
+        <div class="aviso-sem-dado">Não pedimos nome, telefone, e-mail nem qualquer dado pessoal neste formulário.</div>
+        <div class="campo">
+          <label for="campo-aconteceu">O que aconteceu</label>
+          <textarea id="campo-aconteceu" rows="2"></textarea>
+        </div>
+        <div class="campo">
+          <label for="campo-onde">Onde (qual tela ou etapa)</label>
+          <textarea id="campo-onde" rows="1"></textarea>
+        </div>
+        <div class="campo">
+          <label for="campo-esperava">O que você esperava</label>
+          <textarea id="campo-esperava" rows="2"></textarea>
+        </div>
+        <p class="linha-explica">O pedido vira um registro público no GitHub; um agente de IA faz a triagem e uma pessoa do time decide.</p>
+        <button type="button" class="btn" style="background:var(--navy2);color:#fff" id="btn-montar-envio">Enviar</button>
+        <div class="link-pronto" id="link-pronto">
+          <p>Pedido pronto. Abra para publicar no GitHub (pede uma conta gratuita):</p>
+          <a id="link-pronto-a" href="#" target="_blank" rel="noopener noreferrer">Abrir pedido no GitHub →</a>
+        </div>
+      </div>
+
+      <div id="pedidos-recentes" hidden>
+        <h3>Pedidos recentes</h3>
+        <div id="lista-pedidos-recentes"></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="frase">A mesma câmera. Outra pergunta.</div>
+    <div class="rodape-links">
+      <a href="#" data-local="/" data-estatico="painel.html">painel</a>
+      <a href="#" data-local="/inicio" data-estatico="../index.html">apresentação</a>
+      <a href="https://github.com/enioxt/hackathon" target="_blank" rel="noopener noreferrer">código</a>
+    </div>
+  </div>
+</footer>
+
+<script src="melhorias.js"></script>
+<script>
+(function(){
+"use strict";
+
+var REPO = "enioxt/hackathon";
+var EST = location.protocol === "file:" || /github\.io$/.test(location.hostname);
+
+/* =================== data-local / data-estatico (mesmo truque do painel) =================== */
+document.querySelectorAll("[data-local], [data-estatico]").forEach(function(a){
+  var d = EST ? a.getAttribute("data-estatico") : a.getAttribute("data-local");
+  if (d) { a.href = d; }
+  else { a.classList.add("desativado"); a.removeAttribute("href"); a.setAttribute("aria-disabled","true"); }
+});
+
+/* =================== rolagem dos 3 botões do topo =================== */
+document.querySelectorAll("[data-ir]").forEach(function(b){
+  b.addEventListener("click", function(){
+    var alvo = document.querySelector(b.getAttribute("data-ir"));
+    if (alvo) alvo.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+});
+
+/* =================== FAQ =================== */
+var GRUPOS = [
+  {chave:"privacidade", titulo:"Privacidade e dados"},
+  {chave:"como-funciona", titulo:"Como funciona"},
+  {chave:"existe", titulo:"O que já existe e o que falta"},
+  {chave:"prefeitura", titulo:"Para a prefeitura"},
+  {chave:"tecnologia", titulo:"Para quem é de tecnologia"}
+];
+
+var FAQ = [
+  {id:"p1", grupo:"privacidade", pergunta:"Isso é vigilância?", resposta:"Não. O sistema não identifica pessoas: não guarda rosto nem lê placa. Ele conta e classifica veículos por tipo — carro, moto, ônibus, caminhão — e mede fila e espera. Vigilância de segurança pública é outro sistema, com outra finalidade, e não é o nosso assunto."},
+  {id:"p2", grupo:"privacidade", pergunta:"Onde ficam as imagens?", resposta:"O vídeo é lido, a contagem é extraída dele, e a imagem é descartada em seguida. O que fica registrado são números — quantos passaram, de que tipo, quanto tempo esperaram — nunca o quadro de vídeo."},
+  {id:"p3", grupo:"privacidade", pergunta:"Vocês copiam o acervo de câmeras da cidade?", resposta:"Não. Hoje não existe acesso contínuo às câmeras. O que pedimos para começar é uma hora de vídeo já gravado, entregue pela própria prefeitura, sem precisar ligar nada."},
+  {id:"p4", grupo:"privacidade", pergunta:"E se aparecer uma placa ou um rosto no vídeo?", resposta:"A porta de entrada do sistema recusa o que tiver dado pessoal reconhecível — isso já aconteceu em teste, e o envio foi barrado. O objetivo é contar, não identificar; quando o dado foge disso, ele não entra."},
+  {id:"p5", grupo:"privacidade", pergunta:"Quem pode ver os números?", resposta:"Hoje, o time do projeto e quem estiver testando esta demonstração. Numa operação real, os números seriam de quem contratou; o código e o método continuam abertos para qualquer pessoa conferir."},
+  {id:"p6", grupo:"privacidade", pergunta:"E a lei de proteção de dados?", resposta:"Como o sistema não guarda dado pessoal, o risco que essa lei trata — vazamento de identidade — fica reduzido na entrada, de propósito, e não corrigido depois com anonimização."},
+
+  {id:"c1", grupo:"como-funciona", pergunta:"Precisa de câmera nova?", resposta:"Não. A proposta é ler a câmera que a cidade já tem, sem comprar nem instalar equipamento novo. O custo está em processar o vídeo, não em hardware."},
+  {id:"c2", grupo:"como-funciona", pergunta:"Por que com atraso e não no instante?", resposta:"Porque medir antes e depois de uma mudança na via pede comparar a mesma hora em muitos dias diferentes — isso é leitura de vídeo já gravado, de propósito, não uma transmissão contínua. É uma escolha de desenho, não uma limitação escondida."},
+  {id:"c3", grupo:"como-funciona", pergunta:"O que é 'antes e depois'?", resposta:"É comparar os números de um ponto antes de uma mudança na via — um semáforo recalibrado, uma faixa fechada — com os números depois, para saber se a mudança funcionou. Sem essa comparação, mexer na rua é uma aposta."},
+  {id:"c4", grupo:"como-funciona", pergunta:"Quão certo é o contador?", resposta:"Ainda não temos uma contagem conferida à mão num vídeo real desta cidade para comparar — está na lista do que falta. Os números desta demonstração são dado de exemplo, e a tela sempre diz isso."},
+  {id:"c5", grupo:"como-funciona", pergunta:"O que é MEDIDO / SIMULAÇÃO / DADO SINTÉTICO?", resposta:"MEDIDO é número tirado direto de uma fonte real. SIMULAÇÃO é uma conta nossa em cima de dado real. DADO SINTÉTICO é número inventado só para mostrar como a tela funciona. Toda tela carrega essa etiqueta ao lado do número."},
+
+  {id:"e1", grupo:"existe", pergunta:"O que já funciona hoje?", resposta:"O leitor que conta veículos por tipo, a porta de entrada que recusa dado pessoal, o antes e depois por ponto, a etiqueta de origem em todo número, e provas que qualquer pessoa pode refazer. O código é aberto."},
+  {id:"e2", grupo:"existe", pergunta:"O que ainda não têm?", resposta:"Acesso às câmeras da cidade, uma contagem conferida à mão num vídeo real desta cidade, ligação com semáforo, ônibus e estacionamento, medição de erro por tipo de veículo, e operação fora de um notebook."},
+  {id:"e3", grupo:"existe", pergunta:"Já leram câmera desta cidade?", resposta:"Ainda não. Os vídeos reais usados nos testes são abertos ou de transmissões públicas de outras cidades — está dito em cada tela onde isso aparece."},
+
+  {id:"g1", grupo:"prefeitura", pergunta:"O que a cidade precisa entregar para começar?", resposta:"Três coisas pequenas: uma hora de vídeo já gravado de uma câmera, a lista dos pontos monitorados, e um corredor para medir o antes e o depois de uma mudança."},
+  {id:"g2", grupo:"prefeitura", pergunta:"Quanto tempo leva um piloto?", resposta:"Um piloto é pensado para 90 dias em um corredor — tempo suficiente para comparar a mesma hora em dias diferentes, antes e depois de uma mudança."},
+  {id:"g3", grupo:"prefeitura", pergunta:"Como se paga?", resposta:"Em degraus: primeiro um diagnóstico pequeno (um vídeo, um relatório), depois um piloto por contrato, depois uma assinatura por câmera lida quando a operação vira rotina, e por fim licença para outra cidade. Cada degrau só acontece se o anterior mostrou valor."},
+  {id:"g4", grupo:"prefeitura", pergunta:"Dá para ligar semáforo, ônibus, estacionamento?", resposta:"A porta de entrada já aceita esse tipo de dado — o painel mostra essas fontes como 'prontas para ligar'. O que falta é a cidade abrir o acesso; a ligação técnica já está pronta do nosso lado."},
+
+  {id:"t1", grupo:"tecnologia", pergunta:"Qual a stack?", resposta:"Leitura de vídeo em Python, com um modelo de detecção pequeno e rastreio entre quadros; porta de entrada e dados em Bun/TypeScript com SQLite e verificação de dado pessoal; decisão por regra escrita para número, com um classificador de texto só para relato livre; tela em HTML/CSS/JS sem framework, publicada no GitHub Pages."},
+  {id:"t2", grupo:"tecnologia", pergunta:"O código é aberto?", resposta:"Sim. O repositório é público, com as fontes de dados listadas e o comando que recalcula os números publicados."},
+  {id:"t3", grupo:"tecnologia", pergunta:"Como rodar?", resposta:"Baixe o repositório (botão Code → Download ZIP) e abra o arquivo indicado na raiz num navegador — a parte de demonstração funciona sem instalar nada. A parte que lê vídeo de verdade pede Python e as bibliotecas do projeto."},
+  {id:"t4", grupo:"tecnologia", pergunta:"Como contribuir?", resposta:"Pelo botão 'Melhorias', no canto da tela: relate o que não funcionou ou sugira algo, e o pedido vira um registro público no repositório."},
+  {id:"t5", grupo:"tecnologia", pergunta:"Que modelos de IA usam e para quê?", resposta:"Um modelo de detecção pequeno para achar e classificar veículos no quadro de vídeo, com rastreio entre quadros para não contar o mesmo veículo duas vezes; e, à parte, um classificador de texto para relatos em linguagem livre — o que decide sobre um número usa regra escrita, não o modelo."}
+];
+
+function lerVotos(){ try { return JSON.parse(localStorage.getItem("vr_ajuda_votos")||"{}"); } catch(e){ return {}; } }
+function salvarVoto(id, v){ try { var m = lerVotos(); m[id] = v; localStorage.setItem("vr_ajuda_votos", JSON.stringify(m)); } catch(e){} }
+
+function montarUrlGithub(tipo, titulo, corpo){
+  var caminho = "/"+REPO+"/issues/new?template=pedir-melhoria.yml"
+    + "&title=" + encodeURIComponent(titulo)
+    + "&onde=" + encodeURIComponent(location.href)
+    + "&oque=" + encodeURIComponent(corpo)
+    + "&tipo=" + encodeURIComponent(tipo);
+  return "https://github.com/login?return_to=" + encodeURIComponent(caminho);
+}
+
+function montarGrupos(filtro){
+  var wrap = document.getElementById("grupos-faq");
+  wrap.innerHTML = "";
+  var f = (filtro||"").trim().toLowerCase();
+  var achouAlgo = false;
+  GRUPOS.forEach(function(g){
+    var itens = FAQ.filter(function(it){ return it.grupo === g.chave; });
+    if (f) itens = itens.filter(function(it){ return (it.pergunta+" "+it.resposta).toLowerCase().indexOf(f) !== -1; });
+    if (!itens.length) return;
+    achouAlgo = true;
+    var secao = document.createElement("div");
+    secao.className = "grupo-faq";
+    var h3 = document.createElement("h3");
+    h3.textContent = g.titulo;
+    secao.appendChild(h3);
+    itens.forEach(function(it){ secao.appendChild(montarItemFaq(it, !!f)); });
+    wrap.appendChild(secao);
+  });
+  if (!achouAlgo){
+    var vazio = document.createElement("div");
+    vazio.className = "faq-vazio";
+    vazio.textContent = "Nenhuma pergunta encontrada. Tente outra palavra, ou fale com o time abaixo.";
+    wrap.appendChild(vazio);
+  }
+}
+
+function montarItemFaq(it, aberto){
+  var det = document.createElement("details");
+  det.className = "item-faq";
+  if (aberto) det.open = true;
+  var sum = document.createElement("summary");
+  var txt = document.createElement("span"); txt.textContent = it.pergunta;
+  var seta = document.createElement("span"); seta.className = "seta"; seta.textContent = "›"; seta.setAttribute("aria-hidden","true");
+  sum.append(txt, seta);
+  det.appendChild(sum);
+
+  var corpo = document.createElement("div"); corpo.className = "corpo";
+  var p = document.createElement("p"); p.textContent = it.resposta;
+  corpo.appendChild(p);
+
+  var votos = lerVotos();
+  var linhaVotos = document.createElement("div"); linhaVotos.className = "votos";
+  if (votos[it.id]){
+    var jaVotou = document.createElement("span"); jaVotou.className = "votou"; jaVotou.textContent = "Obrigado pelo retorno.";
+    linhaVotos.appendChild(jaVotou);
+  } else {
+    var lbl = document.createElement("span"); lbl.textContent = "Isso ajudou?";
+    var up = document.createElement("button"); up.type = "button"; up.textContent = "👍";
+    var down = document.createElement("button"); down.type = "button"; down.textContent = "👎";
+    linhaVotos.append(lbl, up, down);
+
+    var campoFaltou = document.createElement("div"); campoFaltou.className = "campo-faltou";
+    var ta = document.createElement("textarea"); ta.placeholder = "O que faltou nesta resposta?";
+    var btnEnviarFaltou = document.createElement("button"); btnEnviarFaltou.type = "button"; btnEnviarFaltou.className = "btn claro"; btnEnviarFaltou.textContent = "Enviar";
+    campoFaltou.append(ta, document.createElement("br"), btnEnviarFaltou);
+    corpo.appendChild(campoFaltou);
+
+    up.addEventListener("click", function(){ salvarVoto(it.id,"up"); up.classList.add("marcado"); linhaVotos.innerHTML=""; var ok=document.createElement("span"); ok.className="votou"; ok.textContent="Obrigado pelo retorno."; linhaVotos.appendChild(ok); });
+    down.addEventListener("click", function(){ down.classList.add("marcado"); campoFaltou.classList.add("aberto"); ta.focus(); });
+    btnEnviarFaltou.addEventListener("click", function(){
+      var texto = ta.value.trim();
+      salvarVoto(it.id, "down");
+      var corpoPedido = "Pergunta da FAQ: " + it.pergunta + "\nO que faltou: " + (texto || "(não escrito)");
+      var url = montarUrlGithub("Está confuso", "[melhoria] FAQ: " + it.pergunta.slice(0,50), corpoPedido);
+      var a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Pedido pronto — abrir no GitHub →"; a.style.cssText = "display:inline-block;margin-top:8px;font-weight:800;color:#1c7a44";
+      campoFaltou.innerHTML = ""; campoFaltou.appendChild(a);
+    });
+  }
+  corpo.appendChild(linhaVotos);
+  det.appendChild(corpo);
+  return det;
+}
+
+montarGrupos("");
+document.getElementById("busca-faq").addEventListener("input", function(e){ montarGrupos(e.target.value); });
+
+/* =================== assistente =================== */
+var logEl = document.getElementById("log-assistente");
+var iptEl = document.getElementById("ipt-assistente");
+var btnPerguntar = document.getElementById("btn-perguntar");
+var sugEl = document.getElementById("sugestoes-erro");
+
+function addMsg(classe, texto){
+  var d = document.createElement("div");
+  d.className = "msg-assistente " + classe;
+  d.textContent = texto; // NUNCA innerHTML — texto do visitante e da resposta são dado, não instrução
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+  return d;
+}
+addMsg("ia", "Sou o assistente desta demonstração. Respondo com o que leio nos arquivos do projeto, e digo o que é medido e o que é simulação.");
+
+function registrarPergunta(){
+  try {
+    var lista = JSON.parse(localStorage.getItem("vr_ajuda_perguntas")||"[]");
+    var agora = Date.now();
+    lista = lista.filter(function(t){ return agora - t < 3600000; });
+    lista.push(agora);
+    localStorage.setItem("vr_ajuda_perguntas", JSON.stringify(lista));
+  } catch(e){}
+}
+
+function tresFaqMaisProximas(pergunta){
+  var palavras = (pergunta||"").toLowerCase().split(/\W+/).filter(function(w){ return w.length > 2; });
+  var pontuadas = FAQ.map(function(it){
+    var alvo = (it.pergunta+" "+it.resposta).toLowerCase();
+    var pts = palavras.reduce(function(s,w){ return s + (alvo.indexOf(w) !== -1 ? 1 : 0); }, 0);
+    return {it:it, pts:pts};
+  }).sort(function(a,b){ return b.pts - a.pts; });
+  var top = pontuadas.filter(function(p){ return p.pts > 0; }).slice(0,3).map(function(p){ return p.it; });
+  if (!top.length) top = [FAQ[0], FAQ.filter(function(f){return f.grupo==="como-funciona";})[0], FAQ.filter(function(f){return f.grupo==="prefeitura";})[0]];
+  return top;
+}
+
+function mostrarSugestoes(pergunta){
+  sugEl.innerHTML = "";
+  sugEl.hidden = false;
+  var titulo = document.createElement("p");
+  titulo.style.cssText = "font-size:13px;color:var(--muted);margin:0 0 4px";
+  titulo.textContent = "Perguntas parecidas nas frequentes:";
+  sugEl.appendChild(titulo);
+  tresFaqMaisProximas(pergunta).forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id;
+    a.textContent = it.pergunta;
+    a.addEventListener("click", function(ev){
+      ev.preventDefault();
+      document.getElementById("faq").scrollIntoView({behavior:"smooth"});
+      montarGrupos(it.pergunta.split(" ")[0]);
+    });
+    sugEl.appendChild(a);
+  });
+}
+
+function enviarPergunta(){
+  var msg = iptEl.value.trim();
+  if (!msg) return;
+  iptEl.value = "";
+  sugEl.hidden = true; sugEl.innerHTML = "";
+  addMsg("eu", msg);
+  registrarPergunta();
+  var pensando = addMsg("pensando", "pensando…");
+  btnPerguntar.disabled = true;
+
+  fetch("/chat", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({msg:msg}) })
+    .then(function(r){
+      if (!r.ok) { return r.text().then(function(t){ throw new Error(t || ("HTTP "+r.status)); }); }
+      if (!r.body || !r.body.getReader) { return r.text().then(function(t){ pensando.remove(); addMsg("ia", t); }); }
+      var leitor = r.body.getReader(), decoder = new TextDecoder(), buf = "";
+      var recebeuResposta = false;
+      function passo(){
+        return leitor.read().then(function(res){
+          if (res.done) { if (!recebeuResposta) pensando.remove(); return; }
+          buf += decoder.decode(res.value, {stream:true});
+          var partes = buf.split("\n\n");
+          buf = partes.pop();
+          partes.forEach(function(p){
+            if (p.indexOf("data: ") !== 0) return;
+            try {
+              var ev = JSON.parse(p.slice(6));
+              if (ev.tipo === "resposta"){
+                if (!recebeuResposta) { pensando.remove(); recebeuResposta = true; }
+                addMsg("ia", (ev.erro ? "⚪ " : "") + (ev.texto || ""));
+              }
+            } catch(e){}
+          });
+          return passo();
+        });
+      }
+      return passo();
+    })
+    .catch(function(err){
+      pensando.remove();
+      addMsg("ia", "O assistente só responde na versão ligada ao nosso servidor. Aqui, use as perguntas frequentes ou fale com o time.");
+      mostrarSugestoes(msg);
+    })
+    .finally(function(){ btnPerguntar.disabled = false; iptEl.focus(); });
+}
+
+btnPerguntar.addEventListener("click", enviarPergunta);
+iptEl.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); enviarPergunta(); } });
+
+/* =================== falar com o time =================== */
+var formaTime = document.getElementById("forma-time");
+var linkPronto = document.getElementById("link-pronto");
+var linkProntoA = document.getElementById("link-pronto-a");
+var tipoAtual = null, tituloAtual = null;
+
+document.querySelectorAll(".card-time").forEach(function(c){
+  c.addEventListener("click", function(){
+    document.querySelectorAll(".card-time").forEach(function(x){ x.classList.remove("ativo"); });
+    c.classList.add("ativo");
+    tipoAtual = c.getAttribute("data-tipo");
+    tituloAtual = c.getAttribute("data-titulo");
+    formaTime.hidden = false;
+    linkPronto.classList.remove("aberto");
+    document.getElementById("campo-aconteceu").focus();
+  });
+});
+
+document.getElementById("btn-montar-envio").addEventListener("click", function(){
+  var aconteceu = document.getElementById("campo-aconteceu").value.trim();
+  var onde = document.getElementById("campo-onde").value.trim();
+  var esperava = document.getElementById("campo-esperava").value.trim();
+  if (!aconteceu){ document.getElementById("campo-aconteceu").focus(); return; }
+  var corpo = "O que aconteceu: " + aconteceu + "\nOnde: " + (onde || "(não informado)") + "\nO que esperava: " + (esperava || "(não informado)");
+  var titulo = "[melhoria] " + (tituloAtual || "Pedido") + ": " + aconteceu.slice(0,50);
+  var url = montarUrlGithub(tipoAtual || "Outra coisa", titulo, corpo);
+  linkProntoA.href = url;
+  linkPronto.classList.add("aberto");
+});
+
+/* =================== pedidos recentes (mesma fonte do melhorias.js) =================== */
+fetch("https://api.github.com/repos/"+REPO+"/issues?labels=melhoria&state=all&per_page=6&sort=updated", { headers:{Accept:"application/vnd.github+json"} })
+  .then(function(r){ if (!r.ok) return Promise.reject(r.status); return r.json(); })
+  .then(function(lista){
+    var itens = (lista||[]).filter(function(i){ return !i.pull_request; });
+    if (!itens.length) return;
+    var wrap = document.getElementById("lista-pedidos-recentes");
+    itens.forEach(function(i){
+      var a = document.createElement("a");
+      a.className = "pedido-linha";
+      a.href = i.html_url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      var titulo = document.createElement("span");
+      titulo.textContent = (i.title||"").replace(/^\[melhoria\]\s*/i,"");
+      var quando = document.createElement("span");
+      quando.className = "quando";
+      quando.textContent = new Date(i.updated_at).toLocaleDateString("pt-BR");
+      a.append(titulo, quando);
+      wrap.appendChild(a);
+    });
+    document.getElementById("pedidos-recentes").hidden = false;
+  })
+  .catch(function(){ /* silencioso — bloco fica escondido */ });
+
+})();
+</script>
+</body>
+</html>

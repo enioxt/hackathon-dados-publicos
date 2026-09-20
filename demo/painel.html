@@ -277,7 +277,7 @@ table.memoria tr:last-child td{border-bottom:0}
       <a href="#historico" data-view="historico"><svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M4 4v6h6M20 15a8 8 0 1 1-2.6-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Histórico</a>
     </nav>
 
-<details id="mais-telas" style="margin:6px 10px 0"><summary style="cursor:pointer;color:#c9d6e6;font:600 13px system-ui;padding:10px 8px;list-style:none">＋ Mais telas</summary><div style="display:grid;gap:2px;padding:2px 0 8px"><a class="mt-link" href="/parede" data-local="/parede" data-estatico="parede.html">Parede de câmeras</a><a class="mt-link" href="/participacao" data-local="/participacao" data-estatico="participacao.html">Participação</a><a class="mt-link" href="/observabilidade" data-local="/observabilidade" data-estatico="observabilidade.html">Agentes agora</a><a class="mt-link" href="/app-cidadao" data-local="/app-cidadao" data-estatico="app-cidadao.html">App do cidadão</a><a class="mt-link" href="/entrada" data-local="/entrada" data-estatico="">Entrada de dados</a><a class="mt-link" href="/arquitetura" data-local="/arquitetura" data-estatico="arquitetura.html">Como funciona</a><a class="mt-link" href="/sintetizador" data-local="/sintetizador" data-estatico="sintetizador.html">Mesa de demonstração</a><a class="mt-link" href="/simulador" data-local="/simulador" data-estatico="simulador.html">Simulador de cidade</a><a class="mt-link" href="solucoes.html" data-local="" data-estatico="solucoes.html">O que propomos</a><a class="mt-link" href="o-que-patos-ja-faz.html" data-local="" data-estatico="o-que-patos-ja-faz.html">O que a cidade já fez</a><a class="mt-link" href="/" data-local="/" data-estatico="painel-gestor.html">Versão anterior do painel</a></div></details>
+<details id="mais-telas" style="margin:6px 10px 0"><summary style="cursor:pointer;color:#c9d6e6;font:600 13px system-ui;padding:10px 8px;list-style:none">＋ Mais telas</summary><div style="display:grid;gap:2px;padding:2px 0 8px"><a class="mt-link" href="/camadas" data-local="/camadas" data-estatico="camadas.html">Como a máquina conta</a><a class="mt-link" href="/insights" data-local="/insights" data-estatico="insights.html">Insights das IAs</a><a class="mt-link" href="/operador" data-local="/operador" data-estatico="operador.html">Operador — poucos botões</a><a class="mt-link" href="/ajuda" data-local="/ajuda" data-estatico="ajuda.html">Ajuda e atendimento</a><a class="mt-link" href="/parede" data-local="/parede" data-estatico="parede.html">Parede de câmeras</a><a class="mt-link" href="/participacao" data-local="/participacao" data-estatico="participacao.html">Participação</a><a class="mt-link" href="/observabilidade" data-local="/observabilidade" data-estatico="observabilidade.html">Agentes agora</a><a class="mt-link" href="/app-cidadao" data-local="/app-cidadao" data-estatico="app-cidadao.html">App do cidadão</a><a class="mt-link" href="/entrada" data-local="/entrada" data-estatico="">Entrada de dados</a><a class="mt-link" href="/arquitetura" data-local="/arquitetura" data-estatico="arquitetura.html">Como funciona</a><a class="mt-link" href="/sintetizador" data-local="/sintetizador" data-estatico="sintetizador.html">Mesa de demonstração</a><a class="mt-link" href="/simulador" data-local="/simulador" data-estatico="simulador.html">Simulador de cidade</a><a class="mt-link" href="solucoes.html" data-local="" data-estatico="solucoes.html">O que propomos</a><a class="mt-link" href="o-que-patos-ja-faz.html" data-local="" data-estatico="o-que-patos-ja-faz.html">O que a cidade já fez</a><a class="mt-link" href="/" data-local="/" data-estatico="painel-gestor.html">Versão anterior do painel</a></div></details>
 <style>.mt-link{display:block;padding:9px 12px;border-radius:8px;color:#dbe6f3;text-decoration:none;font:500 14px system-ui}.mt-link:hover{background:rgba(255,255,255,.09)}</style>
 <script>(function(){var est=location.protocol==='file:'||/github\.io$/.test(location.hostname);document.querySelectorAll('.mt-link').forEach(function(a){var d=est?a.dataset.estatico:a.dataset.local;if(d){a.href=d}else{a.remove()}});var v=document.querySelector('.sidebar-footer a[href="/"]');if(v){v.textContent='← apresentação';v.href=est?'../index.html':'/inicio'}})();</script>
     <div class="menu-off-title">Prontas para ligar</div>
@@ -326,7 +326,7 @@ table.memoria tr:last-child td{border-bottom:0}
           <div class="painel-head">
             <div>
               <h2>Câmeras</h2>
-              <p class="h-sub"><span id="cam-atualizado">atualizado há 0 s</span><span class="selo sintetico" style="margin-left:6px">DADO SINTÉTICO — telas de demonstração</span></p>
+              <p class="h-sub"><span id="cam-atualizado">atualizado há 0 s</span><span class="selo sintetico" style="margin-left:6px">vídeo público lido pelo contador nas primeiras telas · o resto é DADO SINTÉTICO</span></p>
             </div>
             <div class="cam-controles">
               <div class="grade-seletor" id="grade-seletor" role="group" aria-label="Quantidade de câmeras">
@@ -837,10 +837,18 @@ function fecharCamerasExpandido(){
   if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
 }
 document.addEventListener("keydown", function(ev){
-  if (ev.key === "Escape") fecharCamerasExpandido();
+  if (ev.key === "Escape"){ fecharCamerasExpandido(); if (typeof fecharFlutuantes === "function") fecharFlutuantes(); }
 });
 window.addEventListener("message", function(ev){
   var d = ev.data;
+  if (d && d.tipo === "vr-clipe" && Number.isInteger(d.indice) && d.indice >= 0 && d.indice < 32){
+    var f1 = document.getElementById("iframe-parede"), f2 = document.getElementById("iframe-parede-overlay");
+    if ((f1 && ev.source === f1.contentWindow) || (f2 && ev.source === f2.contentWindow)){
+      var est = location.protocol === "file:" || /github\.io$/.test(location.hostname);
+      location.href = (est ? "camadas.html" : "/camadas") + "?clipe=" + d.indice;
+    }
+    return;
+  }
   if (!d || d.tipo !== "vr-ponto") return;
   if (!Number.isInteger(d.ponto) || d.ponto < 1 || d.ponto > 32) return;
   var ifr1 = document.getElementById("iframe-parede");

@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visão de Rota — operador</title>
+<style>
+:root{
+  --bg:#f3f6fb; --card:#ffffff; --navy:#0b2545; --navy2:#12335e; --navy3:#173e73;
+  --text:#1b2433; --muted:#5c6b82; --border:#e2e8f2; --border2:#ccd6e6;
+  --green:#1f9d55; --green-bg:#e7f8ee; --amber:#e2a129; --amber-bg:#fdf3e0;
+  --red:#d6444a; --red-bg:#fbe9ea; --blue:#2563eb; --blue-bg:#e8eefd;
+  --focus:#2563eb;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.selo{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.04em;padding:1px 6px;border-radius:6px;margin-left:5px;vertical-align:middle;white-space:nowrap}
+.selo.medido{background:var(--blue-bg);color:#1d4ed8}
+.selo.simulacao{background:var(--amber-bg);color:#93670c}
+.selo.sintetico{background:#eef0f5;color:#586479}
+
+/* ---------- topo ---------- */
+.topo{flex:none;display:flex;align-items:center;gap:14px;padding:8px 100px 8px 16px;background:var(--navy);color:#dbe7fb;font-size:12.5px}
+.topo .titulo{font-weight:800;color:#fff;font-size:14px;white-space:nowrap}
+.topo .dots{display:flex;gap:5px;align-items:center}
+.topo .dot{width:9px;height:9px;border-radius:50%;background:#5f7699;border:1px solid rgba(255,255,255,.25);cursor:default}
+.topo .dot.ativo{background:var(--green)}
+.topo .dot.com-erro{background:var(--amber)}
+.topo .spacer{flex:1}
+.topo .relogio{font-variant-numeric:tabular-nums;color:#c7d7f0}
+.topo .atualizado{color:#8ba1c4}
+.topo a.link{color:#ffd27a;text-decoration:none;font-weight:700;white-space:nowrap}
+.topo a.link:hover{text-decoration:underline}
+
+/* ---------- corpo ---------- */
+.corpo{flex:1;display:flex;gap:12px;padding:12px 16px;min-height:0}
+.coluna-esq{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.coluna-dir{width:380px;flex:none;display:flex;flex-direction:column;min-height:0}
+@media (max-width:900px){.corpo{flex-direction:column}.coluna-dir{width:100%}}
+
+/* ---------- botões enormes ---------- */
+.grade-comandos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:700px){.grade-comandos{grid-template-columns:1fr}}
+.btn-comando{display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:14px 16px;min-height:112px;cursor:pointer;box-shadow:0 1px 2px rgba(15,37,68,.05)}
+.btn-comando:hover{border-color:var(--navy2);box-shadow:0 3px 10px rgba(15,37,68,.1)}
+.btn-comando:disabled{opacity:.55;cursor:default}
+.btn-comando.selecionado{border-color:var(--navy2);background:#f5f8ff}
+.btn-comando .ico{flex:none;width:46px;height:46px;border-radius:12px;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center}
+.btn-comando .ico svg{width:24px;height:24px}
+.btn-comando .txt b{display:block;font-size:15.5px;font-weight:800;color:#0f2544;margin-bottom:3px}
+.btn-comando .txt span{display:block;font-size:12px;color:var(--muted);line-height:1.4}
+.btn-comando.c5 .ico{background:#93670c}
+
+/* ---------- painel esteira ---------- */
+.painel-esteira{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.painel-esteira.vazio{align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:24px}
+.painel-esteira .cabecalho{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;flex:none}
+.painel-esteira h2{margin:0;font-size:14.5px;font-weight:800;color:#0f2544}
+.painel-esteira .fechar{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:8px}
+.painel-esteira .fechar:hover{background:#eef2f8}
+.esteira-scroll{flex:1;min-height:0;overflow-y:auto;padding-right:2px}
+
+.passo{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);opacity:.35}
+.passo:last-child{border-bottom:0}
+.passo.ativo{opacity:1}
+.passo.feito{opacity:1}
+.passo .bolha{flex:none;width:22px;height:22px;border-radius:50%;background:#e2e8f2;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin-top:1px}
+.passo.ativo .bolha{background:var(--amber);color:#5a3d05}
+.passo.feito .bolha{background:var(--green);color:#fff}
+.passo .passo-corpo{min-width:0;flex:1}
+.passo .nome{font-weight:800;font-size:12.5px;color:#0f2544}
+.passo .oque{font-size:12px;color:var(--text);margin-top:1px}
+.passo .meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:6px}
+.passo .meta code{background:#f1f4f9;border-radius:5px;padding:0 4px;font-size:10.5px}
+.regra-aplicada{background:#f6f8fc;border:1px dashed var(--border2);border-radius:10px;padding:8px 10px;font-size:12px;margin-top:4px}
+.regra-aplicada b{color:#0f2544}
+.label-regra{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.03em;color:#5c6b82;text-transform:uppercase;margin-bottom:3px}
+.resposta-assistente{background:#f6f8fc;border-radius:10px;padding:9px 10px;font-size:12.5px;white-space:pre-wrap;margin-top:4px;min-height:20px}
+.pensando{color:var(--muted);font-style:italic}
+
+.resultado{background:#eef4ff;border:1px solid #cfe0fb;border-radius:12px;padding:12px;margin-top:10px;font-size:13px;flex:none}
+.resultado h3{margin:0 0 6px;font-size:13.5px;color:#0f2544}
+.resultado .linha{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed #d5e2f7;font-size:12.5px}
+.resultado .linha:last-child{border-bottom:0}
+.resultado .linha b{color:#0f2544}
+.veredito{display:inline-block;font-size:11px;font-weight:800;border-radius:8px;padding:3px 9px;letter-spacing:.02em}
+.veredito.melhorou{background:var(--green-bg);color:#1c7a44}
+.veredito.piorou{background:var(--red-bg);color:#a8262d}
+.veredito.sem-efeito{background:#eef0f5;color:#586479}
+
+.naosei{background:#fdf3e0;border:1px solid #f2dba8;border-radius:10px;padding:9px 10px;font-size:12px;color:#6b4e0a;margin-top:10px;flex:none}
+.naosei b{display:block;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:#93670c;margin-bottom:3px}
+
+.acoes-humanas{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;flex:none}
+.acoes-humanas button{border:0;border-radius:10px;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;min-height:44px}
+.acoes-humanas .aprovar{background:var(--navy2);color:#fff}
+.acoes-humanas .aprovar:hover{background:var(--navy3)}
+.acoes-humanas .descartar{background:#fff;color:#0f2544;border:1.5px solid var(--border2)}
+.acoes-humanas .copiar{background:#fff;color:#0f2544;border:1.5px solid var(--border2)}
+.aviso-simulacao{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic}
+.toast-ok{font-size:12px;color:#1c7a44;font-weight:700;margin-top:6px}
+
+/* ---------- decisões do turno ---------- */
+.decisoes{margin-top:10px;flex:none;border-top:1px solid var(--border);padding-top:8px}
+.decisoes summary{cursor:pointer;font-size:12px;font-weight:700;color:#0f2544;list-style:none}
+.decisoes summary::-webkit-details-marker{display:none}
+.decisoes summary::before{content:"▸ ";color:var(--muted)}
+.decisoes[open] summary::before{content:"▾ "}
+.decisao-item{font-size:11.5px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border)}
+.decisao-item:last-child{border-bottom:0}
+.decisao-item b{color:#0f2544}
+
+/* ---------- rodapé regras ---------- */
+.rodape-regras{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:8px 16px 8px 168px;background:#eef2f8;border-top:1px solid var(--border)}
+@media (max-width:640px){.rodape-regras{padding:8px 16px;padding-bottom:64px}}
+.pilula{background:#fff;border:1px solid var(--border2);border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;color:#0f2544;cursor:pointer}
+.pilula:hover{border-color:var(--navy2)}
+.pilula-detalhe{background:#fff;border:1px solid var(--border2);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--text);max-width:520px}
+
+.rodape-espaco{flex:none;height:8px}
+@media (max-width:640px){.rodape-espaco{height:56px}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <span class="titulo">Visão de Rota — operador</span>
+  <div class="dots" id="dots" role="img" aria-label="estado dos 9 agentes"></div>
+  <span class="spacer"></span>
+  <span class="atualizado" id="atualizado">agentes: consultando…</span>
+  <span class="relogio" id="relogio">--:--:--</span>
+  <a class="link" href="/claro" data-local="/claro" data-estatico="painel-claro.html">painel completo →</a>
+</header>
+
+<div class="corpo">
+  <div class="coluna-esq">
+    <div class="grade-comandos" id="grade-comandos"></div>
+  </div>
+  <div class="coluna-dir">
+    <div class="painel-esteira vazio" id="painel-esteira">
+      Escolha um comando à esquerda. Os agentes envolvidos aparecem aqui, um a um, enquanto trabalham.
+    </div>
+  </div>
+</div>
+
+<footer class="rodape-regras" id="rodape-regras"></footer>
+<div class="rodape-espaco" aria-hidden="true"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =================== semente fixa (determinístico) =================== */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+var SEMENTE_BASE = 20260920;
+function rngPara(offset){ return mulberry32(SEMENTE_BASE + offset); }
+
+/* =================== base da API =================== */
+var PORTA_API = 8787;
+var MESMA_ORIGEM = (location.protocol !== "file:") && (String(location.port) === String(PORTA_API) || location.hostname === "127.0.0.1" && String(location.port) === String(PORTA_API));
+var API_BASE = (location.protocol === "file:") ? null
+  : (String(location.port) === String(PORTA_API) ? "" : "http://127.0.0.1:" + PORTA_API);
+var CORS_BARRADO = false; // vira true na primeira falha de rede a uma chamada absoluta — some assistente sabe que a rota /operador ainda não está ligada
+
+function urlApi(caminho){ return (API_BASE === null ? null : API_BASE + caminho); }
+
+function buscarJSON(caminho, timeoutMs){
+  var u = urlApi(caminho);
+  if (u === null) return Promise.resolve(null);
+  var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var t = ctrl ? setTimeout(function(){ ctrl.abort(); }, timeoutMs || 6000) : null;
+  return fetch(u, {cache:"no-store", signal: ctrl ? ctrl.signal : undefined}).then(function(r){
+    if (t) clearTimeout(t);
+    if (!r.ok) return null;
+    return r.json();
+  }).catch(function(){ if (t) clearTimeout(t); if (API_BASE) CORS_BARRADO = true; return null; });
+}
+
+/* =================== 12 pontos fixos (mesma leitura sintética do painel do gestor) =================== */
+var PONTOS = [
+  {id:1,  corredor:"A", status:"verde"},
+  {id:2,  corredor:"A", status:"verde"},
+  {id:3,  corredor:"A", status:"ambar"},
+  {id:4,  corredor:"A", status:"verde"},
+  {id:5,  corredor:"B", status:"ambar"},
+  {id:6,  corredor:"B", status:"verde"},
+  {id:7,  corredor:"B", status:"vermelho"},
+  {id:8,  corredor:"B", status:"verde"},
+  {id:9,  corredor:"C", status:"ambar"},
+  {id:10, corredor:"C", status:"verde"},
+  {id:11, corredor:"C", status:"vermelho"},
+  {id:12, corredor:"C", status:"verde"}
+];
+var CACHE_PONTO = {};
+function dadosPonto(id){
+  if (CACHE_PONTO[id]) return CACHE_PONTO[id];
+  var p = PONTOS.filter(function(x){return x.id===id;})[0];
+  var rng = rngPara(id*97);
+  var persistenciaMin = p.status==="vermelho" ? Math.round(11+rng()*17) : (p.status==="ambar" ? Math.round(4+rng()*8) : Math.round(1+rng()*3));
+  var filaM = p.status==="vermelho" ? Math.round(90+rng()*70) : (p.status==="ambar" ? Math.round(45+rng()*30) : Math.round(5+rng()*15));
+  var d = {id:id, nome:"Ponto "+id, corredor:p.corredor, status:p.status, persistenciaMin:persistenciaMin, filaM:filaM};
+  CACHE_PONTO[id] = d;
+  return d;
+}
+function pesoSeveridade(s){ return s==="vermelho" ? 3 : (s==="ambar" ? 1 : 0); }
+function urgencia(d){ return pesoSeveridade(d.status) * d.persistenciaMin; }
+
+/* =================== agentes / telemetria =================== */
+var AGENTES = ["leitor-de-video","porta-de-entrada","verificador-de-privacidade","agregador","detector-de-evento","decisao-tipada","assistente","triagem-de-melhorias","gerador-de-fluxo"];
+var resumoTelemetria = null; // último /api/telemetria/resumo, ou null se não deu para medir
+var ultimaAtualizacaoTel = null;
+
+function agenteResumo(nome){
+  if (!resumoTelemetria || !resumoTelemetria.agentes) return null;
+  for (var i=0;i<resumoTelemetria.agentes.length;i++) if (resumoTelemetria.agentes[i].agente===nome) return resumoTelemetria.agentes[i];
+  return null;
+}
+
+function montarDots(){
+  var wrap = document.getElementById("dots");
+  wrap.innerHTML = "";
+  AGENTES.forEach(function(nome){
+    var r = agenteResumo(nome);
+    var estado = r ? r.estado : "calado";
+    var dot = document.createElement("span");
+    dot.className = "dot " + (estado==="ativo"?"ativo":(estado==="com-erro"?"com-erro":""));
+    var titulo = nome + " — " + (estado==="ativo"?"ativo":(estado==="com-erro"?"recusou/erro":"calado"));
+    if (r && r.ultimo) titulo += " · " + r.ultimo.resumo;
+    dot.title = titulo;
+    wrap.appendChild(dot);
+  });
+}
+
+function atualizarRelogio(){
+  var d = new Date();
+  document.getElementById("relogio").textContent = d.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  var rot = document.getElementById("atualizado");
+  if (ultimaAtualizacaoTel === null) { rot.textContent = CORS_BARRADO ? "agentes: sem conexão com o servidor de dados (cópia isolada)" : "agentes: consultando…"; return; }
+  var s = Math.max(0, Math.round((Date.now()-ultimaAtualizacaoTel)/1000));
+  rot.textContent = "agentes: atualizado há " + s + " s";
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+function atualizarTelemetria(){
+  buscarJSON("/api/telemetria/resumo", 5000).then(function(j){
+    if (j) { resumoTelemetria = j; ultimaAtualizacaoTel = Date.now(); }
+    montarDots();
+  });
+}
+atualizarTelemetria();
+setInterval(atualizarTelemetria, 20000);
+
+/* duração de um passo: usa mediana real da telemetria (última hora) se existir, senão estimado com semente fixa */
+function duracaoPasso(agente, offsetSemente){
+  var r = agenteResumo(agente);
+  if (r && r.duracao_mediana_ms != null && r.eventos_1h > 0) {
+    return { texto: r.duracao_mediana_ms + " ms", selo: "medido", detalhe: "mediana medida na última hora (" + r.eventos_1h + " evento(s))" };
+  }
+  var rng = rngPara(offsetSemente);
+  var ms = Math.round(120 + rng()*760);
+  return { texto: "≈ " + ms + " ms", selo: "estimado", detalhe: "estimado — sem telemetria real deste agente na última hora" };
+}
+
+/* =================== decisões do turno (localStorage) =================== */
+var CHAVE_DECISOES = "vro_decisoes_turno_v1";
+function lerDecisoes(){ try { var raw = localStorage.getItem(CHAVE_DECISOES); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
+function salvarDecisao(item){
+  try {
+    var l = lerDecisoes(); l.unshift(item);
+    localStorage.setItem(CHAVE_DECISOES, JSON.stringify(l.slice(0,50)));
+  } catch(e) { /* localStorage indisponível — decisão fica só na tela desta sessão */ }
+}
+function renderDecisoes(container){
+  var lista = lerDecisoes();
+  var det = document.createElement("details");
+  det.className = "decisoes";
+  var sum = document.createElement("summary");
+  sum.textContent = "Decisões do turno (" + lista.length + ")";
+  det.appendChild(sum);
+  if (!lista.length) {
+    var vazio = document.createElement("div");
+    vazio.className = "decisao-item"; vazio.textContent = "nenhuma decisão registrada ainda nesta sessão.";
+    det.appendChild(vazio);
+  } else {
+    lista.slice(0,12).forEach(function(it){
+      var d = document.createElement("div"); d.className = "decisao-item";
+      var hora = new Date(it.ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+      d.innerHTML = "<b>" + it.tipo + "</b> · " + hora + " · " + it.quem + " — " + it.resumo;
+      det.appendChild(d);
+    });
+  }
+  container.appendChild(det);
+}
+
+/* =================== assistente (1 chamada por comando) =================== */
+function perguntarAssistente(msg, elResposta){
+  elResposta.textContent = "pensando…";
+  elResposta.classList.add("pensando");
+  if (API_BASE === null) {
+    elResposta.classList.remove("pensando");
+    elResposta.textContent = "assistente desligado nesta cópia — resposta preparada: " + msg.split(".")[0] + ".";
+    return Promise.resolve();
+  }
+  var u = urlApi("/chat");
+  var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var t = ctrl ? setTimeout(function(){ ctrl.abort(); }, 35000) : null;
+  return fetch(u, {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({msg: msg}), signal: ctrl ? ctrl.signal : undefined})
+    .then(function(r){
+      if (!r.ok || !r.body) return r.text().then(function(txt){ throw new Error(txt || ("status "+r.status)); });
+      var rd = r.body.getReader(), dec = new TextDecoder(), buf = "";
+      function passo(){
+        return rd.read().then(function(res){
+          if (res.done) return;
+          buf += dec.decode(res.value, {stream:true});
+          var partes = buf.split("\n\n"); buf = partes.pop();
+          partes.forEach(function(p){
+            if (p.indexOf("data: ") !== 0) return;
+            var ev; try { ev = JSON.parse(p.slice(6)); } catch(e){ return; }
+            if (ev.tipo === "resposta") {
+              elResposta.classList.remove("pensando");
+              elResposta.textContent = (ev.erro ? "⚪ " : "") + (ev.texto || "(sem resposta)");
+            }
+          });
+          return passo();
+        });
+      }
+      return passo();
+    })
+    .catch(function(err){
+      if (t) clearTimeout(t);
+      CORS_BARRADO = true;
+      elResposta.classList.remove("pensando");
+      elResposta.textContent = "assistente desligado nesta cópia — resposta preparada: " + msg.split(".")[0] + ". (" + (err && err.message ? err.message.slice(0,80) : "sem conexão") + ")";
+    })
+    .then(function(){ if (t) clearTimeout(t); });
+}
+
+/* =================== helpers de UI da esteira =================== */
+function el(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+function abrirEsteira(titulo){
+  var painel = document.getElementById("painel-esteira");
+  painel.className = "painel-esteira";
+  painel.innerHTML = "";
+  var cab = el("div","cabecalho");
+  cab.appendChild(el("h2", null, titulo));
+  var fechar = el("button","fechar","✕");
+  fechar.type = "button"; fechar.setAttribute("aria-label","fechar");
+  fechar.onclick = function(){ painel.className = "painel-esteira vazio"; painel.innerHTML = "Escolha um comando à esquerda. Os agentes envolvidos aparecem aqui, um a um, enquanto trabalham."; };
+  cab.appendChild(fechar);
+  painel.appendChild(cab);
+  var scroll = el("div","esteira-scroll");
+  painel.appendChild(scroll);
+  return scroll;
+}
+
+function novoPasso(scroll, agente, oque){
+  var p = el("div","passo");
+  var bolha = el("div","bolha","•");
+  var corpo = el("div","passo-corpo");
+  corpo.appendChild(el("div","nome",agente));
+  corpo.appendChild(el("div","oque",oque));
+  var meta = el("div","meta");
+  corpo.appendChild(meta);
+  var extra = el("div");
+  corpo.appendChild(extra);
+  p.appendChild(bolha); p.appendChild(corpo);
+  scroll.appendChild(p);
+  p.classList.add("ativo");
+  scroll.scrollTop = scroll.scrollHeight;
+  return {
+    el: p, meta: meta, extra: extra,
+    concluir: function(origemTxt, semente){
+      var dur = duracaoPasso(agente, semente);
+      meta.innerHTML = '<span>' + dur.texto + '</span><span class="selo ' + (dur.selo==="medido"?"medido":"sintetico") + '">' + (dur.selo==="medido"?"MEDIDO":"ESTIMADO") + '</span><code>' + origemTxt + '</code>';
+      p.classList.remove("ativo"); p.classList.add("feito"); bolha.textContent = "✓";
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+  };
+}
+
+function passoRegra(scroll, texto){
+  var pr = novoPasso(scroll, "decisao-tipada", "aplicou a regra da casa a este comando");
+  return new Promise(function(res){
+    setTimeout(function(){
+      var box = el("div","regra-aplicada");
+      box.innerHTML = '<span class="label-regra">decisão por regra, não por modelo</span><b>Regra:</b> ' + texto;
+      pr.extra.appendChild(box);
+      pr.concluir("cálculo interno (sem rota externa)", 900);
+      res();
+    }, 260);
+  });
+}
+
+function passoAssistente(scroll, msg){
+  var pa = novoPasso(scroll, "assistente", "explicou o resultado em português");
+  var resp = el("div","resposta-assistente");
+  pa.extra.appendChild(resp);
+  return perguntarAssistente(msg, resp).then(function(){
+    pa.concluir(API_BASE===null ? "sem conexão (arquivo local)" : "POST /chat", 950);
+  });
+}
+
+function espera(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+function blocoNaoSei(container, texto){
+  var b = el("div","naosei");
+  b.innerHTML = "<b>O que eu não sei</b>" + texto;
+  container.appendChild(b);
+}
+
+/* =================== os 5 comandos =================== */
+var ICONES = {
+  lupa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  alvo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
+  grafico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M12 19V4M20 19v-6"/></svg>',
+  prancheta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8 11h8M8 15h5"/></svg>',
+  megafone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h3l6 4V6l-6 4H3z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>'
+};
+
+var COMANDOS = [
+  {
+    id:"c1", icone:"lupa", titulo:"O que está acontecendo agora?",
+    sub:"Resumo da cidade: pontos em atenção/críticos, maior fila, o que mudou na última hora.",
+    acao: 5, executar: executarC1
+  },
+  {
+    id:"c2", icone:"alvo", titulo:"Onde agir primeiro?",
+    sub:"Ordena os pontos críticos por urgência, com o porquê de cada um.",
+    acao: 5, executar: executarC2
+  },
+  {
+    id:"c3", icone:"grafico", titulo:"A última mudança funcionou?",
+    sub:"Compara antes e depois de uma intervenção, com veredito e tamanho da amostra.",
+    acao: 5, executar: executarC3
+  },
+  {
+    id:"c4", icone:"prancheta", titulo:"Fechar o relatório do turno",
+    sub:"Monta um relatório de 1 tela com números, eventos e o que ficou sem medir.",
+    acao: 5, executar: executarC4
+  },
+  {
+    id:"c5", icone:"megafone", titulo:"Avisar quem precisa", classe:"c5",
+    sub:"Propõe um aviso para quem cuida do ponto crítico — e para antes de enviar.",
+    acao: 5, executar: executarC5
+  }
+];
+
+function montarBotoes(){
+  var grade = document.getElementById("grade-comandos");
+  grade.innerHTML = "";
+  COMANDOS.forEach(function(c){
+    var b = el("button","btn-comando" + (c.classe?(" "+c.classe):""));
+    b.type = "button"; b.id = "btn-"+c.id;
+    var ico = el("div","ico"); ico.innerHTML = ICONES[c.icone];
+    var txt = el("div","txt");
+    txt.appendChild(el("b",null,c.titulo));
+    txt.appendChild(el("span",null,c.sub));
+    b.appendChild(ico); b.appendChild(txt);
+    b.onclick = function(){ rodarComando(c); };
+    grade.appendChild(b);
+  });
+}
+
+var comandoEmAndamento = false;
+function rodarComando(c){
+  if (comandoEmAndamento) return;
+  comandoEmAndamento = true;
+  document.querySelectorAll(".btn-comando").forEach(function(b){ b.disabled = true; });
+  var atual = document.getElementById("btn-"+c.id);
+  if (atual) atual.classList.add("selecionado");
+  var scroll = abrirEsteira(c.titulo);
+  Promise.resolve(c.executar(scroll)).catch(function(e){
+    var erro = el("div","naosei");
+    erro.innerHTML = "<b>Falha no comando</b>não foi possível concluir: " + (e && e.message ? e.message : "erro desconhecido");
+    scroll.appendChild(erro);
+  }).then(function(){
+    comandoEmAndamento = false;
+    document.querySelectorAll(".btn-comando").forEach(function(b){ b.disabled = false; b.classList.remove("selecionado"); });
+  });
+}
+
+/* --- comando 1 --- */
+function executarC1(scroll){
+  var p1 = novoPasso(scroll, "leitor-de-video", "leu os quadros das câmeras cobertas");
+  return espera(220).then(function(){
+    p1.concluir("leitura de vídeo (fora do escopo desta cópia)", 101);
+    var p2 = novoPasso(scroll, "agregador", "juntou as leituras num retrato da cidade");
+    return buscarJSON("/api/estado", 5000).then(function(j){
+      var origem = (j && j.cameras && j.cameras.length) ? "GET /api/estado" : "GET /api/estado (sem dado real — usando leitura de referência)";
+      p2.concluir(origem, 102);
+      var todos = PONTOS.map(function(x){ return dadosPonto(x.id); });
+      var criticos = todos.filter(function(d){return d.status==="vermelho";});
+      var atencao = todos.filter(function(d){return d.status==="ambar";});
+      var normais = todos.filter(function(d){return d.status==="verde";});
+      var maiorFila = criticos.concat(atencao).sort(function(a,b){return b.filaM-a.filaM;})[0] || todos[0];
+
+      var p3 = novoPasso(scroll, "detector-de-evento", "comparou cada ponto com o padrão da mesma hora");
+      return espera(200).then(function(){
+        p3.concluir("cálculo sobre os dados agregados", 103);
+        return passoRegra(scroll, "fila acima de 60 m por 10 min = <b>atenção</b>; acima de 120 m por 10 min = <b>crítico</b>.").then(function(){
+          var msg = "Resuma em português simples, em 2 a 3 frases curtas, para um operador sem tempo: " +
+            criticos.length + " ponto(s) crítico(s), " + atencao.length + " em atenção, " + normais.length + " normais. " +
+            "A maior fila está no " + maiorFila.nome + " (Corredor " + maiorFila.corredor + "), com fila de " + maiorFila.filaM + " metros há " + maiorFila.persistenciaMin + " minutos. " +
+            "Não invente números novos, apenas explique o que isso significa para quem está operando agora.";
+          return passoAssistente(scroll, msg).then(function(){
+            var res = el("div","resultado");
+            res.appendChild(el("h3","Retrato agora"));
+            var l1 = el("div","linha"); l1.innerHTML = "<span>Críticos</span><b>" + criticos.length + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l1);
+            var l2 = el("div","linha"); l2.innerHTML = "<span>Em atenção</span><b>" + atencao.length + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l2);
+            var l3 = el("div","linha"); l3.innerHTML = "<span>Normais</span><b>" + normais.length + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l3);
+            var l4 = el("div","linha"); l4.innerHTML = "<span>Maior fila</span><b>" + maiorFila.nome + " · " + maiorFila.filaM + " m" + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l4);
+            scroll.appendChild(res);
+            blocoNaoSei(scroll, "causas fora da câmera (obra, evento programado); câmeras fora da cobertura atual; dado de semáforo, transporte e estacionamento (fontes ainda não ligadas).");
+            renderDecisoes(scroll);
+            scroll.scrollTop = scroll.scrollHeight;
+          });
+        });
+      });
+    });
+  });
+}
+
+/* --- comando 2 --- */
+function executarC2(scroll){
+  var p1 = novoPasso(scroll, "leitor-de-video", "leu os quadros das câmeras cobertas");
+  return espera(200).then(function(){
+    p1.concluir("leitura de vídeo (fora do escopo desta cópia)", 201);
+    var p2 = novoPasso(scroll, "agregador", "juntou as leituras num retrato da cidade");
+    return buscarJSON("/api/estado", 5000).then(function(j){
+      p2.concluir((j && j.cameras && j.cameras.length) ? "GET /api/estado" : "GET /api/estado (sem dado real — usando leitura de referência)", 202);
+      var p3 = novoPasso(scroll, "detector-de-evento", "mediu severidade e persistência de cada ponto fora do normal");
+      return espera(200).then(function(){
+        p3.concluir("cálculo sobre os dados agregados", 203);
+        var candidatos = PONTOS.filter(function(x){return x.status!=="verde";}).map(function(x){return dadosPonto(x.id);});
+        candidatos.sort(function(a,b){ return urgencia(b)-urgencia(a); });
+        var top3 = candidatos.slice(0,3);
+        return passoRegra(scroll, "urgência = severidade × persistência — pontos com status crítico e maior tempo de persistência sobem primeiro na fila.").then(function(){
+          var msg = "Explique em português simples, em 2 a 3 frases, por que esta ordem de prioridade faz sentido para um operador: " +
+            top3.map(function(d,i){ return (i+1)+"º "+d.nome+" (Corredor "+d.corredor+", "+d.status+", persistente há "+d.persistenciaMin+" min)"; }).join("; ") + ". Não invente números novos.";
+          return passoAssistente(scroll, msg).then(function(){
+            var res = el("div","resultado");
+            res.appendChild(el("h3","Ordem de prioridade"));
+            top3.forEach(function(d,i){
+              var l = el("div","linha");
+              l.innerHTML = "<span>" + (i+1) + "º " + d.nome + " (Corredor " + d.corredor + ")</span><b>" + d.status + " · " + d.persistenciaMin + " min" + '<span class="selo sintetico">DADO SINTÉTICO</span></b>';
+              res.appendChild(l);
+            });
+            scroll.appendChild(res);
+            blocoNaoSei(scroll, "o impacto real de uma intervenção antes de ela ser aplicada; fatores humanos e de clima que também pesam na decisão.");
+            renderDecisoes(scroll);
+            scroll.scrollTop = scroll.scrollHeight;
+          });
+        });
+      });
+    });
+  });
+}
+
+/* --- comando 3 --- */
+function executarC3(scroll){
+  var p1 = novoPasso(scroll, "porta-de-entrada", "trouxe as leituras já registradas do período");
+  return espera(200).then(function(){
+    p1.concluir("histórico de POST /api/leituras", 301);
+    var p2 = novoPasso(scroll, "agregador", "comparou o período antes e depois do corte");
+    return buscarJSON("/api/estado", 5000).then(function(estado){
+      var cameraId = (estado && estado.cameras && estado.cameras.length) ? estado.cameras[0].camera_id : null;
+      var chamada;
+      if (cameraId) {
+        var corte = new Date(Date.now() - 7*86400000).toISOString();
+        chamada = buscarJSON("/api/antes-depois?camera_id=" + encodeURIComponent(cameraId) + "&corte=" + encodeURIComponent(corte) + "&dias=14", 6000);
+      } else {
+        chamada = Promise.resolve(null);
+      }
+      return chamada.then(function(ad){
+        var antes, depois, variacao, origemTxt, amostra;
+        if (ad && ad.variacao_pct != null && ad.antes && ad.depois) {
+          antes = ad.antes.media_por_hora; depois = ad.depois.media_por_hora; variacao = ad.variacao_pct;
+          origemTxt = "GET /api/antes-depois"; amostra = ad.antes.horas_cobertas + "h antes · " + ad.depois.horas_cobertas + "h depois";
+          p2.el.querySelector(".meta") && null;
+        } else {
+          var rng = rngPara(302);
+          antes = 340; depois = Math.round(antes * (1 - (0.10 + rng()*0.08)));
+          variacao = Number((((depois-antes)/antes)*100).toFixed(1));
+          origemTxt = "GET /api/antes-depois (sem dado real — usando leitura de referência)"; amostra = "14h antes · 14h depois";
+        }
+        p2.concluir(origemTxt, 303);
+        var seloAD = (ad && ad.variacao_pct != null) ? '<span class="selo medido">MEDIDO</span>' : '<span class="selo sintetico">DADO SINTÉTICO</span>';
+        var veredito = Math.abs(variacao) < 5 ? "sem-efeito" : (variacao < 0 ? "melhorou" : "piorou");
+        var veredTxt = veredito === "sem-efeito" ? "SEM EFEITO" : (veredito === "melhorou" ? "MELHOROU" : "PIOROU");
+        return passoRegra(scroll, "variação entre -5% e +5% = <b>sem efeito</b>; queda de 5% ou mais = <b>melhorou</b>; alta de 5% ou mais = <b>piorou</b>.").then(function(){
+          var msg = "Explique em português simples, em 2 a 3 frases, o que este resultado significa para um operador: antes " + antes + " veículos por hora, depois " + depois + " veículos por hora, variação de " + variacao + "%, veredito " + veredTxt + ". Não invente números novos.";
+          return passoAssistente(scroll, msg).then(function(){
+            var res = el("div","resultado");
+            res.appendChild(el("h3","Antes × depois"));
+            var l1 = el("div","linha"); l1.innerHTML = "<span>Antes</span><b>" + antes + " veíc./h" + seloAD + "</b>"; res.appendChild(l1);
+            var l2 = el("div","linha"); l2.innerHTML = "<span>Depois</span><b>" + depois + " veíc./h" + seloAD + "</b>"; res.appendChild(l2);
+            var l3 = el("div","linha"); l3.innerHTML = "<span>Variação</span><b>" + variacao + "%" + seloAD + "</b>"; res.appendChild(l3);
+            var l4 = el("div","linha"); l4.innerHTML = "<span>Veredito</span><b><span class='veredito " + veredito + "'>" + veredTxt + "</span></b>"; res.appendChild(l4);
+            var l5 = el("div","linha"); l5.innerHTML = "<span>Amostra</span><b>" + amostra + seloAD + "</b>"; res.appendChild(l5);
+            scroll.appendChild(res);
+            blocoNaoSei(scroll, "se a amostra é grande o suficiente para uma conclusão firme; se outra causa (clima, evento, feriado) explica a variação, e não a intervenção.");
+            renderDecisoes(scroll);
+            scroll.scrollTop = scroll.scrollHeight;
+          });
+        });
+      });
+    });
+  });
+}
+
+/* --- comando 4 --- */
+function executarC4(scroll){
+  var p1 = novoPasso(scroll, "agregador", "somou os eventos monitorados no turno");
+  return buscarJSON("/api/telemetria/resumo", 5000).then(function(tel){
+    var origem = tel ? "GET /api/telemetria/resumo" : "GET /api/telemetria/resumo (sem dado real — usando leitura de referência)";
+    p1.concluir(origem, 401);
+    var totais = tel ? tel.totais : null;
+    var reais = totais ? totais.reais_dia : 0;
+    var simulados = totais ? totais.simulados_dia : 0;
+    var rng = rngPara(402);
+    var intervencoes = Math.round(1 + rng()*3);
+    var todos = PONTOS.map(function(x){ return dadosPonto(x.id); });
+    var criticos = todos.filter(function(d){return d.status==="vermelho";}).length;
+
+    var p2 = novoPasso(scroll, "triagem-de-melhorias", "separou o que é fato medido do que ficou pendente");
+    return espera(220).then(function(){
+      p2.concluir("cálculo sobre a telemetria e o retrato da cidade", 403);
+      return passoRegra(scroll, "o turno fecha com o que foi medido; o que não foi medido entra como pendência, nunca como zero.").then(function(){
+        var msg = "Escreva em português simples, em até 3 frases, o fechamento deste turno para um relatório: " + (reais+simulados) + " evento(s) monitorado(s) (" + reais + " medido(s), " + simulados + " simulado(s)), " + criticos + " ponto(s) crítico(s) ao fechar, " + intervencoes + " intervenção(ões) registrada(s). Não invente números novos.";
+        return passoAssistente(scroll, msg).then(function(){
+          var textoRelatorio = "Relatório do turno — " + new Date().toLocaleString("pt-BR") + "\n" +
+            "Eventos monitorados: " + (reais+simulados) + " (" + reais + " medidos, " + simulados + " simulados)\n" +
+            "Pontos críticos ao fechar: " + criticos + "\n" +
+            "Intervenções no turno: " + intervencoes + "\n" +
+            "Pendências: eventos fora da cobertura das câmeras; decisões tomadas por rádio/telefone não ficam registradas aqui.";
+          var res = el("div","resultado");
+          res.appendChild(el("h3","Relatório do turno"));
+          var l1 = el("div","linha"); l1.innerHTML = "<span>Eventos monitorados</span><b>" + (reais+simulados) + " (" + reais + " medidos" + '<span class="selo medido">MEDIDO</span> · ' + simulados + " simulados" + '<span class="selo simulacao">SIMULAÇÃO</span>)</b>'; res.appendChild(l1);
+          var l2 = el("div","linha"); l2.innerHTML = "<span>Pontos críticos ao fechar</span><b>" + criticos + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l2);
+          var l3 = el("div","linha"); l3.innerHTML = "<span>Intervenções no turno</span><b>" + intervencoes + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l3);
+          scroll.appendChild(res);
+          var botoes = el("div","acoes-humanas");
+          var copiar = el("button","copiar","Copiar texto"); copiar.type="button";
+          var toast = el("div","toast-ok"); toast.hidden = true; toast.textContent = "texto copiado.";
+          copiar.onclick = function(){
+            var ok = false;
+            try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(textoRelatorio); ok = true; } } catch(e){ /* segue para o plano B */ }
+            if (!ok) { try { var ta = document.createElement("textarea"); ta.value = textoRelatorio; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); ok = true; } catch(e2){ /* sem clipboard disponível */ } }
+            toast.hidden = !ok; toast.textContent = ok ? "texto copiado." : "não foi possível copiar automaticamente — selecione o texto acima.";
+          };
+          botoes.appendChild(copiar);
+          scroll.appendChild(botoes);
+          scroll.appendChild(toast);
+          blocoNaoSei(scroll, "eventos fora da cobertura das câmeras; decisões tomadas fora deste sistema (rádio, telefone) não ficam registradas aqui.");
+          renderDecisoes(scroll);
+        });
+      });
+    });
+  });
+}
+
+/* --- comando 5 --- */
+function executarC5(scroll){
+  var p1 = novoPasso(scroll, "detector-de-evento", "identificou o ponto que mais precisa de aviso agora");
+  return espera(200).then(function(){
+    var candidatos = PONTOS.filter(function(x){return x.status!=="verde";}).map(function(x){return dadosPonto(x.id);});
+    candidatos.sort(function(a,b){ return urgencia(b)-urgencia(a); });
+    var alvo = candidatos[0] || dadosPonto(7);
+    p1.concluir("cálculo sobre o retrato da cidade", 501);
+
+    var p2 = novoPasso(scroll, "verificador-de-privacidade", "confirmou que o aviso não carrega placa, rosto ou nome de pessoa");
+    return espera(200).then(function(){
+      p2.concluir("regra de mascaramento (sem rota externa)", 502);
+      return passoRegra(scroll, "evento classificado como grave ou persistente por mais de 15 min aciona proposta de aviso; o envio real exige aprovação humana.").then(function(){
+        var msg = "Escreva um aviso curto e direto, em português, de no máximo 3 frases, para uma equipe genérica de trânsito, sobre: " + alvo.nome + " (Corredor " + alvo.corredor + "), fila de " + alvo.filaM + " metros, persistente há " + alvo.persistenciaMin + " minutos. Não use nome de pessoa, empresa ou endereço. Não invente números novos.";
+        return passoAssistente(scroll, msg).then(function(textoResp){
+          var respEl = scroll.querySelectorAll(".resposta-assistente");
+          var textoAviso = respEl.length ? respEl[respEl.length-1].textContent : ("Atenção: " + alvo.nome + " com fila persistente. Avaliar intervenção.");
+
+          var res = el("div","resultado");
+          res.appendChild(el("h3","Proposta de aviso"));
+          var l1 = el("div","linha"); l1.innerHTML = "<span>O quê</span><b>fila crítica persistente no " + alvo.nome + " (Corredor " + alvo.corredor + ") há " + alvo.persistenciaMin + " min" + '<span class="selo sintetico">DADO SINTÉTICO</span></b>'; res.appendChild(l1);
+          var l2 = el("div","linha"); l2.innerHTML = "<span>Para</span><b>Trânsito (destino genérico)</b>"; res.appendChild(l2);
+          var l3 = el("div","linha"); l3.innerHTML = "<span>Canal</span><b>rádio operacional / painel interno</b>"; res.appendChild(l3);
+          scroll.appendChild(res);
+
+          var textoBox = el("div","resposta-assistente", null);
+          textoBox.textContent = textoAviso;
+          scroll.appendChild(textoBox);
+
+          var aviso = el("div","aviso-simulacao","nada é enviado de verdade nesta demonstração.");
+          scroll.appendChild(aviso);
+
+          var botoes = el("div","acoes-humanas");
+          var aprovar = el("button","aprovar","Aprovar aviso"); aprovar.type="button";
+          var descartar = el("button","descartar","Descartar"); descartar.type="button";
+          var toast = el("div","toast-ok"); toast.hidden = true;
+          function registrar(tipo, texto){
+            salvarDecisao({ ts: new Date().toISOString(), tipo: tipo, quem: "operador (demonstração)", resumo: alvo.nome + " — " + texto });
+            aprovar.disabled = true; descartar.disabled = true;
+            toast.hidden = false; toast.textContent = (tipo === "Aprovado" ? "aviso aprovado (simulado) às " : "aviso descartado às ") + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) + ".";
+            var lista = scroll.querySelector(".decisoes"); if (lista) lista.remove();
+            renderDecisoes(scroll);
+            scroll.scrollTop = scroll.scrollHeight;
+          }
+          aprovar.onclick = function(){ registrar("Aprovado", "aviso aprovado (simulado)"); };
+          descartar.onclick = function(){ registrar("Descartado", "aviso descartado"); };
+          botoes.appendChild(aprovar); botoes.appendChild(descartar);
+          scroll.appendChild(botoes);
+          scroll.appendChild(toast);
+
+          blocoNaoSei(scroll, "se o canal escolhido vai ser visto a tempo; se a urgência classificada está correta; nenhum aviso real é enviado nesta demonstração.");
+          renderDecisoes(scroll);
+        });
+      });
+    });
+  });
+}
+
+/* =================== regras da casa (rodapé) =================== */
+var REGRAS = [
+  {rotulo:"Número decide por regra", texto:"O que vira número e veredito passa por uma função fixa e escrita — nunca por um modelo respondendo livremente."},
+  {rotulo:"Dúvida vai para pessoa", texto:"Quando falta clareza ou a régua não decide, a pergunta sobe para quem está operando — o sistema não escolhe no escuro."},
+  {rotulo:"Todo número diz de onde veio", texto:"Cada dado mostrado carrega a etiqueta de origem: medido, simulação ou dado sintético — nunca aparece sem explicação."},
+  {rotulo:"Ação só com aprovação humana", texto:"Nenhum aviso, mensagem ou mudança sai sozinho — sempre passa por aprovar ou descartar antes de qualquer efeito."}
+];
+function montarRegras(){
+  var wrap = document.getElementById("rodape-regras");
+  wrap.innerHTML = "";
+  REGRAS.forEach(function(r){
+    var p = el("button","pilula", r.rotulo); p.type = "button";
+    var det = null;
+    p.onclick = function(){
+      if (det) { det.remove(); det = null; return; }
+      det = el("div","pilula-detalhe", r.texto);
+      p.insertAdjacentElement("afterend", det);
+    };
+    wrap.appendChild(p);
+  });
+}
+
+montarBotoes();
+montarRegras();
+montarDots();
+})();
+</script>
+<script src="melhorias.js"></script>
+<script src="tour.js"></script>
+</body>
+</html>
