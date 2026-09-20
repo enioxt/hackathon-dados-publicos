@@ -48,7 +48,7 @@ Dado real: ocorrências de trânsito do Estado e base nacional de sinistros. Câ
 | Pasta | Conteúdo |
 |---|---|
 | `fontes/` | **83 fontes verificadas** (32 com dado de Patos aberto hoje · 12 só por pedido · 22 públicas sem recorte de Patos · 17 sem dado ou itens internos do time, 6 deles marcados como tal): relatório de leitura + JSON com URL, prova vista, caminho de pedido, prazo, rascunho de LAI · 12 lacunas declaradas · manifesto sha256 dos arquivos baixados · licitações de mobilidade (PNCP 2024–26) e municípios de referência |
-| `dados/` | **1.100 ocorrências de trânsito com coordenada** em Patos (2025 + início de 2026, 19 fatais) — dados abertos SEJUSP-MG, sem dado policial · 689 contratações de mobilidade do Brasil (PNCP) · programa federal Avançar Cidades |
+| `dados/` | **1.100 ocorrências de trânsito com coordenada** em Patos (2025 + início de 2026, 18 ocorrências fatais (19 vítimas)) — dados abertos SEJUSP-MG, sem dado policial · 689 contratações de mobilidade do Brasil (PNCP) · programa federal Avançar Cidades |
 | `juridico/` | Parcerias câmera de segurança → trânsito: **12 casos no Brasil + 3 negados** (Porto Alegre, Vitória, COR-Rio, Smart Sampa, TCE-SC...) e **13 no mundo + 4 limitações** (Bellevue, Amsterdã, Londres, Clearview, AI Act) · base legal LGPD (art. 12, 26 §1º, ACT, RIPD) com checklist de 10 itens e minuta de cláusula · fatos públicos do Olho Vivo de Patos (edital 002/2024, Termo 19/2024, quem manda no dado) |
 | `tecnicas/` | Como pesquisamos (7 ângulos, prova por fonte, refutação, parser com testes, geocodificação, mapa honesto) · o que faz uma câmera ser inteligente · regras de cruzamento de dados · regras que seguimos |
 | `motor/` | CSS das páginas |
@@ -57,7 +57,7 @@ Dado real: ocorrências de trânsito do Estado e base nacional de sinistros. Câ
 ## Números que qualquer time pode usar (com fonte)
 - Frota de Patos: 136.300 veículos, 43.319 motos (31,8%) — SENATRAN jul/2026
 - Sinistros 2018–2026: 22.709, 140 óbitos — RENAEST
-- 1.100 ocorrências com coordenada (2025 + início de 2026), 19 fatais — SEJUSP-MG
+- 1.100 ocorrências com coordenada (2025 + início de 2026), 18 ocorrências fatais (19 vítimas) — SEJUSP-MG
 - Tarifa R$ 3,00 × tarifa técnica R$ 4,76 (jan/2024), subsídio R$ 1,76/passageiro — Decreto 5.668
 - Olho Vivo: 49 câmeras no edital de 2024; "240 em 140 pontos" na notícia de mai/2026; R$ 25 mil por câmera; contradição de inventário declarada em `juridico/olho-vivo-patos-fatos-publicos.md`
 - Piloto de semáforo com IA na Av. Paracatu: 36 de 76 equipamentos, 60 dias desde 18/08/2026

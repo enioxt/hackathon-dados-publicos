@@ -69,7 +69,7 @@ idx = f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta na
 
 <h2>Dados e pesquisa abertos a todos os times</h2><div class=como>
 <div><b>83 fontes públicas verificadas</b>32 com dado de Patos aberto hoje, 12 por pedido, com canal e prazo. <a href="https://github.com/enioxt/hackathon-dados-publicos/blob/main/fontes/00-relatorio-83-fontes.md">ler</a></div>
-<div><b>1.100 acidentes com coordenada</b>2025 e início de 2026, 19 fatais, dado aberto do Estado (SEJUSP-MG). <a href="https://github.com/enioxt/hackathon-dados-publicos/blob/main/dados/acidentes-patos-sejusp-mg-2025-2026.json">baixar</a></div>
+<div><b>1.100 acidentes com coordenada</b>2025 e início de 2026, 18 ocorrências fatais (19 vítimas), dado aberto do Estado (SEJUSP-MG). <a href="https://github.com/enioxt/hackathon-dados-publicos/blob/main/dados/acidentes-patos-sejusp-mg-2025-2026.json">baixar</a></div>
 <div><b>Câmeras existentes para trânsito</b>12 casos no Brasil, 13 no mundo, base legal LGPD com checklist. <a href="https://github.com/enioxt/hackathon-dados-publicos/tree/main/juridico">ler</a></div>
 <div><b>Olho Vivo de Patos: fatos públicos</b>Edital 2024, termo de colaboração, custo por câmera, quem opera. <a href="https://github.com/enioxt/hackathon-dados-publicos/blob/main/juridico/olho-vivo-patos-fatos-publicos.md">ler</a></div>
 <div><b>Como pesquisamos</b>7 ângulos, prova por fonte, refutação, parser com testes, mapa honesto. <a href="https://github.com/enioxt/hackathon-dados-publicos/blob/main/tecnicas/COMO-PESQUISAMOS.md">ler</a></div>
