@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>O que Patos de Minas já fez</title>
+<style>
+:root{--n:#0B1B2B;--c:#12273B;--b:#27425c;--t:#F6F8FA;--a:#E8A33D;--v:#2E9E6B;--z:#9AA5B1;--of:#2E9E6B;--im:#4A7FB5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--n);color:var(--t);font:16px/1.6 system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+header{padding:34px 6vw 10px;max-width:980px}
+small{letter-spacing:.14em;color:var(--z);font-size:12px}
+h1{margin:8px 0 6px;font-size:30px;line-height:1.15}
+.lead{color:var(--z);max-width:760px;font-size:15.5px}
+.filtros{display:flex;flex-wrap:wrap;gap:8px;padding:6px 6vw 4px;max-width:980px}
+.filtro{border:1px solid var(--b);background:var(--c);color:var(--t);border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600}
+.filtro.on{background:var(--a);color:#111;border-color:var(--a)}
+main{padding:10px 6vw 60px;max-width:980px}
+.linha{position:relative;padding-left:26px;border-left:2px solid var(--b);margin-top:6px}
+.grupo{margin:34px 0 8px}
+.grupo h2{margin:0;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--a)}
+.item{position:relative;background:var(--c);border:1px solid var(--b);border-radius:12px;padding:14px 16px;margin:14px 0 14px -26px;margin-left:0;width:calc(100% + 0px)}
+.item::before{content:"";position:absolute;left:-32px;top:20px;width:11px;height:11px;border-radius:50%;background:var(--a);border:2px solid var(--n)}
+.data{font-size:12.5px;color:var(--z);font-weight:700;letter-spacing:.03em}
+.frase{margin:4px 0 8px;font-size:15px}
+.valor{color:var(--a);font-weight:700}
+.botoes{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:8px;text-decoration:none;border:1px solid var(--b)}
+.btn.of{color:var(--of);border-color:var(--of)}
+.btn.im{color:var(--im);border-color:var(--im)}
+.selo{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:700}
+.selo.of{background:rgba(46,158,107,.18);color:var(--of)}
+.selo.im{background:rgba(74,127,181,.18);color:var(--im)}
+.encaixe{background:var(--c);border:1px solid var(--a);border-radius:14px;padding:20px 22px;margin:40px 0 10px}
+.encaixe h2{margin:0 0 12px;font-size:19px;color:var(--t)}
+.linha-encaixe{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--b)}
+.linha-encaixe:first-of-type{border-top:none}
+.linha-encaixe .ja{flex:1 1 46%;color:var(--z);font-size:14px}
+.linha-encaixe .seta{color:var(--a);font-weight:900;flex:none;padding-top:1px}
+.linha-encaixe .prop{flex:1 1 46%;font-size:14px}
+.corr{background:#3a2a12;border:1px solid var(--a);border-radius:10px;padding:12px 16px;margin:10px 0 20px;font-size:13.5px;color:var(--z)}
+footer{padding:10px 6vw 40px;color:var(--z);font-size:12.5px;max-width:980px}
+footer a{color:var(--z)}
+.voltar{display:inline-block;margin:0 6vw;color:var(--z);font-size:13px;text-decoration:none}
+@media (max-width:640px){h1{font-size:24px}.item{margin-left:0}.linha{padding-left:20px}.item::before{left:-26px}.linha-encaixe{flex-direction:column}.linha-encaixe .seta{transform:rotate(90deg);padding:2px 0}}
+</style></head><body>
+
+<a class="voltar" href="index.html">← voltar</a>
+<header>
+<small>HACKATHON CIDADES INTELIGENTES · PATOS DE MINAS · SETEMBRO 2026</small>
+<h1>O que Patos de Minas já fez</h1>
+<div class="lead">A cidade já investiu em olhos, em aplicativo e em semáforo. A nossa proposta soma a isso: usa o que existe para medir o que funciona.</div>
+</header>
+
+<div class="filtros" id="filtros">
+<button class="filtro on" data-f="todos">Todos</button>
+<button class="filtro" data-f="app">Aplicativo e Patos Premia</button>
+<button class="filtro" data-f="olho">Videomonitoramento</button>
+<button class="filtro" data-f="semaforo">Semáforos</button>
+<button class="filtro" data-f="radar">Fiscalização eletrônica</button>
+<button class="filtro" data-f="zona">Zona Azul</button>
+<button class="filtro" data-f="onibus">Transporte coletivo</button>
+<button class="filtro" data-f="legis">Legislativo</button>
+<button class="filtro" data-f="planos">Planos e programas</button>
+</div>
+
+<main>
+<div class="linha" id="linha">
+
+<div class="grupo" data-f="app"><h2>Aplicativo da cidade e Patos Premia</h2></div>
+
+<div class="item" data-f="app">
+<div class="data">16/02/2022</div>
+<div class="frase">Prefeitura lança o aplicativo Conecta Patos, com canal de ocorrências que inclui a categoria trânsito.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/prefeitura-lanca-conecta-patos-novo-aplicativo-para-receber-e-atender-as-demandas-da-populacao-72049.html">matéria ↗</a>
+<a class="btn im" target="_blank" rel="noopener" href="https://www.em.com.br/app/noticia/gerais/2022/02/16/interna_gerais,1345380/prefeitura-de-patos-de-minas-lanca-aplicativo-para-simplificar-atendimento.shtml">2ª matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="app">
+<div class="data">fevereiro/2026</div>
+<div class="frase">Módulo "Emprega Patos" (vagas de emprego) é adicionado dentro do Conecta Patos.</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2438/prefeitura-investe-em-tecnologia-para-impulsionar-emprego-e-renda/">fonte oficial ↗</a>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/prefeitura-de-patos-de-minas-lanca-plataforma-para-facilitar-acesso-a-vagas-de-emprego-94567.html">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="app">
+<div class="data">2025</div>
+<div class="frase">Programa municipal Patos Premia (prêmios por nota fiscal com CPF) já distribuiu 25 prêmios em 2 sorteios do início do ano.</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2304/patos-premia-ja-distribuiu-25-premios-e-segue-com-novos-sorteios-ate-dezembro/">fonte oficial ↗</a></div>
+</div>
+
+<div class="grupo" data-f="olho"><h2>Videomonitoramento (Olho Vivo)</h2></div>
+
+<div class="item" data-f="olho">
+<div class="data">05/06/2014</div>
+<div class="frase">Inauguração do Olho Vivo: 16 câmeras na região central, central de monitoramento na 86ª Companhia da PM. <span class="valor">cerca de R$ 2.000.000</span></div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://www.patos1.com.br/noticia/projeto-olho-vivo-e-inaugurado-em-patos-de-minas-com-esperanca-em-diminuir-a-criminalidade">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="olho">
+<div class="data">20/09/2024</div>
+<div class="frase">Edital de Chamamento Público nº 002/2024 para manutenção e ampliação do sistema, então com 49 câmeras. <span class="valor">R$ 300.000/ano</span> (orçamento próprio do município)</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://terceirosetor.patosdeminas.mg.gov.br/downloadFile?file=dados%2Flicitacao%2F35%2Farquivo%2F105-1726696098.pdf">edital, PDF oficial ↗</a></div>
+</div>
+
+<div class="item" data-f="olho">
+<div class="data">04/07/2025</div>
+<div class="frase">Prefeitura anuncia meta de ampliação para 295 câmeras, com recursos de emenda estadual. <span class="valor">R$ 1.500.000</span></div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2323/patos-de-minas-tera-maior-area-videomonitorada-do-estado-com-295--cameras">fonte oficial ↗</a></div>
+</div>
+
+<div class="item" data-f="olho">
+<div class="data">25/05/2026</div>
+<div class="frase">Entrega de etapa de ampliação: sistema chega a 240 câmeras em 140 pontos, urbanos e rurais.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/olho-vivo-e-ampliado-com-monitoramento-360-leitura-de-placas-e-reconhecimento-facial-em-patos-de-minas-95907.html">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="olho">
+<div class="data">2024→2026</div>
+<div class="frase">Emenda parlamentar estadual financia a expansão do Olho Vivo, com recursos administrados pelo conselho comunitário de segurança. <span class="valor">R$ 1.800.000</span> (total do período)</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/deputada-lud-falcao-destaca-expansao-do-olho-vivo-e-articulacao-para-o-cinturao-digital-em-patos-de-minas-94360.html">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="olho">
+<div class="data">19/09/2024 → 19/09/2029</div>
+<div class="frase">Contrato municipal para serviço de monitoramento CFTV-IP nas vias urbanas de Patos de Minas, vigente por 5 anos. <span class="valor">R$ 7.953.489,00</span></div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://pncp.gov.br/app/contratos/18602011000107/2024/138">Contrato 206/2024, PNCP ↗</a></div>
+</div>
+
+<div class="grupo" data-f="semaforo"><h2>Semáforos</h2></div>
+
+<div class="item" data-f="semaforo">
+<div class="data">agosto/2026</div>
+<div class="frase">Piloto de semáforo com inteligência artificial na Avenida Paracatu: visão computacional conta veículos por sentido e recalcula o tempo de abertura, teste gratuito de 60 dias.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/prefeitura-aposta-em-sistema-inteligente-para-controlar-semaforos-e-desafogar-o-transito-em-patos-de-minas-97130.html">matéria ↗</a>
+<a class="btn im" target="_blank" rel="noopener" href="https://www.patos1.com.br/noticia/patos-de-minas-prefeitura-inicia-testes-com-semaforos-inteligentes-acionados-por-inteligencia-artificial-na-avenida-paracatu">2ª matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="semaforo">
+<div class="data">2026, data exata não determinada</div>
+<div class="frase">Conversão à esquerda proibida em 3 cruzamentos da Rua Major Gote; medição de fluxo mostrou que só 7% dos motoristas convertiam nesses pontos.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/conversoes-a-esquerda-serao-proibidas-em-tres-cruzamentos-da-rua-major-gote-a-partir-desta-sexta-97161.html">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="semaforo">
+<div class="data">22/10/2025 → 22/10/2026</div>
+<div class="frase">Contrato vigente para aquisição de peças das unidades semafóricas da marca Brascontrol, para manutenção da rede semafórica do município. <span class="valor">R$ 355.172,16</span></div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://pncp.gov.br/app/contratos/18602011000107/2025/208">Contrato 235/2025, PNCP ↗</a></div>
+</div>
+
+<div class="grupo" data-f="radar"><h2>Fiscalização eletrônica</h2></div>
+
+<div class="item" data-f="radar">
+<div class="data">22/07/2026</div>
+<div class="frase">Ampliação da fiscalização eletrônica: 2 sensores de avanço de sinal em operação e mais 5 sendo instalados, além de 11 novos radares de velocidade (Avenidas JK e Marabá), locais definidos com apoio técnico da Polícia Militar.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://www.patosja.com.br/Tr%C3%A2nsito/patos-de-minas-amplia-fiscalizacao-no-transito-com-instalacao-de-novos-radares-de-velocidade-e-avanco-de-sinal">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="radar">
+<div class="data">data não determinada</div>
+<div class="frase">Radares metrológicos de controle de velocidade voltam a operar em diversos pontos da cidade, limite de 60 km/h.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/radares-voltam-a-operar-em-patos-de-minas-veja-os-locais-onde-eles-estao-operando-83779.html">matéria ↗</a></div>
+</div>
+
+<div class="grupo" data-f="zona"><h2>Estacionamento rotativo (Zona Azul)</h2></div>
+
+<div class="item" data-f="zona">
+<div class="data">~2022</div>
+<div class="frase">Prefeitura assina contrato e implanta a Zona Azul digital no centro da cidade.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://www.patoshoje.com.br/noticias/prefeito-jose-eustaquio-assina-contrato-para-implementar-zona-azul-em-patos-de-minas-55313.html">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="zona">
+<div class="data">agosto/2023</div>
+<div class="frase">Sistema de estacionamento rotativo é suspenso.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patosemdestaque.com.br/noticia/W5LeNy7Ur8">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="zona">
+<div class="data">11 a 19/11/2025</div>
+<div class="frase">Consulta pública sobre nova concessão do estacionamento rotativo (Zona Azul), com Cadernos Técnico, Econômico e Jurídico publicados.</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2396/prefeitura-de-patos-de-minas-abre-consulta-publica-sobre-a-nova-concessao-do-estacionamento-rotativo-zona-azul">fonte oficial ↗</a></div>
+</div>
+
+<div class="item" data-f="zona">
+<div class="data">2026, data exata não determinada</div>
+<div class="frase">Projeto de lei do Executivo propõe ampliar o prazo da concessão de 5 para até 15 anos, para viabilizar investimento em app e monitoramento.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/projeto-que-promete-atrair-empresas-interessadas-na-concessao-da-zona-azul-volta-a-pauta-da-camara-92962.html">matéria ↗</a></div>
+</div>
+
+<div class="grupo" data-f="onibus"><h2>Transporte coletivo</h2></div>
+
+<div class="item" data-f="onibus">
+<div class="data">31/01/2024</div>
+<div class="frase">Decreto municipal regulamenta subsídio ao transporte coletivo urbano: a tarifa técnica sobe, mas o usuário continua pagando o mesmo valor, com a diferença coberta pelo município.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patosnoticias.com.br/com-subsidio-da-prefeitura-passagem-do-coletivo-cai-para-r-300-a-partir-desta-quinta-feira/">matéria ↗</a></div>
+</div>
+
+<div class="item" data-f="onibus">
+<div class="data">2026</div>
+<div class="frase">Prefeitura mantém a tarifa popular do ônibus, ampliando o subsídio ao transporte coletivo; investimento municipal no sistema é da ordem de <span class="valor">R$ 21.000.000/ano</span>. Benefícios sociais mantidos: desconto para idosos entre 60-65 anos e gratuidade para estudantes e pessoas com deficiência.</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://www.patosdeminas.mg.gov.br/portal/noticias/0/3/2501/prefeitura-de-patos-de-minas-aumenta-subsidio-ao-transporte-coletivo-e-passagem-e-mantida-em-r-300">fonte oficial ↗</a>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/prefeita-sandra-mantem-passagem-de-onibus-em-r-300-e-amplia-subsidio-para-custear-transporte-coletivo-96307.html">matéria ↗</a></div>
+</div>
+
+<div class="grupo" data-f="legis"><h2>Legislativo</h2></div>
+
+<div class="item" data-f="legis">
+<div class="data">21/03/2022</div>
+<div class="frase">Lei Complementar nº 660/2022 revisa o Plano Diretor do município, com diretrizes gerais de mobilidade sustentável (rede cicloviária, bicicletários).</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://sapl.patosdeminas.mg.leg.br/norma/11865">norma no SAPL ↗</a></div>
+</div>
+
+<div class="item" data-f="legis">
+<div class="data">2014 e datas seguintes</div>
+<div class="frase">Câmara Municipal já recebeu, ao longo dos anos, indicações e requerimentos de vereadores sobre semáforos e segurança viária, incluindo pedidos específicos para a Rua Major Gote.</div>
+<div class="botoes"><span class="selo of">fonte oficial</span>
+<a class="btn of" target="_blank" rel="noopener" href="https://sapl.patosdeminas.mg.leg.br/materia/pesquisar-materia">sistema de matérias, SAPL ↗</a></div>
+</div>
+
+<div class="grupo" data-f="planos"><h2>Planos e programas</h2></div>
+
+<div class="item" data-f="planos">
+<div class="data">18 a 20/09/2026</div>
+<div class="frase">Prefeitura, Sebrae, Unipam, Universidade Federal de Uberlândia e Patos Valley realizam o Hackathon Cidades Inteligentes, dedicado a trânsito, transporte e mobilidade urbana — o próprio evento em que esta proposta nasceu.</div>
+<div class="botoes"><span class="selo im">imprensa</span>
+<a class="btn im" target="_blank" rel="noopener" href="https://patoshoje.com.br/noticias/hackathon-cidades-inteligentes-busca-solucoes-para-desafios-da-mobilidade-urbana-em-patos-de-minas-97542.html">matéria ↗</a></div>
+</div>
+
+</div>
+</main>
+
+<div class="encaixe">
+<h2>Onde a nossa proposta encaixa</h2>
+<div class="linha-encaixe"><div class="ja">Câmeras do Olho Vivo já cobrem 140 pontos da cidade.</div><div class="seta">→</div><div class="prop">Sobre a mesma base, pode dar contagem de fluxo sem rosto e sem placa — sem tocar no sistema de segurança já em operação.</div></div>
+<div class="linha-encaixe"><div class="ja">Semáforo com IA já está em teste na Avenida Paracatu.</div><div class="seta">→</div><div class="prop">Pode medir o antes e o depois de cada ajuste, com um número comparável, não só a sensação de que melhorou.</div></div>
+<div class="linha-encaixe"><div class="ja">O aplicativo Conecta Patos já é o canal oficial de ocorrências de trânsito.</div><div class="seta">→</div><div class="prop">Pode ser o canal para avisar o cidadão sobre o que mudou na rua, sem exigir a instalação de outro aplicativo.</div></div>
+<div class="linha-encaixe"><div class="ja">O transporte coletivo já opera sob contrato com subsídio e tarifa técnica públicos.</div><div class="seta">→</div><div class="prop">Pode cruzar o dado que a operadora já envia com o fluxo medido, para mostrar onde o tempo se perde de verdade.</div></div>
+</div>
+
+<footer>
+Levantamento realizado em 19/09/2026. Todas as fontes foram abertas nessa data. Tom de reconhecimento: construímos em cima do que a cidade já fez.<br>
+Achou um link quebrado ou um fato errado? <a target="_blank" rel="noopener" href="https://github.com/enioxt/hackathon/issues/new?template=pedir-melhoria.yml">avise aqui ↗</a>
+</footer>
+
+<script>
+(function(){
+  var btns = document.querySelectorAll('.filtro');
+  var itens = document.querySelectorAll('.item, .grupo');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on');
+      var f = b.getAttribute('data-f');
+      itens.forEach(function(it){
+        if(f==='todos' || it.getAttribute('data-f')===f){ it.hidden=false; } else { it.hidden=true; }
+      });
+    });
+  });
+})();
+</script>
+</body></html>
