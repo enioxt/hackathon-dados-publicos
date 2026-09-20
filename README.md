@@ -5,6 +5,24 @@ Este repositório é **aberto a todos os times** do hackathon (e a quem mais qui
 
 
 
+## Entre e teste tudo
+
+| O quê | Link |
+|---|---|
+| **Tudo numa página (abre no celular)** | https://enioxt.github.io/hackathon-dados-publicos/demo/ |
+| Painel do gestor — 5 layouts | https://enioxt.github.io/hackathon-dados-publicos/demo/painel-gestor.html |
+| Parede de monitores | https://enioxt.github.io/hackathon-dados-publicos/demo/parede.html |
+| Mesa de controle | https://enioxt.github.io/hackathon-dados-publicos/demo/sintetizador.html |
+| Espinha dorsal: agentes, onde rodam, custo | https://enioxt.github.io/hackathon-dados-publicos/demo/arquitetura.html |
+| Simulador de custo por cidade | https://enioxt.github.io/hackathon-dados-publicos/demo/simulador.html |
+| App do cidadão | https://enioxt.github.io/hackathon-dados-publicos/demo/app-cidadao.html |
+| Apresentação · PDF · Canvas | [slides](https://enioxt.github.io/hackathon-dados-publicos/demo/apresentacao.html) · [pdf](https://enioxt.github.io/hackathon-dados-publicos/demo/apresentacao.pdf) · [canvas](https://enioxt.github.io/hackathon-dados-publicos/demo/canvas.html) |
+| **O código que roda** (porta de entrada, leitor de vídeo, votos) | [`codigo/`](codigo/LEIA.md) |
+| A construção e os aprendizados | [`construcao/`](construcao/) |
+| Hub de ideias (atualiza sozinho) | https://enioxt.github.io/hackathon-dados-publicos/hub/ |
+
+Onde estamos: **protótipo avançado, ainda não MVP** — [por quê](construcao/prototipo-x-mvp.md).
+
 ## 🖥️ Tudo que dá para abrir agora (GitHub Pages)
 
 | Abrir | O que é |

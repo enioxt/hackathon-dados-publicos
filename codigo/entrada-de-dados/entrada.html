@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entrada de dados — Visão de Rota</title>
+<style>
+  :root{
+    --bg:#0B1B2B; --panel:#12273B; --panel-2:#0F2032;
+    --ink:#F6F8FA; --ink-dim:#B9C4D0; --amber:#E8A33D;
+    --green:#2E9E6B; --red:#D6453D; --gray:#9AA5B1;
+    --line: rgba(246,248,250,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    padding: 28px clamp(16px,3vw,56px) 60px; line-height:1.42;
+  }
+  header.top{ max-width:1400px; margin:0 auto 22px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+  header.top .eyebrow{ color:var(--amber); text-transform:uppercase; letter-spacing:.14em; font-size:14px; font-weight:700; margin:0 0 6px; }
+  header.top h1{ margin:0 0 8px; font-size:clamp(24px,3vw,38px); font-weight:800; letter-spacing:-0.01em; }
+  header.top p.sub{ margin:0; color:var(--ink-dim); font-size:clamp(14px,1.3vw,17px); max-width:900px; }
+  main{ max-width:1400px; margin:0 auto; display:grid; gap:20px; }
+  .section{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px 24px; }
+  .section h2{ margin:0 0 14px; font-size:16px; font-weight:800; color:var(--amber); text-transform:uppercase; letter-spacing:.06em; }
+  .grade-fontes{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+  .cartao{ background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .cartao .titulo{ font-weight:700; font-size:15px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .bolinha{ width:10px; height:10px; border-radius:50%; display:inline-block; flex:0 0 auto; }
+  .bolinha.ok{ background:var(--green); }
+  .bolinha.calada{ background:var(--red); }
+  .cartao .linha{ font-size:13px; color:var(--ink-dim); margin-top:2px; }
+  .cartao .linha b{ color:var(--ink); font-weight:600; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th{ text-align:left; color:var(--amber); font-weight:700; padding:8px 10px; border-bottom:1px solid var(--line); }
+  td{ padding:8px 10px; border-bottom:1px solid rgba(246,248,250,0.06); color:var(--ink); }
+  .etq{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+  .etq.medido{ background:rgba(46,158,107,0.18); color:#8fd6b3; border:1px solid rgba(46,158,107,0.4); }
+  .etq.sintetico{ background:rgba(232,163,61,0.16); color:var(--amber); border:1px solid rgba(232,163,61,0.4); }
+  .etq.simulacao{ background:rgba(154,165,177,0.18); color:var(--gray); border:1px solid rgba(154,165,177,0.4); }
+  .vazio{ color:var(--ink-dim); font-size:13.5px; padding:10px 0; }
+  .feed{ max-height:260px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:6px; font-size:13px; }
+  .feed .item{ padding:6px 10px; border-radius:8px; background:var(--panel-2); border-left:3px solid var(--gray); }
+  .feed .item.recusa{ border-left-color:var(--red); color:#f3b7b2; }
+  .feed .item.aceita{ border-left-color:var(--green); }
+  button.acao{ background:var(--red); color:#fff; border:0; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-size:14px; }
+  button.acao:hover{ opacity:.9; }
+  .resultado-teste{ margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:10px; background:var(--panel-2); border:1px solid var(--line); white-space:pre-wrap; }
+  .rodape-nota{ color:var(--ink-dim); font-size:12.5px; margin-top:6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <p class="eyebrow">Visão de Rota — porta de entrada</p>
+  <h1>Entrada de dados ao vivo</h1>
+  <p class="sub">Aqui entram as leituras — de fonte real ou de demonstração — pela mesma porta, validadas contra o mesmo contrato. O que chega, chega aqui primeiro.</p>
+</header>
+<main>
+  <section class="section">
+    <h2>Fontes ligadas</h2>
+    <div id="fontes" class="grade-fontes"><p class="vazio">carregando…</p></div>
+  </section>
+
+  <section class="section">
+    <h2>Câmeras — última leitura</h2>
+    <div id="cameras"></div>
+  </section>
+
+  <section class="section">
+    <h2>Testar a recusa</h2>
+    <p class="rodape-nota">Este botão manda um payload com uma placa embutida. A porta tem que recusar (422) e nada pode ser gravado — é a promessa do produto, não um detalhe.</p>
+    <button class="acao" id="btn-teste-recusa">Enviar leitura com placa (deve ser recusada)</button>
+    <div id="resultado-teste" class="resultado-teste" hidden></div>
+  </section>
+
+  <section class="section">
+    <h2>Atividade recente</h2>
+    <div id="feed" class="feed"><p class="vazio">sem atividade ainda</p></div>
+  </section>
+</main>
+
+<script>
+const CHAVE_DEMO = "__CHAVE_DEMO__";
+let ultimoResumoEstado = null;
+
+function badgeOrigem(origem) {
+  if (origem === "medido") return '<span class="etq medido">MEDIDO</span>';
+  if (origem === "sintetico") return '<span class="etq sintetico">DADO SINTÉTICO</span>';
+  return '<span class="etq simulacao">SIMULAÇÃO</span>';
+}
+
+function adicionarFeed(texto, tipo) {
+  const feed = document.getElementById("feed");
+  if (feed.querySelector(".vazio")) feed.innerHTML = "";
+  const item = document.createElement("div");
+  item.className = "item" + (tipo ? " " + tipo : "");
+  const hora = new Date().toLocaleTimeString("pt-BR");
+  item.textContent = `[${hora}] ${texto}`;
+  feed.prepend(item);
+  while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+}
+
+async function chamarApi(caminho) {
+  try {
+    const r = await fetch(caminho);
+    if (!r.ok) return { indisponivel: true, motivo: "status " + r.status };
+    return await r.json();
+  } catch (e) {
+    return { indisponivel: true, motivo: String(e) };
+  }
+}
+
+async function atualizarSaude() {
+  const j = await chamarApi("/api/saude");
+  const div = document.getElementById("fontes");
+  if (j.indisponivel) { div.innerHTML = '<p class="vazio">sem dado — ' + j.motivo + '</p>'; return; }
+  if (!j.fontes || j.fontes.length === 0) { div.innerHTML = '<p class="vazio">nenhuma fonte se conectou ainda</p>'; return; }
+  div.innerHTML = j.fontes.map((f) => `
+    <div class="cartao">
+      <div class="titulo"><span class="bolinha ${f.calada ? "calada" : "ok"}"></span>${f.fonte_id}</div>
+      <div class="linha">status: <b>${f.calada ? "calada" : "ativa"}</b></div>
+      <div class="linha">última recepção: <b>${f.ultima_recepcao ? new Date(f.ultima_recepcao).toLocaleString("pt-BR") : "nunca"}</b></div>
+      <div class="linha">atraso: <b>${f.atraso_s !== null ? f.atraso_s + "s" : "—"}</b></div>
+      <div class="linha">últimas 24h: <b>${f.aceitas_24h} aceitas</b> · ${f.recusadas_24h} recusadas</div>
+    </div>
+  `).join("");
+}
+
+async function atualizarEstado() {
+  const j = await chamarApi("/api/estado");
+  const div = document.getElementById("cameras");
+  if (j.indisponivel) { div.innerHTML = '<p class="vazio">sem dado — ' + j.motivo + '</p>'; return; }
+  if (!j.cameras || j.cameras.length === 0) { div.innerHTML = '<p class="vazio">nenhuma leitura chegou ainda</p>'; return; }
+  const linhas = j.cameras.map((c) => {
+    const u = c.ultima_leitura;
+    if (!u) return `<tr><td>${c.camera_id}</td><td colspan="5" class="vazio">sem leitura ainda</td></tr>`;
+    const total = u.automovel + u.moto + u.onibus + u.caminhao;
+    return `<tr>
+      <td>${c.camera_id}</td>
+      <td>${new Date(u.ts).toLocaleString("pt-BR")}</td>
+      <td>${badgeOrigem(u.origem)}</td>
+      <td>${total} (auto ${u.automovel} · moto ${u.moto} · ônibus ${u.onibus} · caminhão ${u.caminhao})</td>
+      <td>${c.veiculos_na_hora_atual}</td>
+      <td>${c.media_mesma_hora_dias_anteriores !== null ? c.media_mesma_hora_dias_anteriores.toFixed(1) : "—"}</td>
+    </tr>`;
+  }).join("");
+  div.innerHTML = `<table>
+    <thead><tr><th>Câmera</th><th>Última leitura</th><th>Origem</th><th>Contagem</th><th>Nesta hora</th><th>Média mesma hora (dias ant.)</th></tr></thead>
+    <tbody>${linhas}</tbody>
+  </table>`;
+
+  const resumo = JSON.stringify(j.cameras.map((c) => [c.camera_id, c.ultima_leitura && c.ultima_leitura.id]));
+  if (ultimoResumoEstado !== null && resumo !== ultimoResumoEstado) adicionarFeed("novas leituras chegaram — estado atualizado", "aceita");
+  ultimoResumoEstado = resumo;
+}
+
+document.getElementById("btn-teste-recusa").addEventListener("click", async () => {
+  const payload = {
+    fonte_id: "prefeitura-demo",
+    camera_id: "ABC1D23", // parece placa Mercosul — a porta tem que recusar
+    ts: new Date().toISOString(),
+    janela_s: 60,
+    contagens: { automovel: 1 },
+    origem: "medido",
+  };
+  const resDiv = document.getElementById("resultado-teste");
+  resDiv.hidden = false;
+  resDiv.textContent = "enviando…";
+  try {
+    const r = await fetch("/api/leituras", { method: "POST", headers: { "content-type": "application/json", "x-fonte-chave": CHAVE_DEMO }, body: JSON.stringify(payload) });
+    const j = await r.json();
+    resDiv.textContent = `status HTTP: ${r.status}\nresposta: ${JSON.stringify(j, null, 2)}`;
+    adicionarFeed(`teste de recusa — status ${r.status}: ${j.erro || "aceito (inesperado)"}`, r.status === 422 ? "recusa" : "aceita");
+  } catch (e) {
+    resDiv.textContent = "falhou: " + e;
+  }
+});
+
+async function ciclo() { await Promise.all([atualizarSaude(), atualizarEstado()]); }
+ciclo();
+setInterval(ciclo, 5000);
+</script>
+</body>
+</html>

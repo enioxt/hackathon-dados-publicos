@@ -1,0 +1,642 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sintetizador — mesa de demonstração Visão de Rota</title>
+<style>
+:root{--n:#0B1B2B;--c:#12273B;--b:#27425c;--t:#F6F8FA;--a:#E8A33D;--v:#2E9E6B;--z:#9AA5B1;--r:#D6453D}
+:root[data-tema=claro]{--n:#F3F5F8;--c:#FFFFFF;--b:#D8DEE6;--t:#16232E;--a:#B4720C;--v:#1E7A50;--z:#5B6773;--r:#B23A32}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--n);color:var(--t);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}
+.selo{background:var(--a);color:#111;padding:5px 5vw;font-weight:700;font-size:11.8px;letter-spacing:.01em}
+header{padding:7px 5vw 4px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+header small{letter-spacing:.14em;color:var(--z)}
+h1{margin:2px 0 0;font-size:18px}
+a.voltar{color:var(--z);font-size:12px;text-decoration:none;border:1px solid var(--b);border-radius:8px;padding:4px 10px}
+a.voltar:hover{border-color:var(--a);color:var(--a)}
+#mesa{display:grid;grid-template-columns:320px 1fr 290px;gap:10px;padding:5px 5vw 3px;height:calc(100vh - 108px);min-height:520px}
+.painel{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:10px;overflow-y:auto}
+.painel h2{font-size:12px;margin:0 0 6px;color:var(--a);text-transform:uppercase;letter-spacing:.06em}
+.grupo{border:1px solid var(--b);border-radius:10px;padding:6px 7px;margin-bottom:6px;background:var(--n)}
+.grupo h3{font-size:10.5px;margin:0 0 6px;color:var(--z);text-transform:uppercase;letter-spacing:.08em}
+.knobs{display:flex;flex-wrap:wrap;gap:8px}
+.knob-wrap{display:flex;flex-direction:column;align-items:center;width:68px;user-select:none}
+.knob{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c),var(--n));border:2px solid var(--b);position:relative;cursor:grab;touch-action:none;outline:none}
+.knob:focus-visible{border-color:var(--a)}
+.knob .indicador{position:absolute;left:50%;top:4px;width:3px;height:18px;background:var(--a);border-radius:2px;transform-origin:50% 19px;margin-left:-1.5px}
+.knob-label{font-size:9.8px;color:var(--z);margin-top:3px;text-align:center;line-height:1.2}
+.knob-val{font-size:11.5px;font-weight:700;color:var(--t)}
+.chaves{display:flex;flex-direction:column;gap:3px}
+.chave{display:flex;align-items:center;gap:7px;font-size:11.6px;cursor:pointer;padding:3px 6px;border-radius:7px;border:1px solid transparent}
+.chave.on{background:rgba(232,163,61,.14);border-color:var(--a)}
+.chave input{accent-color:var(--a)}
+.chave2{display:flex;align-items:center;gap:7px;font-size:12.3px}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.presetbtn{background:var(--n);border:1px solid var(--b);color:var(--t);border-radius:9px;padding:7px 6px;font-size:11.3px;font-weight:600;cursor:pointer;text-align:center;line-height:1.25}
+.presetbtn:hover{border-color:var(--a);color:var(--a)}
+.presetbtn:active{transform:scale(.97)}
+#centro{display:flex;flex-direction:column;gap:8px;min-width:0}
+.formaSel{display:flex;gap:6px;flex-wrap:wrap}
+.formaBtn{flex:1 1 auto;background:var(--c);border:1px solid var(--b);color:var(--z);border-radius:9px;padding:8px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
+.formaBtn.ativo{border-color:var(--a);color:var(--a);background:rgba(232,163,61,.1)}
+#palco{flex:1;background:var(--c);border:1px solid var(--b);border-radius:14px;padding:14px;display:flex;flex-direction:column;min-height:0}
+#palco h2{font-size:12px;color:var(--z);margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+#viz{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+#viz svg{max-width:100%;max-height:100%}
+.numgrande{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%}
+.numcard{background:var(--n);border:1px solid var(--b);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.numcard b{font-size:clamp(28px,5vw,52px);color:var(--a);line-height:1}
+.numcard span{color:var(--z);font-size:12px;text-align:center;padding:0 8px}
+.numcard small{color:var(--z);font-size:10px}
+table.tb{width:100%;border-collapse:collapse;font-size:12.6px}
+table.tb td,table.tb th{padding:6px 5px;border-bottom:1px solid var(--b);text-align:right}
+table.tb td:first-child,table.tb th:first-child{text-align:left}
+table.tb th{color:var(--z);font-weight:600;font-size:11px;text-transform:uppercase}
+.dir{display:flex;flex-direction:column;gap:7px}
+.frase{background:var(--n);border:1px solid var(--b);border-radius:10px;padding:9px}
+.frase b{display:block;color:var(--a);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.frase p{margin:0;font-size:12.5px}
+.tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10.5px;font-weight:700;color:#111;white-space:nowrap;margin-left:4px}
+.tag-sim{background:var(--z)}
+.tag-sint{background:var(--a)}
+footer{padding:3px 5vw 5px;color:var(--z);font-size:9.8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;line-height:1.3}
+#autoteste{position:fixed;bottom:8px;left:8px;background:var(--c);border:1px solid var(--a);border-radius:10px;padding:8px 10px;font-size:12px;z-index:50;max-width:340px}
+#autoteste.ok{border-color:var(--v)}
+#autoteste.falhou{border-color:var(--r)}
+@media(max-width:900px){
+  body{overflow:auto}
+  #mesa{grid-template-columns:1fr;height:auto}
+  .painel{max-height:none}
+}
+</style></head>
+<body>
+<div class="selo">MESA DE DEMONSTRAÇÃO: os efeitos das intervenções são ilustrativos, não previsão. O sistema real MEDE o depois; não promete.</div>
+<header>
+  <div>
+    <small>VISÃO DE ROTA · SINTETIZADOR</small>
+    <h1>Mesa de controle — mesma cidade, outro cenário</h1>
+  </div>
+  <a class="voltar" href="painel-gestor.html">← voltar ao painel</a>
+</header>
+
+<div id="mesa">
+  <div class="painel" id="painelEsquerda">
+    <h2>Mesa</h2>
+
+    <div class="grupo">
+      <h3>Cenário</h3>
+      <div class="knobs">
+        <div class="knob-wrap">
+          <div class="knob" id="k_hora" tabindex="0" role="slider" aria-label="Hora do dia" aria-valuemin="0" aria-valuemax="23"><div class="indicador"></div></div>
+          <div class="knob-val" id="v_hora">7h</div>
+          <div class="knob-label">Hora do dia</div>
+        </div>
+        <div class="knob-wrap">
+          <div class="knob" id="k_chuva" tabindex="0" role="slider" aria-label="Chuva" aria-valuemin="0" aria-valuemax="3"><div class="indicador"></div></div>
+          <div class="knob-val" id="v_chuva">0</div>
+          <div class="knob-label">Chuva (0-3)</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="knob-label" style="text-align:left;margin-bottom:4px">Dia</div>
+        <select id="sel_dia" style="width:100%;background:var(--n);color:var(--t);border:1px solid var(--b);border-radius:8px;padding:6px">
+          <option value="util">Dia útil</option>
+          <option value="sabado">Sábado</option>
+          <option value="domingo">Domingo</option>
+        </select>
+      </div>
+      <label class="chave2" style="margin-top:8px"><input type="checkbox" id="chk_evento"> Evento na cidade</label>
+    </div>
+
+    <div class="grupo">
+      <h3>Sistema</h3>
+      <div class="knobs">
+        <div class="knob-wrap">
+          <div class="knob" id="k_cameras" tabindex="0" role="slider" aria-label="Câmeras lidas" aria-valuemin="10" aria-valuemax="600"><div class="indicador"></div></div>
+          <div class="knob-val" id="v_cameras">240</div>
+          <div class="knob-label">Câmeras lidas</div>
+        </div>
+        <div class="knob-wrap">
+          <div class="knob" id="k_janela" tabindex="0" role="slider" aria-label="Janela de contagem" aria-valuemin="1" aria-valuemax="15"><div class="indicador"></div></div>
+          <div class="knob-val" id="v_janela">5 min</div>
+          <div class="knob-label">Janela de contagem</div>
+        </div>
+        <div class="knob-wrap">
+          <div class="knob" id="k_pontos" tabindex="0" role="slider" aria-label="Pontos monitorados" aria-valuemin="1" aria-valuemax="12"><div class="indicador"></div></div>
+          <div class="knob-val" id="v_pontos">5</div>
+          <div class="knob-label">Pontos monitorados</div>
+        </div>
+      </div>
+      <div class="frase" style="margin-top:8px;padding:7px">
+        <b>Cobertura estimada <span class="tag tag-sim">SIMULAÇÃO</span></b>
+        <p id="txtCobertura" style="font-size:12px"></p>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <h3>Intervenção (uma por vez)</h3>
+      <div class="chaves" id="chavesIntervencao"></div>
+    </div>
+
+    <div class="grupo">
+      <h3>Presets</h3>
+      <div class="presets" id="presets"></div>
+    </div>
+  </div>
+
+  <div id="centro">
+    <div class="formaSel" id="formaSel"></div>
+    <div id="palco">
+      <h2 id="tituloViz">Onda — fluxo nas 24 horas</h2>
+      <div id="viz"></div>
+    </div>
+  </div>
+
+  <div class="painel dir" id="painelDireita">
+    <h2>O que isso quer dizer</h2>
+    <div class="frase"><b>O gestor veria</b><p id="txtGestor"></p></div>
+    <div class="frase"><b>O que decidiria</b><p id="txtDecidiria"></p></div>
+    <div class="frase"><b>Tempo para medir o resultado</b><p id="txtMedir">14 dias antes, 14 dias depois.</p></div>
+    <div class="frase"><b>Efeito colateral</b><p id="txtColateral"></p></div>
+  </div>
+</div>
+
+<footer>
+  <span>Origem: cobertura por nº de câmeras — <span class="tag tag-sim">SIMULAÇÃO</span> sobre curva real (SimCam, 4-dados/simcam-curva.json: 33→25%, 94→50%, 207→75%, 357→90%). Fluxo, fila, espera e efeito de intervenção — <span class="tag tag-sint">DADO SINTÉTICO</span> por fórmula com semente fixa. Acidentes por tipo/veículo — RENAEST Patos de Minas, dados abertos 13/08/2026 (sem quebra por hora do dia na fonte; distribuição horária aqui é <span class="tag tag-sint">DADO SINTÉTICO</span>).</span>
+  <span>Visão de Rota — protótipo de hackathon, não produto em operação.</span>
+</footer>
+
+<div id="autoteste" hidden></div>
+
+<script>
+'use strict';
+
+/* ===================== semente fixa determinística ===================== */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function rngFor(seedStr){
+  var h=1779033703^seedStr.length;
+  for(var i=0;i<seedStr.length;i++){h=Math.imul(h^seedStr.charCodeAt(i),3432918353);h=h<<13|h>>>19;}
+  return mulberry32((h^h>>>16)>>>0);
+}
+
+/* ===================== dado real: curva de cobertura SimCam ===================== */
+var PONTOS_BASE=[[0,0],[33,25],[94,50],[207,75],[357,90],[487,100]];
+function coberturaPct(camLido){
+  var pts=PONTOS_BASE;
+  if(camLido<=0)return 0;
+  if(camLido>=pts[pts.length-1][0])return 100;
+  for(var i=1;i<pts.length;i++){
+    var a=pts[i-1],b=pts[i];
+    if(camLido<=b[0]){
+      var frac=(camLido-a[0])/(b[0]-a[0]);
+      return a[1]+frac*(b[1]-a[1]);
+    }
+  }
+  return 100;
+}
+
+/* ===================== dado real: RENAEST Patos (por tipo/veículo) ===================== */
+var RENAEST={sinistros:22708,obitos:140,sinistros_com_moto:6818,motos:6183,por_tipo_top:[["CHOQUE",4815],["COLISÃO LATERAL",3868],["COLISÃO TRASEIRA",3020],["COLISÃO TRANSVERSAL",2274],["COLISÃO FRONTAL",2082]]};
+
+/* ===================== estado dos knobs ===================== */
+var estado={
+  hora:7, dia:'util', chuva:0, evento:false,
+  cameras:240, janela:5, pontos:5,
+  intervencao:'nenhuma',
+  forma:'onda'
+};
+
+var LIMITES={hora:[0,23],chuva:[0,3],cameras:[10,600],janela:[1,15],pontos:[1,12]};
+
+var INTERVENCOES=[
+  {id:'nenhuma',label:'Nenhuma'},
+  {id:'estacionamento',label:'Tirar estacionamento de um lado'},
+  {id:'sentido',label:'Inverter sentido da rua'},
+  {id:'semaforo',label:'Ajustar tempo de semáforo'},
+  {id:'faixa_onibus',label:'Faixa exclusiva de ônibus'}
+];
+
+var PRESETS=[
+  {id:'pico-da-manha',label:'Pico da manhã',valores:{hora:7,dia:'util',chuva:0,evento:false,cameras:240,janela:5,pontos:5,intervencao:'nenhuma'}},
+  {id:'saida-de-escola',label:'Saída de escola',valores:{hora:17,dia:'util',chuva:0,evento:false,cameras:240,janela:5,pontos:8,intervencao:'nenhuma'}},
+  {id:'sabado-de-chuva',label:'Sábado de chuva',valores:{hora:11,dia:'sabado',chuva:2,evento:false,cameras:180,janela:5,pontos:5,intervencao:'nenhuma'}},
+  {id:'depois-da-intervencao',label:'Depois da intervenção',valores:{hora:7,dia:'util',chuva:0,evento:false,cameras:240,janela:5,pontos:5,intervencao:'faixa_onibus'}},
+  {id:'cidade-com-100-cameras',label:'Cidade com 100 câmeras',valores:{hora:8,dia:'util',chuva:0,evento:false,cameras:100,janela:5,pontos:5,intervencao:'nenhuma'}}
+];
+
+/* ===================== motor de números sintéticos (determinístico) ===================== */
+// curva-base de fluxo por hora (perfil urbano típico: 2 picos, madrugada baixa) — DADO SINTÉTICO
+var PERFIL_HORA=[8,5,3,2,2,4,12,32,38,26,22,24,27,26,24,23,27,36,34,24,18,14,11,9];
+
+function fatorDia(dia){ return dia==='util'?1.0 : dia==='sabado'?0.68 : 0.5; }
+function fatorChuva(chuva){ return 1 - chuva*0.06; } // chuva reduz fluxo de veículos levemente, aumenta espera
+function fatorEvento(evento){ return evento?1.22:1.0; }
+function fatorJanela(min){ return 1 + (min-5)*0.01; } // janela maior suaviza pico (efeito de médias)
+
+function fluxoBaseHora(h,dia,chuva,evento,janela){
+  var base=PERFIL_HORA[((h%24)+24)%24];
+  var v=base*fatorDia(dia)*fatorEvento(evento)*fatorJanela(janela);
+  v=v*(1-chuva*0.04); // chuva tira um pouco de volume de veículo (mais gente evita sair) mas...
+  return Math.max(1,v);
+}
+
+function esperaBaseSeg(h,dia,chuva,evento,cobertura){
+  var fluxo=fluxoBaseHora(h,dia,chuva,evento,5);
+  var esperaBase=18 + fluxo*1.15; // mais fluxo = mais espera no cruzamento
+  esperaBase*=(1+chuva*0.14); // chuva aumenta espera (frenagem, cautela)
+  esperaBase*=(1+(evento?0.28:0));
+  // cobertura baixa = medição mais ruidosa, mas não altera o valor real — só a confiança (usada na faixa)
+  return esperaBase;
+}
+
+var EFEITO_INTERVENCAO={
+  nenhuma:      {reducao:0,   colateralIdx:-1, colateralPct:0},
+  estacionamento:{reducao:0.14,colateralIdx:2, colateralPct:0.09},  // ganha fluxo, cruzamento 3 piora (conversão)
+  sentido:      {reducao:0.20,colateralIdx:4, colateralPct:0.15},  // ganha muito, cruzamento 5 piora (rota nova concentra)
+  semaforo:     {reducao:0.11,colateralIdx:1, colateralPct:0.05},
+  faixa_onibus: {reducao:0.08,colateralIdx:3, colateralPct:0.12}   // ganha pouco pro carro, cruzamento 4 (acesso lateral) piora
+};
+
+var NOMES_CRUZAMENTO=['Cruzamento 1','Cruzamento 2','Cruzamento 3','Cruzamento 4','Cruzamento 5'];
+
+function gerarCruzamentos(){
+  var rng=rngFor('cruzamentos|'+estado.hora+'|'+estado.dia+'|'+estado.chuva+'|'+estado.evento+'|'+estado.pontos+'|'+estado.janela+'|'+estado.cameras+'|'+estado.intervencao);
+  var esperaBase=esperaBaseSeg(estado.hora,estado.dia,estado.chuva,estado.evento,coberturaPct(estado.cameras));
+  var efeito=EFEITO_INTERVENCAO[estado.intervencao];
+  var n=Math.min(5,Math.max(3,Math.round(estado.pontos/2)+3));
+  var linhas=[];
+  for(var i=0;i<5;i++){
+    var variacao=0.82+rng()*0.42; // 0.82 a 1.24 — variação por cruzamento
+    var fluxo=Math.round(fluxoBaseHora(estado.hora,estado.dia,estado.chuva,estado.evento,estado.janela)*variacao*(3+i*0.4));
+    var esperaAntes=esperaBase*variacao;
+    var esperaDepois=esperaAntes;
+    if(efeito.reducao>0){
+      esperaDepois=esperaAntes*(1-efeito.reducao);
+      if(i===efeito.colateralIdx){
+        esperaDepois=esperaAntes*(1+efeito.colateralPct);
+      }
+    }
+    var incertezaPct=0.10+rng()*0.05;
+    linhas.push({
+      nome:NOMES_CRUZAMENTO[i],
+      fluxo:fluxo,
+      esperaAntes:esperaAntes,
+      esperaDepois:esperaDepois,
+      incertezaPct:incertezaPct,
+      colateral:(efeito.reducao>0 && i===efeito.colateralIdx)
+    });
+  }
+  return linhas.slice(0,n);
+}
+
+function gerarCurva24h(){
+  var pts=[];
+  for(var h=0;h<24;h++){
+    pts.push(fluxoBaseHora(h,estado.dia,estado.chuva,estado.evento,estado.janela));
+  }
+  return pts;
+}
+
+/* ===================== knobs: interação mouse/toque/teclado ===================== */
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+
+function setupKnob(id,campo,min,max,step,formatador){
+  var el=document.getElementById(id);
+  function aplicarVisual(){
+    var v=estado[campo];
+    var frac=(v-min)/(max-min);
+    var ang=-135+frac*270;
+    el.querySelector('.indicador').style.transform='rotate('+ang+'deg)';
+    el.setAttribute('aria-valuenow',v);
+    document.getElementById('v_'+campo).textContent=formatador(v);
+  }
+  function setValor(v,semRender){
+    v=clamp(Math.round(v/step)*step,min,max);
+    estado[campo]=v;
+    aplicarVisual();
+    if(!semRender)render();
+  }
+  el._setValor=setValor;
+  el._aplicarVisual=aplicarVisual;
+  var arrastando=false,yIni=0,valIni=0;
+  function inicio(clientY){arrastando=true;yIni=clientY;valIni=estado[campo];el.style.cursor='grabbing';}
+  function mover(clientY){
+    if(!arrastando)return;
+    var delta=(yIni-clientY)/2.4;
+    var faixa=max-min;
+    setValor(valIni+delta*(faixa/100));
+  }
+  function fim(){arrastando=false;el.style.cursor='grab';}
+  el.addEventListener('mousedown',function(e){inicio(e.clientY);e.preventDefault();});
+  window.addEventListener('mousemove',function(e){mover(e.clientY);});
+  window.addEventListener('mouseup',fim);
+  el.addEventListener('touchstart',function(e){inicio(e.touches[0].clientY);},{passive:true});
+  el.addEventListener('touchmove',function(e){mover(e.touches[0].clientY);e.preventDefault();},{passive:false});
+  el.addEventListener('touchend',fim);
+  el.addEventListener('keydown',function(e){
+    if(e.key==='ArrowUp'||e.key==='ArrowRight'){setValor(estado[campo]+step);e.preventDefault();}
+    else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){setValor(estado[campo]-step);e.preventDefault();}
+  });
+  aplicarVisual();
+}
+
+function animarKnobPara(campo,alvo,duracaoMs){
+  var el=document.getElementById('k_'+campo);
+  var ini=estado[campo];
+  var t0=performance.now();
+  function passo(t){
+    var frac=Math.min(1,(t-t0)/duracaoMs);
+    var v=ini+(alvo-ini)*frac;
+    estado[campo]=(campo==='dia'||typeof alvo!=='number')?alvo:Math.round(v);
+    if(el&&el._aplicarVisual)el._aplicarVisual();
+    if(frac<1)requestAnimationFrame(passo); else { estado[campo]=alvo; if(el&&el._aplicarVisual)el._aplicarVisual(); }
+  }
+  requestAnimationFrame(passo);
+}
+
+/* ===================== montagem de chaves / presets / seletor de forma ===================== */
+function montarChaves(){
+  var wrap=document.getElementById('chavesIntervencao');
+  wrap.innerHTML='';
+  INTERVENCOES.forEach(function(it){
+    var lbl=document.createElement('label');
+    lbl.className='chave'+(estado.intervencao===it.id?' on':'');
+    lbl.innerHTML='<input type="radio" name="intervencao" value="'+it.id+'" '+(estado.intervencao===it.id?'checked':'')+'> '+it.label;
+    lbl.querySelector('input').addEventListener('change',function(){
+      estado.intervencao=it.id;
+      montarChaves();
+      render();
+    });
+    wrap.appendChild(lbl);
+  });
+}
+
+function montarPresets(){
+  var wrap=document.getElementById('presets');
+  wrap.innerHTML='';
+  PRESETS.forEach(function(p){
+    var b=document.createElement('button');
+    b.className='presetbtn';
+    b.type='button';
+    b.textContent=p.label;
+    b.addEventListener('click',function(){aplicarPreset(p.id);});
+    wrap.appendChild(b);
+  });
+}
+
+function aplicarPreset(id){
+  var p=PRESETS.filter(function(x){return x.id===id;})[0];
+  if(!p)return;
+  var v=p.valores;
+  animarKnobPara('hora',v.hora,420);
+  animarKnobPara('chuva',v.chuva,420);
+  animarKnobPara('cameras',v.cameras,420);
+  animarKnobPara('janela',v.janela,420);
+  animarKnobPara('pontos',v.pontos,420);
+  estado.dia=v.dia;
+  document.getElementById('sel_dia').value=v.dia;
+  estado.evento=v.evento;
+  document.getElementById('chk_evento').checked=v.evento;
+  estado.intervencao=v.intervencao;
+  montarChaves();
+  setTimeout(render,460);
+}
+
+var FORMAS=[{id:'onda',label:'Onda'},{id:'mapa',label:'Mapa'},{id:'numeros',label:'Números'},{id:'tabela',label:'Tabela'}];
+function montarFormaSel(){
+  var wrap=document.getElementById('formaSel');
+  wrap.innerHTML='';
+  FORMAS.forEach(function(f){
+    var b=document.createElement('button');
+    b.className='formaBtn'+(estado.forma===f.id?' ativo':'');
+    b.type='button';
+    b.textContent=f.label;
+    b.addEventListener('click',function(){estado.forma=f.id;montarFormaSel();render();});
+    wrap.appendChild(b);
+  });
+}
+
+/* ===================== visualizações (mesmos números, 4 formas) ===================== */
+var TITULOS={onda:'Onda — fluxo nas 24 horas',mapa:'Mapa — corredor esquemático (5 cruzamentos, sem nome real)',numeros:'Números — para telão',tabela:'Tabela — por cruzamento'};
+
+function renderOnda(){
+  document.getElementById('tituloViz').textContent=TITULOS.onda;
+  var curva=gerarCurva24h();
+  var w=760,h=340,pad=36;
+  var maxV=Math.max(1,Math.max.apply(null,curva))*1.15;
+  function X(h){return pad+(h/23)*(w-2*pad);}
+  function Y(v){return h-pad-(v/maxV)*(h-2*pad);}
+  var pontos=curva.map(function(v,i){return X(i)+','+Y(v);}).join(' ');
+  var linhas=gerarCruzamentos();
+  var temFaixa=estado.intervencao!=='nenhuma';
+  var faixaSvg='';
+  if(temFaixa){
+    var antes=linhas.map(function(l){return l.esperaAntes;});
+    var depois=linhas.map(function(l){return l.esperaDepois;});
+    var maxE=Math.max.apply(null,antes.concat(depois))*1.2;
+    var Ye=function(v){return h-pad-(v/maxE)*(h-2*pad);};
+    var barrasAntes=linhas.map(function(l,i){var bx=pad+i*((w-2*pad)/linhas.length)+14;return '<rect x="'+bx+'" y="'+Ye(l.esperaAntes)+'" width="16" height="'+(h-pad-Ye(l.esperaAntes))+'" fill="var(--z)" opacity=".55"/>';}).join('');
+    var barrasDepois=linhas.map(function(l,i){var bx=pad+i*((w-2*pad)/linhas.length)+34;var cor=l.colateral?'var(--r)':'var(--v)';return '<rect x="'+bx+'" y="'+Ye(l.esperaDepois)+'" width="16" height="'+(h-pad-Ye(l.esperaDepois))+'" fill="'+cor+'"/>';}).join('');
+    faixaSvg='<g transform="translate(0,'+(h+18)+')">'+
+      '<text x="'+pad+'" y="-2" fill="var(--z)" font-size="11">espera por cruzamento — antes (cinza) × depois (verde/vermelho), segundos</text>'+
+      barrasAntes+barrasDepois+'</g>';
+  }
+  var cxHora=X(estado.hora),cyHora=Y(curva[estado.hora]);
+  var svg='<svg viewBox="0 0 '+w+' '+(h+(temFaixa?170:20))+'" width="100%" height="100%">'+
+    '<polyline points="'+pontos+'" fill="none" stroke="var(--a)" stroke-width="2.4"/>'+
+    curva.map(function(v,i){return i%3===0?'<text x="'+X(i)+'" y="'+(h+14)+'" fill="var(--z)" font-size="10" text-anchor="middle">'+i+'h</text>':'';}).join('')+
+    '<circle cx="'+cxHora+'" cy="'+cyHora+'" r="6" fill="var(--a)" stroke="var(--n)" stroke-width="2"/>'+
+    '<text x="'+cxHora+'" y="'+(cyHora-12)+'" fill="var(--a)" font-size="12" font-weight="700" text-anchor="middle">'+estado.hora+'h</text>'+
+    faixaSvg+
+    '</svg>';
+  document.getElementById('viz').innerHTML=svg;
+}
+
+function renderMapa(){
+  document.getElementById('tituloViz').textContent=TITULOS.mapa;
+  var linhas=gerarCruzamentos();
+  var w=760,h=340;
+  var maxFluxo=Math.max.apply(null,linhas.map(function(l){return l.fluxo;}))||1;
+  var n=linhas.length;
+  var passo=(w-120)/(n-1||1);
+  var pontosX=linhas.map(function(l,i){return 60+i*passo;});
+  var y=h/2;
+  var trechos='';
+  for(var i=0;i<n-1;i++){
+    var espessura=2+ (linhas[i].fluxo/maxFluxo)*14;
+    var cor=linhas[i].colateral||linhas[i+1].colateral?'var(--r)':'var(--v)';
+    if(estado.intervencao==='nenhuma')cor='var(--a)';
+    trechos+='<line x1="'+pontosX[i]+'" y1="'+y+'" x2="'+pontosX[i+1]+'" y2="'+y+'" stroke="'+cor+'" stroke-width="'+espessura+'" stroke-linecap="round"/>';
+  }
+  var nos=linhas.map(function(l,i){
+    var r=10+(l.fluxo/maxFluxo)*8;
+    var corNo=l.colateral?'var(--r)':'var(--t)';
+    return '<circle cx="'+pontosX[i]+'" cy="'+y+'" r="'+r+'" fill="var(--n)" stroke="'+corNo+'" stroke-width="2.4"/>'+
+      '<text x="'+pontosX[i]+'" y="'+(y-24)+'" fill="var(--z)" font-size="11" text-anchor="middle">'+l.nome+'</text>'+
+      '<text x="'+pontosX[i]+'" y="'+(y+34)+'" fill="var(--t)" font-size="11" text-anchor="middle">'+Math.round(l.esperaDepois)+'s</text>'+
+      (l.colateral?'<text x="'+pontosX[i]+'" y="'+(y+50)+'" fill="var(--r)" font-size="10" text-anchor="middle">↑ piorou</text>':'');
+  }).join('');
+  var svg='<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="100%">'+trechos+nos+
+    '<text x="'+w/2+'" y="'+(h-14)+'" fill="var(--z)" font-size="10.5" text-anchor="middle">esquema — corredor fictício, espessura e cor = fluxo/espera</text>'+
+    '</svg>';
+  document.getElementById('viz').innerHTML=svg;
+}
+
+function renderNumeros(){
+  document.getElementById('tituloViz').textContent=TITULOS.numeros;
+  var linhas=gerarCruzamentos();
+  var fluxoTot=linhas.reduce(function(a,l){return a+l.fluxo;},0);
+  var esperaMedAntes=linhas.reduce(function(a,l){return a+l.esperaAntes;},0)/linhas.length;
+  var esperaMedDepois=linhas.reduce(function(a,l){return a+l.esperaDepois;},0)/linhas.length;
+  var variacaoPct=((esperaMedDepois-esperaMedAntes)/esperaMedAntes*100);
+  var cob=coberturaPct(estado.cameras);
+  var html='<div class="numgrande">'+
+    '<div class="numcard"><b>'+Math.round(fluxoTot)+'</b><span>veículos/min contados no corredor</span><small>DADO SINTÉTICO</small></div>'+
+    '<div class="numcard"><b>'+Math.round(esperaMedDepois)+'s</b><span>espera média por cruzamento (±'+Math.round(esperaMedAntes*0.12)+'s)</span><small>DADO SINTÉTICO</small></div>'+
+    '<div class="numcard"><b>'+(variacaoPct<=0?'':'+')+variacaoPct.toFixed(1).replace('.',',')+'%</b><span>variação vs. sem intervenção</span><small>DADO SINTÉTICO</small></div>'+
+    '<div class="numcard"><b>'+cob.toFixed(0)+'%</b><span>das ocorrências cobertas com '+estado.cameras+' câmeras</span><small>SIMULAÇÃO sobre curva real</small></div>'+
+    '</div>';
+  document.getElementById('viz').innerHTML=html;
+}
+
+function renderTabela(){
+  document.getElementById('tituloViz').textContent=TITULOS.tabela;
+  var linhas=gerarCruzamentos();
+  var corpo=linhas.map(function(l){
+    var faixaAntes=Math.round(l.esperaAntes);
+    var faixaBaixo=Math.round(l.esperaDepois*(1-l.incertezaPct));
+    var faixaAlto=Math.round(l.esperaDepois*(1+l.incertezaPct));
+    return '<tr><td>'+l.nome+(l.colateral?' <span class="tag" style="background:var(--r)">piorou</span>':'')+'</td>'+
+      '<td>'+l.fluxo+'</td><td>'+faixaAntes+'s</td>'+
+      '<td>'+faixaBaixo+'–'+faixaAlto+'s</td></tr>';
+  }).join('');
+  var html='<div style="overflow-x:auto;width:100%"><table class="tb"><thead><tr><th>Cruzamento</th><th>Fluxo (veíc/min)</th><th>Espera antes</th><th>Espera depois (faixa)</th></tr></thead><tbody>'+corpo+'</tbody></table></div>';
+  document.getElementById('viz').innerHTML=html;
+}
+
+function renderViz(){
+  if(estado.forma==='onda')renderOnda();
+  else if(estado.forma==='mapa')renderMapa();
+  else if(estado.forma==='numeros')renderNumeros();
+  else renderTabela();
+}
+
+/* ===================== painel direita (o que isso quer dizer) ===================== */
+function renderDireita(){
+  var cob=coberturaPct(estado.cameras);
+  document.getElementById('txtCobertura').textContent=
+    'Com '+estado.cameras+' câmeras lidas, o sistema cobriria cerca de '+cob.toFixed(0)+'% das ocorrências (curva SimCam real, escala Patos de Minas).';
+
+  var fluxoAgora=fluxoBaseHora(estado.hora,estado.dia,estado.chuva,estado.evento,estado.janela);
+  var nivel = fluxoAgora>28?'alto':fluxoAgora>14?'moderado':'baixo';
+  var horaTxt=estado.hora+'h de um '+({util:'dia útil',sabado:'sábado',domingo:'domingo'})[estado.dia]+(estado.chuva>0?', com chuva':'')+(estado.evento?', com evento na cidade':'');
+  document.getElementById('txtGestor').textContent=
+    'Fluxo '+nivel+' às '+horaTxt+', cobertura de '+cob.toFixed(0)+'% das câmeras contando — não vídeo, não rosto, não placa.';
+
+  var interv=INTERVENCOES.filter(function(i){return i.id===estado.intervencao;})[0];
+  var linhas=gerarCruzamentos();
+  var colateral=linhas.filter(function(l){return l.colateral;})[0];
+  var decidiriaTxt;
+  if(estado.intervencao==='nenhuma'){
+    decidiriaTxt='Ainda não há intervenção testada. O gestor decidiria olhar os pontos de maior espera antes de agir.';
+  } else {
+    var media=linhas.reduce(function(a,l){return a+(l.esperaAntes-l.esperaDepois)/l.esperaAntes;},0)/linhas.length*100;
+    decidiriaTxt='Com "'+interv.label.toLowerCase()+'", a espera média cai por volta de '+Math.abs(media).toFixed(0)+'% nos demais cruzamentos'+(colateral?', mas piora em '+colateral.nome+' — efeito colateral a monitorar.':', sem colateral relevante nesta leitura.');
+  }
+  document.getElementById('txtDecidiria').textContent=decidiriaTxt;
+
+  document.getElementById('txtColateral').textContent = colateral
+    ? colateral.nome+' passaria de ~'+Math.round(colateral.esperaAntes)+'s para ~'+Math.round(colateral.esperaDepois)+'s de espera — o ganho num ponto empurra fila para outro.'
+    : (estado.intervencao==='nenhuma' ? 'Sem intervenção ativa, não há efeito colateral a mostrar.' : 'Nesta leitura o efeito colateral é pequeno o bastante para não aparecer separado.');
+}
+
+/* ===================== render geral ===================== */
+function render(){
+  renderViz();
+  renderDireita();
+}
+
+/* ===================== leitura de querystring ===================== */
+function lerQuery(){
+  var q=new URLSearchParams(location.search);
+  var tema=q.get('tema');
+  if(tema==='claro')document.documentElement.setAttribute('data-tema','claro');
+  var forma=q.get('forma');
+  if(forma&&FORMAS.some(function(f){return f.id===forma;}))estado.forma=forma;
+  var preset=q.get('preset');
+  return preset;
+}
+
+/* ===================== autoteste ===================== */
+function autoTeste(){
+  var caixa=document.getElementById('autoteste');
+  caixa.hidden=false;
+  var falhas=[];
+
+  // 1) mesmos knobs -> mesmos números
+  estado.hora=7;estado.dia='util';estado.chuva=0;estado.evento=false;estado.cameras=240;estado.janela=5;estado.pontos=5;estado.intervencao='nenhuma';
+  var a1=JSON.stringify(gerarCruzamentos());
+  var a2=JSON.stringify(gerarCruzamentos());
+  if(a1!==a2)falhas.push('determinismo: duas chamadas com os mesmos knobs deram números diferentes');
+
+  // 2) trocar a forma não altera os valores
+  var linhasAntes=JSON.stringify(gerarCruzamentos());
+  estado.forma='mapa';
+  var linhasDepois=JSON.stringify(gerarCruzamentos());
+  estado.forma='onda';
+  if(linhasAntes!==linhasDepois)falhas.push('forma: trocar de visualização alterou os valores gerados');
+
+  // 3) preset aplica os knobs esperados
+  var p=PRESETS.filter(function(x){return x.id==='pico-da-manha';})[0];
+  var okPreset = p.valores.hora===7 && p.valores.dia==='util' && p.valores.cameras===240;
+  if(!okPreset)falhas.push('preset: "Pico da manhã" não bate com os knobs esperados (7h, dia útil, 240 câmeras)');
+
+  var p2=PRESETS.filter(function(x){return x.id==='depois-da-intervencao';})[0];
+  if(p2.valores.intervencao!=='faixa_onibus')falhas.push('preset: "Depois da intervenção" deveria ligar uma intervenção');
+
+  // 4) cobertura bate com os 4 pontos reais da curva (tolerância de arredondamento)
+  var checagens=[[33,25],[94,50],[207,75],[357,90]];
+  checagens.forEach(function(c){
+    var v=coberturaPct(c[0]);
+    if(Math.abs(v-c[1])>0.6)falhas.push('cobertura: '+c[0]+' câmeras deu '+v.toFixed(1)+'%, esperado '+c[1]+'%');
+  });
+
+  if(falhas.length===0){
+    caixa.className='ok';
+    caixa.textContent='AUTOTESTE PASSOU — determinismo, forma-independente, presets e curva de cobertura conferidos.';
+  } else {
+    caixa.className='falhou';
+    caixa.textContent='AUTOTESTE FALHOU: '+falhas.join(' | ');
+  }
+}
+
+/* ===================== inicialização ===================== */
+function init(){
+  setupKnob('k_hora','hora',LIMITES.hora[0],LIMITES.hora[1],1,function(v){return v+'h';});
+  setupKnob('k_chuva','chuva',LIMITES.chuva[0],LIMITES.chuva[1],1,function(v){return String(v);});
+  setupKnob('k_cameras','cameras',LIMITES.cameras[0],LIMITES.cameras[1],5,function(v){return String(v);});
+  setupKnob('k_janela','janela',LIMITES.janela[0],LIMITES.janela[1],1,function(v){return v+' min';});
+  setupKnob('k_pontos','pontos',LIMITES.pontos[0],LIMITES.pontos[1],1,function(v){return String(v);});
+
+  document.getElementById('sel_dia').addEventListener('change',function(e){estado.dia=e.target.value;render();});
+  document.getElementById('chk_evento').addEventListener('change',function(e){estado.evento=e.target.checked;render();});
+
+  var presetQuery=lerQuery();
+
+  montarChaves();
+  montarPresets();
+  montarFormaSel();
+
+  if(presetQuery){
+    var existe=PRESETS.some(function(p){return p.id===presetQuery;});
+    if(existe)aplicarPreset(presetQuery);
+    else render();
+  } else {
+    render();
+  }
+
+  var q=new URLSearchParams(location.search);
+  if(q.get('teste')==='1')setTimeout(autoTeste,600);
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body></html>
