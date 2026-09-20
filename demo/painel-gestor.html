@@ -68,8 +68,11 @@
   @media (max-width:760px){ .stats{grid-template-columns:repeat(2,1fr);} }
   .stat{
     background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 14px;
-    display:flex;flex-direction:column;gap:8px;min-width:0;
+    display:flex;flex-direction:column;gap:8px;min-width:0;width:100%;
+    cursor:pointer;text-align:left;font:inherit;color:inherit;-webkit-appearance:none;appearance:none;
   }
+  .stat:hover{border-color:var(--amber);}
+  .stat:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
   .stat .tag{
     align-self:flex-start;font-size:9.5px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:5px;
   }
@@ -77,6 +80,120 @@
   .tag-sim{background:rgba(232,163,61,0.18);color:var(--amber);border:1px solid rgba(232,163,61,0.4);}
   .stat .num{font-size:24px;font-weight:800;line-height:1;}
   .stat .lbl{color:var(--gray);font-size:11.5px;}
+
+  /* ---------- Melhoria #2: popover de origem do número (Esc/clique fora fecham) ---------- */
+  .origem-pop{
+    position:fixed;z-index:1000;background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px 16px;width:min(320px, calc(100vw - 32px));box-shadow:0 14px 34px rgba(0,0,0,0.5);
+    font-size:12.5px;line-height:1.55;animation:origem-pop-in .12s ease-out;
+  }
+  @keyframes origem-pop-in{ from{opacity:0;transform:translateY(-4px);} to{opacity:1;transform:none;} }
+  .origem-pop h4{margin:2px 0 8px;font-size:13.5px;color:var(--ice);}
+  .origem-pop .origem-fecha{
+    position:absolute;top:8px;right:10px;background:none;border:0;color:var(--gray);font-size:15px;cursor:pointer;
+    line-height:1;padding:4px;
+  }
+  .origem-pop .origem-fecha:hover{color:var(--ice);}
+  .origem-pop .origem-de-onde{color:var(--gray);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+  .origem-pop .origem-de-onde b{color:var(--ice);}
+  .origem-pop a.origem-prova{
+    display:inline-block;margin-top:8px;color:var(--amber);text-decoration:none;font-weight:600;
+  }
+  .origem-pop a.origem-prova:hover{text-decoration:underline;}
+
+  /* ---------- Melhoria #4: entrada de primeira visita ----------
+     Não cobre o canto inferior esquerdo (é onde vive o botão "Pedir melhoria" do melhorias.js). */
+  .intro-overlay{
+    position:fixed;inset:0;z-index:1100;background:rgba(5,10,18,0.62);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .intro-card{
+    position:relative;max-width:520px;width:100%;background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:26px 24px 22px;box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    max-height:calc(100vh - 48px);overflow-y:auto;
+  }
+  .intro-card h3{margin:0 0 16px;font-size:16.5px;line-height:1.4;color:var(--ice);padding-right:26px;}
+  .intro-fecha{
+    position:absolute;top:14px;right:14px;background:none;border:0;color:var(--gray);font-size:17px;cursor:pointer;padding:4px;
+  }
+  .intro-fecha:hover{color:var(--ice);}
+  .intro-passos{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .intro-passos li{margin:0;}
+  .intro-passo{display:block;width:100%;text-align:left;}
+  .intro-legenda{font-size:11px;color:var(--gray);line-height:2.1;margin-bottom:18px;}
+  .intro-legenda .tag{margin-right:2px;}
+  .intro-entendi{width:100%;text-align:center;}
+  @media (max-width:480px){ .intro-overlay{padding:12px;} .intro-card{padding:20px 16px 18px;} }
+
+  /* ---------- Modo História (?historia=1) ---------- */
+  .historia-cta{
+    background:var(--amber);color:#1a1204;border:0;border-radius:9px;font-weight:800;
+    font-size:13px;padding:9px 16px;cursor:pointer;white-space:nowrap;
+    box-shadow:0 3px 12px rgba(232,163,61,0.35);
+  }
+  .historia-cta:hover{filter:brightness(1.06);}
+  .historia-cta-intro{display:block;width:100%;font-size:14.5px;padding:13px 16px;margin-bottom:16px;text-align:center;}
+
+  /* elemento real da tela recebe destaque + "buraco" no escurecimento via box-shadow gigante —
+     tudo que NÃO é o alvo fica visualmente escuro, sem cobrir o alvo com uma camada por cima. */
+  .historia-spot{
+    position:relative!important;z-index:1201;border-radius:10px;isolation:isolate;
+    box-shadow:0 0 0 3px var(--amber), 0 0 44px 10px rgba(232,163,61,0.55);
+    transition:box-shadow .18s ease-out;
+  }
+  .historia-scrim{position:fixed;inset:0;z-index:1150;background:rgba(5,10,18,0.8);}
+  .historia-overlay{position:fixed;inset:0;z-index:1250;pointer-events:none;}
+  .historia-progresso{
+    position:fixed;top:0;left:0;right:0;height:5px;background:rgba(255,255,255,0.08);z-index:1260;
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .historia-progresso-fill{height:100%;background:var(--amber);width:14.28%;transition:width .25s ease-out;}
+  .historia-chrome{
+    position:fixed;top:14px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;
+    z-index:1260;pointer-events:none;
+  }
+  .historia-passo-lbl{
+    background:rgba(11,27,43,0.9);color:var(--ice);border:1px solid var(--border);border-radius:20px;
+    padding:5px 16px;font-size:13px;font-weight:700;pointer-events:auto;
+  }
+  .historia-x{
+    position:fixed;top:14px;right:16px;background:rgba(11,27,43,0.9);border:1px solid var(--border);color:var(--ice);
+    border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;pointer-events:auto;z-index:1261;
+  }
+  .historia-x:hover{border-color:var(--amber);color:var(--amber);}
+  .historia-card{
+    position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:1260;pointer-events:auto;
+    width:min(680px, calc(100vw - 32px));max-height:min(52vh, 480px);overflow-y:auto;
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    padding:22px 26px 24px;box-shadow:0 24px 60px rgba(0,0,0,0.55);
+  }
+  .historia-titulo{font-size:clamp(34px, 3.4vw, 46px);font-weight:800;line-height:1.15;color:var(--ice);margin:0 0 12px;}
+  .historia-num{font-size:clamp(120px, 13vw, 190px);font-weight:800;line-height:0.95;color:var(--amber);margin:6px 0;}
+  .historia-num-sub{font-size:15px;color:var(--gray);margin-bottom:10px;}
+  .historia-corpo{font-size:14.5px;line-height:1.6;color:var(--ice);}
+  .historia-corpo .tag{margin-right:6px;}
+  .historia-lista{margin:10px 0 0;padding-left:18px;}
+  .historia-lista li{margin-bottom:4px;}
+  .historia-opcoes{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .historia-opcoes .chip{width:100%;text-align:left;font-size:14px;padding:12px 16px;}
+  .historia-efeito{margin-top:12px;padding:12px 14px;background:var(--card2);border-radius:10px;font-size:13.5px;}
+  .historia-nav{
+    position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:14px;
+    padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:1260;pointer-events:none;
+  }
+  .historia-nav-btn{
+    pointer-events:auto;font-size:17px;font-weight:800;padding:14px 26px;border-radius:12px;cursor:pointer;
+    background:var(--card2);border:1px solid var(--border);color:var(--ice);
+  }
+  .historia-nav-btn:disabled{opacity:0.35;cursor:default;}
+  .historia-nav-btn-principal{background:var(--amber);color:#1a1204;border-color:transparent;}
+  .historia-final-btn{width:100%;text-align:center;font-size:16px;padding:14px;margin-top:16px;}
+  @media (max-width:760px){
+    .historia-titulo{font-size:clamp(26px,7vw,34px);}
+    .historia-num{font-size:clamp(72px,20vw,120px);}
+    .historia-card{padding:18px 18px 20px;bottom:82px;}
+    .historia-cta:not(.historia-cta-intro){display:none;}
+  }
 
   /* Layout grid */
   .grid2{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start;}
@@ -501,7 +618,7 @@
   }
   body:not(.layout-painel) #vrChat.min header b{display:none;}
   body:not(.layout-painel) #vrChat.min header span{font-size:20px;}
-  body.layout-foco #vrChat, body.layout-foco a[href="/custos"]{display:none!important;}
+  body.layout-foco #vrChat, body.layout-foco a[href="simulador.html"]{display:none!important;}
 
   body.layout-central #screen-agora #stats-topo,
   body.layout-fila #screen-agora #stats-topo{
@@ -542,7 +659,9 @@
     padding:16px 16px 20px;overflow-y:auto;margin-bottom:16px;
   }
   body.layout-central #screen-agora #central-detail-root{height:clamp(320px, calc(100vh - 380px), 480px);}
-  body.layout-fila #screen-agora #central-detail-root{height:clamp(360px, calc(100vh - 260px), 640px);}
+  /* Fila: nunca prende os botões de ação atrás de scroll invisível dentro de uma caixa —
+     cresce com o conteúdo (a página rola normalmente); só limita quando não há nada selecionado. */
+  body.layout-fila #screen-agora #central-detail-root{min-height:200px;max-height:none;height:auto;overflow-y:visible;}
   body:not(.layout-painel) #screen-agora #central-detail-root .painel-x{display:none;}
   body:not(.layout-painel) #screen-agora #central-detail-root .painel-tabs{flex-wrap:wrap;}
 
@@ -652,7 +771,7 @@
 
   @page{ size: A4 landscape; margin: 10mm; }
   @media print{
-    .layout-switch, #layout-select, .tema-switch, #vrChat, a[href="/custos"],
+    .layout-switch, #layout-select, .tema-switch, #vrChat, a[href="simulador.html"],
     .foco-nav, .foco-sair{display:none!important;}
   }
 </style>
@@ -681,7 +800,7 @@
         <span class="nav-row"><span class="ico">▤</span> O que mudou depois</span>
         <span class="nav-desc">Antes×depois e relatório da semana</span>
       </a>
-      <a href="/custos"><span class="nav-row"><span class="ico">⚙</span> Custos</span></a>
+      <a href="simulador.html"><span class="nav-row"><span class="ico">⚙</span> Custos</span></a>
     </nav>
     <div class="sidebar-foot">Demonstração · hackathon 19–20/09/2026</div>
   </aside>
@@ -712,6 +831,8 @@
             <span class="ti-escuro" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
             <span class="ti-claro" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></span>
           </button>
+          <button type="button" class="tema-switch" id="intro-abrir-btn" aria-label="Como usar este painel" title="Como usar este painel">?</button>
+          <button type="button" class="historia-cta" id="historia-abrir-btn">▶ Ver a história em 1 minuto</button>
         </div>
         <div class="clock" id="clock">—</div>
       </div>
@@ -725,70 +846,70 @@
       </div>
 
       <div class="stats" id="stats-topo">
-        <div class="stat">
+        <button type="button" class="stat" data-origem="ocorrencias" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-medido">MEDIDO</span>
             <div class="num">1.100</div>
             <div class="lbl">ocorrências com coordenada — 2025 e início de 2026</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="graves" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-medido">MEDIDO</span>
             <div class="num">132</div>
             <div class="lbl">graves ou fatais</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="cameras" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="14" height="11" rx="2"/><path d="M17 10l4-2v9l-4-2"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-sim">SIMULAÇÃO</span>
             <div class="num" id="stat-cameras">100</div>
             <div class="lbl">câmeras lidas no cenário atual</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="cobertura" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-sim">SIMULAÇÃO</span>
             <div class="num" id="stat-cobertura">51,8%</div>
             <div class="lbl">das ocorrências a até 100 m de uma câmera</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="fontes" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-medido">MEDIDO</span>
             <div class="num" id="stat-fontes">1 de 9</div>
             <div class="lbl">fontes conectadas hoje</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="veiculos" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="15" height="7" rx="1.5"/><circle cx="7" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/><path d="M4 10l2-4h8l3 4"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-sint">DADO SINTÉTICO</span>
             <div class="num" id="stat-veiculos-agora">—</div>
             <div class="lbl">veículos/h na cidade agora</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="anormais" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3z"/><path d="M12 12l3-3M9 12l3-3"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-sint">DADO SINTÉTICO</span>
             <div class="num" id="stat-pontos-anormais">—</div>
             <div class="lbl">pontos acima do normal</div>
           </div>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-origem="fluidez" aria-haspopup="dialog">
           <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15c3-6 5-6 7-3s4 3 7-3"/></svg></span>
           <div class="stat-body">
             <span class="tag tag-sint">DADO SINTÉTICO</span>
             <div class="num" id="stat-fluidez-mes">—</div>
             <div class="lbl">fluidez comparada ao mês anterior</div>
           </div>
-        </div>
+        </button>
       </div>
 
       <div class="grid2">
@@ -1118,6 +1239,20 @@
 
 <div id="painel-lateral-root"></div>
 
+<div id="historia-scrim" class="historia-scrim" hidden></div>
+<div id="historia-overlay" class="historia-overlay" hidden role="dialog" aria-modal="true" aria-label="Modo história — Visão de Rota">
+  <div class="historia-progresso"><div class="historia-progresso-fill" id="historia-progresso-fill"></div></div>
+  <div class="historia-chrome">
+    <span class="historia-passo-lbl" id="historia-passo-lbl">passo <b id="historia-passo-num">1</b> de 7</span>
+    <button type="button" id="historia-sair-btn" class="historia-x" aria-label="Sair da história">✕ sair (Esc)</button>
+  </div>
+  <div class="historia-card" id="historia-card"></div>
+  <div class="historia-nav">
+    <button type="button" id="historia-prev-btn" class="historia-nav-btn">← voltar</button>
+    <button type="button" id="historia-next-btn" class="historia-nav-btn historia-nav-btn-principal">Próximo →</button>
+  </div>
+</div>
+
 <div id="foco-view" hidden>
   <button type="button" class="chip foco-sair" id="foco-sair">✕ sair do foco</button>
   <div class="foco-pos" id="foco-pos">—</div>
@@ -1293,6 +1428,49 @@
   // ---------- #controle: mapa principal ----------
   var mapControle = null, heatLayer = null, zonasLayer = null, camerasLayer = null, fluxoLayer = null;
   var mapControleInit = false;
+  var zonaMarkersInfo = [];
+  var zonaZoomWired = false;
+
+  // ---------- Melhoria #3: marcadores de zona que se sobrepõem em pixels (ex.: 5 e 12 no
+  // zoom inicial) não podem deixar um clique "engolido" pelo vizinho. Não mexe na coordenada
+  // do dado — só desloca visualmente o ÍCONE quando dois ficam mais perto que o próprio
+  // tamanho do ícone na tela, recalculando a cada zoom/pan (spiderfy simples). ----------
+  function ajustarColisoesZonaMarkers(){
+    if(!mapControle || !zonaMarkersInfo.length) return;
+    var LIMIAR = 24; // px — icone é 20x20, com folga
+    var base = zonaMarkersInfo.map(function(inf){ return mapControle.latLngToContainerPoint(inf.marker.getLatLng()); });
+    var desl = zonaMarkersInfo.map(function(){ return {dx:0,dy:0}; });
+    // relaxação iterativa: com 3+ marcadores agrupados, uma passada só não converge
+    // (o empurrão de um par cancela o do outro) — repete até estabilizar ou 8 rodadas.
+    for(var iter=0; iter<8; iter++){
+      var pts = base.map(function(p, i){ return { x:p.x+desl[i].dx, y:p.y+desl[i].dy }; });
+      var moveu = false;
+      for(var a=0; a<pts.length; a++){
+        for(var b=a+1; b<pts.length; b++){
+          var dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y;
+          var dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist > 0.01 && dist < LIMIAR){
+            var falta = (LIMIAR - dist) / 2 + 1;
+            var ux = dx/dist, uy = dy/dist;
+            desl[b].dx += ux*falta; desl[b].dy += uy*falta;
+            desl[a].dx -= ux*falta; desl[a].dy -= uy*falta;
+            moveu = true;
+          } else if(dist <= 0.01){
+            var ang = (b * 137.5) * Math.PI/180;
+            desl[b].dx += Math.cos(ang)*13; desl[b].dy += Math.sin(ang)*13;
+            moveu = true;
+          }
+        }
+      }
+      if(!moveu) break;
+    }
+    zonaMarkersInfo.forEach(function(inf, idx){
+      var d = desl[idx];
+      if(Math.abs(d.dx) < 0.5 && Math.abs(d.dy) < 0.5) return;
+      var icon = L.divIcon({ className:'', html:'<div class="zona-label" style="cursor:pointer;">'+(inf.i+1)+'</div>', iconSize:[20,20], iconAnchor:[10 - d.dx, 10 - d.dy] });
+      inf.marker.setIcon(icon);
+    });
+  }
 
   var LEGENDA_CONTROLE =
     '<div class="legend-row"><span class="legend-dot" style="background:#D6453D"></span> zona quente (MEDIDO)</div>'+
@@ -1376,6 +1554,7 @@
     if(!state.showZonas) return;
     zonasLayer = L.layerGroup();
     var zonas = computarZonas();
+    zonaMarkersInfo = [];
     zonas.forEach(function(z, i){
       var raioM = 60 + Math.min(50, z.count*1.4);
       var circle = L.circle([z.lat, z.lon], {
@@ -1390,11 +1569,17 @@
       circle.addTo(zonasLayer);
 
       var label = L.divIcon({ className:'', html:'<div class="zona-label" style="cursor:pointer;">'+(i+1)+'</div>', iconSize:[20,20] });
-      var marker = L.marker([z.lat, z.lon], { icon: label });
+      var marker = L.marker([z.lat, z.lon], { icon: label, zIndexOffset: i });
       marker.on('click', function(){ window.abrirPainelZona(i); });
       marker.addTo(zonasLayer);
+      zonaMarkersInfo.push({ marker: marker, i: i });
     });
     zonasLayer.addTo(mapControle);
+    ajustarColisoesZonaMarkers();
+    if(!zonaZoomWired){
+      zonaZoomWired = true;
+      mapControle.on('zoomend moveend', ajustarColisoesZonaMarkers);
+    }
   }
 
   function posicoesCenario(n){
@@ -3539,13 +3724,499 @@
     }
   };
 
+  // ---------- Melhoria #2: origem do número em cada cartão do topo ----------
+  var LINK_PROVAS = 'https://github.com/enioxt/hackathon/blob/main/docs/PROVAS.md';
+  function origemInfo(chave){
+    var c = cenarioAtual();
+    var pct = c ? String(c.pct_ocorrencias).replace('.', ',') + '%' : '—';
+    var nCam = c ? ((state.cenario >= 600) ? DATA.posicoes.length : c.posicoes_usadas) : state.cenario;
+    var curva = DATA.cenarios.map(function(cc){
+      return cc.cameras + ' câmeras → ' + String(cc.pct_ocorrencias).replace('.', ',') + '%';
+    }).join(' · ');
+    var MAP = {
+      ocorrencias: {
+        titulo: '1.100 ocorrências com coordenada', tag: 'MEDIDO', tagCls: 'tag-medido',
+        oQueE: 'Total de ocorrências de trânsito com latitude/longitude, em 2025 e no início de 2026.',
+        deOnde: 'Dado aberto do Estado de Minas Gerais. Carregado no bloco <code>#dados-reais</code> deste HTML (JSON embutido), campo <code>ocorrencias</code>/<code>universo_ocorrencias</code>.',
+        provado: true
+      },
+      graves: {
+        titulo: '132 graves ou fatais', tag: 'MEDIDO', tagCls: 'tag-medido',
+        oQueE: 'Das 1.100 ocorrências, as classificadas como graves ou fatais.',
+        deOnde: 'Mesmo dado aberto do Estado — bloco <code>#dados-reais</code>, campo <code>universo_ocorrencias.gravidade</code>.',
+        provado: true
+      },
+      cameras: {
+        titulo: nCam + ' câmeras lidas no cenário atual', tag: 'SIMULAÇÃO', tagCls: 'tag-sim',
+        oQueE: 'Não são câmeras reais — são posições calculadas (célula de 100 m escolhida por cobrir mais ocorrências) para simular "e se houvesse N câmeras aqui".',
+        deOnde: 'Bloco <code>#dados-reais</code>, campo <code>cenarios</code> (cenário com '+nCam+' câmeras) + <code>posicoes</code>. Curva completa: '+curva+'.',
+        provado: false
+      },
+      cobertura: {
+        titulo: pct + ' de cobertura', tag: 'SIMULAÇÃO', tagCls: 'tag-sim',
+        oQueE: '% das ocorrências reais que ficariam a até 100 m de alguma câmera, se o cenário de '+nCam+' câmeras existisse.',
+        deOnde: 'Bloco <code>#dados-reais</code>, campo <code>cenarios</code> — mesma curva de cobertura por número de câmeras: '+curva+'.',
+        provado: false
+      },
+      fontes: {
+        titulo: '1 de 9 fontes conectadas hoje', tag: 'MEDIDO', tagCls: 'tag-medido',
+        oQueE: '9 fontes de dado candidatas foram mapeadas (câmeras municipais, Hélios, câmeras privadas, semáforo com IA, ônibus, app da cidade, relatos, navegação). Só a de ocorrências de trânsito está de fato ligada hoje — as outras 8 dependem de autorização ainda não obtida.',
+        deOnde: 'Lista <code>FONTES</code> no código deste painel (gestor.html) — aba "Fontes e sistemas" mostra as 9 uma a uma.',
+        provado: true
+      },
+      veiculos: {
+        titulo: 'veículos/h na cidade agora', tag: 'DADO SINTÉTICO', tagCls: 'tag-sint',
+        oQueE: 'Nenhum sensor real está contando veículos agora. O número é gerado no navegador por uma função com semente fixa — sempre o mesmo valor a cada vez que a página abre.',
+        deOnde: 'Função <code>updateIndicadoresTopo()</code>, gerador <code>mulberry32(seedFor(\'VISAODEROTA-INDICADORES\'))</code> — sem rede, sem sensor.',
+        provado: false
+      },
+      anormais: {
+        titulo: 'pontos acima do normal', tag: 'DADO SINTÉTICO', tagCls: 'tag-sint',
+        oQueE: 'Quantas das 12 zonas quentes (essas são MEDIDAS) o gerador sintético marcou como "acima do normal" agora — a situação de cada zona também vem da mesma semente fixa, não de leitura ao vivo.',
+        deOnde: 'Função <code>updateIndicadoresTopo()</code> + <code>situacaoDoPonto()</code>, semente <code>VISAODEROTA-ZONA-i</code>.',
+        provado: false
+      },
+      fluidez: {
+        titulo: 'fluidez comparada ao mês anterior', tag: 'DADO SINTÉTICO', tagCls: 'tag-sint',
+        oQueE: 'Variação percentual inventada para ilustrar como o painel mostraria uma comparação mês a mês — não há leitura real de fluxo hoje.',
+        deOnde: 'Função <code>updateIndicadoresTopo()</code>, mesmo gerador <code>mulberry32(seedFor(\'VISAODEROTA-INDICADORES\'))</code>.',
+        provado: false
+      }
+    };
+    return MAP[chave] || null;
+  }
+
+  var origemPopEl = null, origemPopBtn = null;
+  function fecharOrigemPop(){
+    if(origemPopEl && origemPopEl.parentNode) origemPopEl.parentNode.removeChild(origemPopEl);
+    origemPopEl = null;
+    if(origemPopBtn){ origemPopBtn.focus(); origemPopBtn = null; }
+    document.removeEventListener('mousedown', onOrigemDocClick, true);
+  }
+  function onOrigemDocClick(ev){
+    if(origemPopEl && !origemPopEl.contains(ev.target) && ev.target !== origemPopBtn && !origemPopBtn.contains(ev.target)){
+      fecharOrigemPop();
+    }
+  }
+  function abrirOrigemPop(btn){
+    fecharOrigemPop();
+    var info = origemInfo(btn.getAttribute('data-origem'));
+    if(!info) return;
+    origemPopBtn = btn;
+    var pop = document.createElement('div');
+    pop.className = 'origem-pop';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Origem do número: ' + info.titulo);
+    pop.innerHTML =
+      '<button type="button" class="origem-fecha" aria-label="Fechar">✕</button>'+
+      '<span class="tag '+info.tagCls+'">'+info.tag+'</span>'+
+      '<h4>'+info.titulo+'</h4>'+
+      '<div>'+info.oQueE+'</div>'+
+      '<div class="origem-de-onde"><b>De onde vem:</b> '+info.deOnde+'</div>'+
+      (info.provado ? '<a class="origem-prova" href="'+LINK_PROVAS+'" target="_blank" rel="noopener">ver a prova →</a>' : '');
+    document.body.appendChild(pop);
+    origemPopEl = pop;
+    // posiciona perto do cartão, sem sair da tela
+    var r = btn.getBoundingClientRect();
+    var maxW = pop.offsetWidth || 320;
+    var left = Math.min(Math.max(8, r.left), window.innerWidth - maxW - 8);
+    var top = r.bottom + 8;
+    if(top + pop.offsetHeight > window.innerHeight - 8){ top = Math.max(8, r.top - pop.offsetHeight - 8); }
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.querySelector('.origem-fecha').addEventListener('click', fecharOrigemPop);
+    setTimeout(function(){ document.addEventListener('mousedown', onOrigemDocClick, true); }, 0);
+  }
+  function wireStatsOrigem(){
+    Array.prototype.forEach.call(document.querySelectorAll('#stats-topo .stat[data-origem]'), function(btn){
+      btn.addEventListener('click', function(){ abrirOrigemPop(btn); });
+    });
+  }
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape' && origemPopEl) fecharOrigemPop();
+  });
+
+  // ---------- Melhoria #4: entrada de primeira visita — o que é e por onde clicar ----------
+  var INTRO_LS_KEY = 'visaoderota_intro_vista_v1';
+  function introDesligadaPorUrl(){ return (new URLSearchParams(location.search)).get('intro') === '0'; }
+  function fecharIntro(){
+    var el = document.getElementById('intro-overlay');
+    if(el) el.remove();
+    document.removeEventListener('keydown', introKeydown);
+  }
+  function introKeydown(ev){ if(ev.key === 'Escape') fecharIntro(); }
+  function abrirIntro(){
+    if(document.getElementById('intro-overlay')) return;
+    var el = document.createElement('div');
+    el.id = 'intro-overlay';
+    el.className = 'intro-overlay';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', 'Como usar o Visão de Rota');
+    el.innerHTML =
+      '<div class="intro-card">'+
+        '<button type="button" class="intro-fecha" aria-label="Fechar">✕</button>'+
+        '<h3>Visão de Rota lê as câmeras que a cidade já tem para contar o trânsito — sem rosto, sem placa</h3>'+
+        '<button type="button" class="historia-cta historia-cta-intro" id="intro-historia-btn">▶ Ver a história em 1 minuto</button>'+
+        '<ol class="intro-passos">'+
+          '<li><button type="button" class="chip intro-passo" id="intro-passo-1">1. clique num ponto do mapa</button></li>'+
+          '<li><button type="button" class="chip intro-passo" id="intro-passo-2">2. veja o que mudou depois de uma intervenção</button></li>'+
+          '<li><button type="button" class="chip intro-passo" id="intro-passo-3">3. troque o jeito de ver no canto superior direito</button></li>'+
+        '</ol>'+
+        '<div class="intro-legenda">'+
+          '<span class="tag tag-medido">MEDIDO</span> dado real do Estado &nbsp; '+
+          '<span class="tag tag-sim">SIMULAÇÃO</span> cenário hipotético calculado &nbsp; '+
+          '<span class="tag tag-sint">DADO SINTÉTICO</span> exemplo gerado, não é leitura real'+
+        '</div>'+
+        '<button type="button" class="chip on intro-entendi">entendi, começar</button>'+
+      '</div>';
+    document.body.appendChild(el);
+    document.addEventListener('keydown', introKeydown);
+    el.addEventListener('click', function(ev){ if(ev.target === el) fecharIntro(); });
+    el.querySelector('.intro-fecha').addEventListener('click', fecharIntro);
+    el.querySelector('.intro-entendi').addEventListener('click', fecharIntro);
+    var introHistoriaBtn = document.getElementById('intro-historia-btn');
+    if(introHistoriaBtn) introHistoriaBtn.addEventListener('click', function(){ fecharIntro(); historiaAbrir(); });
+    var p1 = document.getElementById('intro-passo-1');
+    if(p1) p1.addEventListener('click', function(){
+      fecharIntro();
+      if(state.telaAtual !== 'agora'){ location.hash = 'controle'; }
+      var zonas = computarZonas();
+      if(zonas.length) window.abrirPainelZona(0);
+    });
+    var p2 = document.getElementById('intro-passo-2');
+    if(p2) p2.addEventListener('click', function(){ fecharIntro(); location.hash = 'intervencoes'; });
+    var p3 = document.getElementById('intro-passo-3');
+    if(p3) p3.addEventListener('click', function(){
+      fecharIntro();
+      var sw = document.getElementById('layout-switch');
+      if(sw){ sw.scrollIntoView({block:'center'}); }
+    });
+    try{ localStorage.setItem(INTRO_LS_KEY, '1'); }catch(e){ /* localStorage indisponível — segue sem lembrar */ }
+  }
+  function wireIntroBotao(){
+    var btn = document.getElementById('intro-abrir-btn');
+    if(btn) btn.addEventListener('click', abrirIntro);
+  }
+  function talvezAbrirIntroPrimeiraVez(){
+    if(introDesligadaPorUrl()) return;
+    var jaViu = false;
+    try{ jaViu = localStorage.getItem(INTRO_LS_KEY) === '1'; }catch(e){ jaViu = false; }
+    if(!jaViu) abrirIntro();
+  }
+
+  // ---------- Modo História (?historia=1): a cidade gera dados → o sistema organiza →
+  // identifica algo fora do padrão → o gestor entende → testa uma alternativa → decide →
+  // mede se melhorou. 7 passos, um cruzamento só ("Ponto 1"), operando o painel real —
+  // nunca slide. Honestidade: cada número carrega sua etiqueta; nada de "tempo real". ----------
+  var HISTORIA_TOTAL_PASSOS = 7;
+  var HISTORIA_TIPOS = [
+    { k:'semaforo', label:'ajustar tempo do semáforo' },
+    { k:'estacionamento', label:'tirar estacionamento de um lado' },
+    { k:'inverter', label:'inverter sentido de uma via lateral' }
+  ];
+  state.historia = { ativo:false, passo:1, ponto:null, tipo:null, layoutAntes:null, hashAntes:null, telaAntes:null };
+
+  function historiaZonaCritica(){
+    var zonas = computarZonas();
+    if(!zonas.length) return 0;
+    var melhor = 0;
+    zonas.forEach(function(z, i){ if(z.count > zonas[melhor].count) melhor = i; });
+    return melhor;
+  }
+  function historiaVizinha(idx){
+    var zonas = computarZonas();
+    var alvo = zonas[idx];
+    var melhorD = Infinity, melhorI = (idx+1) % zonas.length;
+    zonas.forEach(function(z, i){
+      if(i === idx || !alvo) return;
+      var d = distMetros(alvo.lat, alvo.lon, z.lat, z.lon);
+      if(d < melhorD){ melhorD = d; melhorI = i; }
+    });
+    return melhorI;
+  }
+  function historiaDesvioPct(idx){ var r = mulberry32(seedFor('VISAODEROTA-HISTORIA-DESVIO-'+idx)+21); return 22 + Math.round(r()*38); }
+  function historiaMinutosAtras(idx){ var r = mulberry32(seedFor('VISAODEROTA-HISTORIA-MIN-'+idx)+5); return 6 + Math.round(r()*34); }
+  function historiaEfeito(tipoKey, idx){
+    var r = mulberry32(seedFor('VISAODEROTA-HISTORIA-EFEITO-'+tipoKey+'-'+idx)+3);
+    var min = 8 + Math.round(r()*12), max = min + 6 + Math.round(r()*8);
+    var vizIdx = historiaVizinha(idx);
+    var colateralAlto = r() > 0.5, colateralPct = 3 + Math.round(r()*9);
+    return { min:min, max:max, vizIdx:vizIdx,
+      txt: colateralAlto
+        ? ('efeito colateral: fluxo no Ponto vizinho (zona quente nº '+(vizIdx+1)+') pode subir cerca de '+colateralPct+'%')
+        : ('efeito colateral no Ponto vizinho (zona quente nº '+(vizIdx+1)+') deve ficar pequeno, abaixo de '+colateralPct+'%') };
+  }
+  function historiaResultado(tipoKey, idx){
+    var r = mulberry32(seedFor('VISAODEROTA-HISTORIA-RESULTADO-'+tipoKey+'-'+idx)+91);
+    var antes = 18 + Math.round(r()*22);
+    var variPct = -0.30 + r()*0.42;
+    var depois = Math.max(1, Math.round(antes*(1+variPct)));
+    var pct = Math.round((depois-antes)/antes*100);
+    return { antes:antes, depois:depois, pct:pct, dias:14, inconclusivo: tipoKey === 'inverter' };
+  }
+
+  function historiaLimparInjetado(){
+    Array.prototype.forEach.call(document.querySelectorAll('.historia-injetado'), function(el){ el.remove(); });
+  }
+  function historiaSpot(el){
+    var atual = document.querySelector('.historia-spot');
+    if(atual && atual !== el) atual.classList.remove('historia-spot');
+    if(el){
+      el.classList.add('historia-spot');
+      try{ el.scrollIntoView({ block:'center', behavior:'auto' }); }catch(e){ /* scroll é conforto, não crítico */ }
+    }
+  }
+  function historiaInjetar(containerSel, html){
+    var wrap = document.querySelector(containerSel);
+    if(!wrap) return null;
+    var div = document.createElement('div');
+    div.className = 'painel-bloco historia-injetado';
+    div.innerHTML = html;
+    wrap.appendChild(div);
+    return div;
+  }
+  function historiaAtualizarChrome(){
+    var passo = state.historia.passo;
+    var lbl = document.getElementById('historia-passo-lbl');
+    var fill = document.getElementById('historia-progresso-fill');
+    if(passo > HISTORIA_TOTAL_PASSOS){
+      if(lbl) lbl.textContent = 'fim';
+      if(fill) fill.style.width = '100%';
+    } else {
+      var numEl = document.getElementById('historia-passo-num');
+      if(numEl) numEl.textContent = String(passo);
+      if(lbl) lbl.hidden = false;
+      if(fill) fill.style.width = Math.round(passo/HISTORIA_TOTAL_PASSOS*100) + '%';
+    }
+    var prevBtn = document.getElementById('historia-prev-btn');
+    var nextBtn = document.getElementById('historia-next-btn');
+    if(prevBtn) prevBtn.disabled = (passo <= 1);
+    if(nextBtn) nextBtn.textContent = (passo >= HISTORIA_TOTAL_PASSOS) ? 'ver o final →' : 'Próximo →';
+    if(nextBtn) nextBtn.hidden = (passo > HISTORIA_TOTAL_PASSOS);
+  }
+
+  function historiaRenderPasso(){
+    historiaLimparInjetado();
+    var h = state.historia, idx = h.ponto, card = document.getElementById('historia-card');
+    if(!card) return;
+    historiaAtualizarChrome();
+    if(h.passo === 1){
+      aplicarLayout('central'); location.hash = 'controle';
+      var fontesEl = document.querySelector('#stats-topo .stat[data-origem="fontes"]');
+      historiaSpot(fontesEl);
+      card.innerHTML =
+        '<div class="historia-titulo">1. A cidade gera dados</div>'+
+        '<div class="historia-num" id="historia-contador">0</div>'+
+        '<div class="historia-num-sub"><span class="tag tag-sint">DADO SINTÉTICO</span> contagem chegando agora, ilustrativa</div>'+
+        '<div class="historia-corpo"><span class="tag tag-medido">MEDIDO</span> hoje, <b>1 de 9</b> fontes de dado já está de fato ligada — a de ocorrências de trânsito do Estado. As outras 8 dependem de autorização.</div>';
+      var contEl = document.getElementById('historia-contador');
+      if(contEl){
+        var alvo = 340 + Math.round(mulberry32(seedFor('VISAODEROTA-HISTORIA-CONTADOR'))()*260);
+        var passo0 = Math.max(1, Math.round(alvo/28)), atual0 = 0;
+        var iv = setInterval(function(){
+          atual0 = Math.min(alvo, atual0+passo0);
+          contEl.textContent = atual0.toLocaleString('pt-BR');
+          if(atual0 >= alvo || state.historia.passo !== 1) clearInterval(iv);
+        }, 40);
+      }
+    } else if(h.passo === 2){
+      aplicarLayout('central'); location.hash = 'controle';
+      var zonas2 = computarZonas(); var z2 = zonas2[idx];
+      if(mapControle && z2){ try{ mapControle.setView([z2.lat, z2.lon], 16, { animate:true }); }catch(e){} }
+      historiaSpot(document.getElementById('map'));
+      card.innerHTML =
+        '<div class="historia-titulo">2. O sistema organiza</div>'+
+        '<div class="historia-num">12</div>'+
+        '<div class="historia-num-sub"><span class="tag tag-medido">MEDIDO</span> zonas quentes calculadas a partir das ocorrências reais</div>'+
+        '<div class="historia-corpo">O mapa acabou de dar zoom no <b>Ponto 1 — região central</b>, a zona quente com mais ocorrências no dado — é onde a história continua.</div>';
+    } else if(h.passo === 3){
+      window.abrirPainelZona(idx);
+      historiaSpot(document.querySelector(painelRootSel()));
+      var desvio = historiaDesvioPct(idx), minAtras = historiaMinutosAtras(idx);
+      card.innerHTML =
+        '<div class="historia-titulo">3. Algo fora do padrão</div>'+
+        '<div class="historia-num">+'+desvio+'%</div>'+
+        '<div class="historia-num-sub"><span class="tag tag-sint">DADO SINTÉTICO</span> fluxo acima do habitual neste horário, começou há '+minAtras+' min</div>'+
+        '<div class="historia-corpo">No <b>Ponto 1</b> o painel real (à esquerda/atrás) já abriu o detalhe — aba "Histórico" mostra o gráfico atual × habitual completo.</div>';
+    } else if(h.passo === 4){
+      window.abrirPainelZona(idx, 'geral');
+      historiaSpot(document.querySelector(painelRootSel()));
+      var zonas4 = computarZonas(); var z4 = zonas4[idx];
+      var causas4 = causasPossiveis('critica', 'VISAODEROTA-ZONA-'+idx);
+      card.innerHTML =
+        '<div class="historia-titulo">4. O gestor entende</div>'+
+        '<div class="historia-corpo"><span class="tag tag-medido">MEDIDO</span> '+(z4?z4.count:0)+' ocorrências já registradas neste ponto ('+(z4?z4.gf:0)+' graves/fatais).</div>'+
+        '<div class="historia-corpo" style="margin-top:8px;"><b>Possíveis causas</b> (o sistema não afirma qual é — lista hipóteses para o gestor checar):</div>'+
+        '<ul class="historia-lista">'+causas4.map(function(c){ return '<li>'+c+'</li>'; }).join('')+'</ul>';
+    } else if(h.passo === 5){
+      window.abrirPainelZona(idx, 'geral');
+      var bloco5 = historiaInjetar(painelRootSel(), historia5Html(h.tipo, idx));
+      historiaSpot(bloco5);
+      historia5Wire(idx);
+      card.innerHTML =
+        '<div class="historia-titulo">5. Testa uma alternativa</div>'+
+        '<div class="historia-corpo">No painel real, escolha uma intervenção para o <b>Ponto 1</b> — o efeito aparece ali, como faixa estimada.</div>'+
+        '<div class="historia-corpo" style="margin-top:6px;color:var(--gray);font-size:12.5px;">o sistema real MEDE o depois; aqui ele só ilustra uma estimativa.</div>';
+    } else if(h.passo === 6){
+      window.abrirPainelZona(idx, 'geral');
+      var bloco6 = historiaInjetar(painelRootSel(), historia6Html(h.tipo, idx));
+      historiaSpot(bloco6);
+      historia6Wire(idx);
+      card.innerHTML =
+        '<div class="historia-titulo">6. Decide</div>'+
+        '<div class="historia-corpo">A máquina sugere; <b>quem decide é gente</b>. Registre a intervenção escolhida no painel real ao lado para seguir.</div>';
+    } else if(h.passo === 7){
+      var zonas7 = computarZonas(); var z7 = zonas7[idx];
+      window.vrIrParaMemoria(idx);
+      var res = historiaResultado(h.tipo || 'semaforo', idx);
+      setTimeout(function(){
+        var alvo7 = document.querySelector('.memoria-timeline') || document.getElementById('screen-resultado');
+        var bloco7 = historiaInjetar('#screen-resultado .panel, #screen-resultado', historia7Html(res, z7));
+        historiaSpot(bloco7 || alvo7);
+      }, 30);
+      card.innerHTML =
+        '<div class="historia-titulo">7. Mede se melhorou</div>'+
+        '<div class="historia-corpo"><span class="tag tag-sint">DADO SINTÉTICO</span> janela declarada: 14 dias antes × 14 dias depois — veredito no painel real ao lado.</div>';
+    } else {
+      historiaSpot(null);
+      card.innerHTML =
+        '<div class="historia-titulo">Esta foi a história.</div>'+
+        '<div class="historia-corpo">Agora explore sozinho — mude de layout, clique em outro ponto, veja outras zonas.</div>'+
+        '<button type="button" class="chip on historia-final-btn" id="historia-explorar-btn">explorar sozinho</button>';
+      var expBtn = document.getElementById('historia-explorar-btn');
+      if(expBtn) expBtn.addEventListener('click', historiaSair);
+    }
+  }
+
+  function historia5Html(tipoAtual, idx){
+    var opcoes = HISTORIA_TIPOS.map(function(t){
+      return '<button type="button" class="chip historia-tipo-btn'+(tipoAtual===t.k?' on':'')+'" data-tipo="'+t.k+'">'+t.label+'</button>';
+    }).join('');
+    var efeitoHtml = '';
+    if(tipoAtual){
+      var ef = historiaEfeito(tipoAtual, idx);
+      efeitoHtml = '<div class="historia-efeito"><span class="tag tag-sint">DADO SINTÉTICO</span> espera estimada: <b>−'+ef.min+'% a −'+ef.max+'%</b><br>'+ef.txt+'</div>';
+    }
+    return '<h4>Testar uma alternativa no Ponto 1 <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+      '<div class="historia-opcoes">'+opcoes+'</div>'+efeitoHtml;
+  }
+  function historia5Wire(idx){
+    Array.prototype.forEach.call(document.querySelectorAll('.historia-tipo-btn'), function(btn){
+      btn.addEventListener('click', function(){
+        state.historia.tipo = btn.getAttribute('data-tipo');
+        var alvo = btn.closest('.historia-injetado');
+        if(alvo){
+          alvo.innerHTML = historia5Html(state.historia.tipo, idx);
+          historia5Wire(idx);
+          historiaSpot(alvo);
+        }
+      });
+    });
+  }
+  function historia6Html(tipo, idx){
+    var tipoInfo = HISTORIA_TIPOS.filter(function(t){ return t.k === tipo; })[0];
+    var hoje = new Date();
+    var dataStr = hoje.toLocaleDateString('pt-BR');
+    if(!tipo){
+      return '<h4>Registrar intervenção <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+        '<div style="font-size:12.5px;color:var(--gray);">volte ao passo 5 e escolha uma alternativa antes de registrar.</div>';
+    }
+    return '<h4>Registrar intervenção <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+      '<div style="font-size:13px;margin-bottom:8px;">Ponto 1 — região central · '+tipoInfo.label+' · '+dataStr+'</div>'+
+      '<div style="font-size:12.5px;color:var(--gray);margin-bottom:10px;">decisor: gestor (demonstração) · hipótese: "esperamos reduzir a espera em ~'+historiaEfeito(tipo, idx).min+'% a '+historiaEfeito(tipo, idx).max+'%"</div>'+
+      '<button type="button" class="chip on" id="historia-registrar-btn">registrar intervenção</button>'+
+      '<div id="historia-registrado-msg" style="margin-top:8px;font-size:12.5px;color:var(--green);"></div>';
+  }
+  function historia6Wire(idx){
+    var btn = document.getElementById('historia-registrar-btn');
+    if(btn) btn.addEventListener('click', function(){
+      var msg = document.getElementById('historia-registrado-msg');
+      if(msg) msg.textContent = '✓ registrado — a decisão é humana; a máquina só mediu e sugeriu.';
+      btn.disabled = true;
+    });
+  }
+  function historia7Html(res, z){
+    var melhora = res.pct < 0;
+    var veredito = res.inconclusivo
+      ? 'dados insuficientes para concluir — a intervenção escolhida costuma levar mais de 14 dias para estabilizar.'
+      : (melhora ? ('melhorou: espera caiu '+Math.abs(res.pct)+'% na janela medida.') : ('não melhorou: espera variou '+(res.pct>0?'+':'')+res.pct+'% na janela medida.'));
+    return '<h4>Antes × depois — 14 dias antes × 14 dias depois <span class="tag tag-sint">DADO SINTÉTICO</span></h4>'+
+      '<div class="bar-wrap" style="margin-bottom:6px;"><span style="width:44px;">antes</span><div class="bar before"><i style="width:100%"></i></div><span>'+res.antes+' s</span></div>'+
+      '<div class="bar-wrap"><span style="width:44px;">depois</span><div class="bar after"><i style="width:'+Math.round(res.depois/res.antes*100)+'%"></i></div><span>'+res.depois+' s</span></div>'+
+      '<div style="margin-top:10px;font-weight:700;">veredito: '+veredito+'</div>'+
+      (z ? ('<div style="margin-top:8px;font-size:12px;color:var(--gray);"><span class="tag tag-medido">MEDIDO</span> '+z.count+' ocorrências históricas neste ponto continuam registradas, independente do resultado da intervenção.</div>') : '');
+  }
+
+  function historiaProximo(){
+    if(state.historia.passo > HISTORIA_TOTAL_PASSOS) return;
+    state.historia.passo += 1;
+    historiaRenderPasso();
+  }
+  function historiaVoltar(){
+    if(state.historia.passo <= 1) return;
+    state.historia.passo -= 1;
+    historiaRenderPasso();
+  }
+  function historiaTeclado(ev){
+    if(!state.historia.ativo) return;
+    if(ev.key === 'Escape'){ historiaSair(); }
+    else if(ev.key === 'ArrowRight' || ev.key === ' '){ ev.preventDefault(); historiaProximo(); }
+    else if(ev.key === 'ArrowLeft'){ historiaVoltar(); }
+  }
+  function historiaSair(){
+    state.historia.ativo = false;
+    historiaLimparInjetado();
+    historiaSpot(null);
+    var overlay = document.getElementById('historia-overlay');
+    var scrim = document.getElementById('historia-scrim');
+    if(overlay) overlay.hidden = true;
+    if(scrim) scrim.hidden = true;
+    document.removeEventListener('keydown', historiaTeclado);
+    if(state.historia.layoutAntes) aplicarLayout(state.historia.layoutAntes);
+    location.hash = state.historia.hashAntes || 'controle';
+  }
+  function historiaAbrir(){
+    if(document.getElementById('intro-overlay')) fecharIntro();
+    state.historia.layoutAntes = layoutAtual();
+    state.historia.hashAntes = location.hash;
+    state.historia.ativo = true;
+    state.historia.passo = 1;
+    state.historia.tipo = null;
+    state.historia.ponto = historiaZonaCritica();
+    var overlay = document.getElementById('historia-overlay');
+    var scrim = document.getElementById('historia-scrim');
+    if(overlay) overlay.hidden = false;
+    if(scrim) scrim.hidden = false;
+    document.addEventListener('keydown', historiaTeclado);
+    historiaRenderPasso();
+  }
+  function wireHistoria(){
+    var btnTop = document.getElementById('historia-abrir-btn');
+    if(btnTop) btnTop.addEventListener('click', historiaAbrir);
+    var next = document.getElementById('historia-next-btn');
+    var prev = document.getElementById('historia-prev-btn');
+    var sair = document.getElementById('historia-sair-btn');
+    if(next) next.addEventListener('click', historiaProximo);
+    if(prev) prev.addEventListener('click', historiaVoltar);
+    if(sair) sair.addEventListener('click', historiaSair);
+  }
+  function talvezAbrirHistoriaPorUrl(){
+    if((new URLSearchParams(location.search)).get('historia') === '1') historiaAbrir();
+  }
+
   // ---------- Boot ----------
   renderFontes();
   updateFontesCard();
   updateStats();
   wireControls();
+  wireStatsOrigem();
+  wireIntroBotao();
+  wireHistoria();
   iniciarFilaAlertas();
   onHashChange();
+  talvezAbrirIntroPrimeiraVez();
+  talvezAbrirHistoriaPorUrl();
 })();
 </script>
 <script src="melhorias.js"></script>
