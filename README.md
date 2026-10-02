@@ -1,3 +1,11 @@
+> **MIGRAÇÃO EGOS — 2026-10-01**
+> Este repositório não é mais mantido. O projeto inteiro vive em [github.com/enioxt/hackathon](https://github.com/enioxt/hackathon). Não é uma unidade canônica do EGOS.
+> Nenhum roadmap, status, porta de entrada ou intenção futura vive aqui.
+> O conteúdo válido está sendo absorvido por:
+> - público compartilhável: [github.com/enioxt/cinco](https://github.com/enioxt/cinco) (site: [cinco.ia.br](https://cinco.ia.br))
+> - o núcleo do EGOS é privado e não faz parte deste repositório.
+> Até a migração terminar, este repositório é somente fonte histórica.
+
 # Dados públicos de mobilidade urbana — Patos de Minas (MG)
 ### Pesquisa compartilhável do Hackathon Cidades Inteligentes · 18–20/09/2026
 
